@@ -1,4 +1,5 @@
 import type { PointerEvent, ReactNode } from "react";
+import { BrandMark } from "./BrandMark";
 
 /**
  * 좌측 사이드바. 폭과 접힘 상태는 바깥에서 받는다.
@@ -51,8 +52,8 @@ export function Sidebar({
           aria-expanded={false}
           className="flex flex-1 flex-col items-center gap-x2 py-x3 hover:bg-bg-neutral-weak-alpha focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-stroke-focus-ring"
         >
-          {/* 아이콘 레일 자리표시. 실제 아이콘은 트리 스프린트에서. */}
-          {Array.from({ length: 4 }, (_, index) => (
+          <BrandMark size={18} />
+          {Array.from({ length: 3 }, (_, index) => (
             <span
               key={index}
               aria-hidden
@@ -85,7 +86,7 @@ function SidebarPlaceholder() {
   return (
     <>
       <div className="flex items-center gap-x2">
-        <span aria-hidden className="size-x5 rounded-r1 bg-bg-neutral-weak-alpha" />
+        <BrandMark size={18} />
         <span className="t3-bold truncate text-fg-neutral">워크스페이스</span>
       </div>
 
