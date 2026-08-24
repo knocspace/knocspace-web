@@ -93,3 +93,36 @@
   --knoc-color-grid-edge: var(--seed-color-stroke-neutral-muted);
   --knoc-color-grid-border: var(--seed-color-stroke-neutral-weak);
 }
+
+/* Tailwind 유틸리티 노출 — DESIGN.md 4절.
+ * 여기 등록한 것만 클래스로 쓴다. h-[var(--knoc-...)] 같은 임의값 표기는 쓰지 않는다.
+ * toolbar·chip 높이는 Sprint 7 에서 실제로 쓸 때 추가한다. */
+@theme inline {
+  --spacing-dense-1: var(--knoc-space-dense-1);
+  --spacing-dense-2: var(--knoc-space-dense-2);
+  --spacing-dense-3: var(--knoc-space-dense-3);
+  --spacing-dense-4: var(--knoc-space-dense-4);
+  --spacing-dense-5: var(--knoc-space-dense-5);
+  --spacing-dense-6: var(--knoc-space-dense-6);
+  --spacing-dense-7: var(--knoc-space-dense-7);
+
+  --spacing-comfy-1: var(--knoc-space-comfy-1);
+  --spacing-comfy-2: var(--knoc-space-comfy-2);
+  --spacing-comfy-3: var(--knoc-space-comfy-3);
+  --spacing-comfy-4: var(--knoc-space-comfy-4);
+  --spacing-comfy-5: var(--knoc-space-comfy-5);
+  --spacing-comfy-6: var(--knoc-space-comfy-6);
+  --spacing-comfy-7: var(--knoc-space-comfy-7);
+
+  --spacing-doc-gutter: var(--knoc-doc-gutter);
+
+  --height-tree-row:   var(--knoc-tree-row-height);
+  --height-grid-row:   var(--knoc-grid-row-height);
+  --height-topbar:     var(--knoc-topbar-height);
+
+  --width-sidebar:     var(--knoc-sidebar-default);
+  --max-width-measure: var(--knoc-doc-measure);
+
+  --color-grid-line: var(--knoc-color-grid-line);
+  --color-grid-edge: var(--knoc-color-grid-edge);
+}

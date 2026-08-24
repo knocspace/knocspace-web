@@ -70,13 +70,13 @@ UI 코드를 쓰기 전에 이 파일을 읽습니다. 여기 적힌 값은 D0�
 | 문서 본문 최대 폭 | 720px | `--knoc-doc-measure` |
 | 문서 좌우 거터 | 56px | `--knoc-doc-gutter` |
 | DB 화면 좌우 거터 | 16px (measure 무시, 전체 폭) | — |
-| 그리드 행 높이 | 32px | `--knoc-size-grid-row` |
-| 그리드 헤더 높이 | 34px | `--knoc-size-grid-header` |
-| 그리드 셀 좌우 패딩 | 8px | `--knoc-size-grid-cell-x` |
-| 트리 행 높이 | 28px | `--knoc-size-tree-row` |
-| 트리 들여쓰기 단위 | 14px | `--knoc-size-tree-indent` |
-| 툴바 높이 | 40px | `--knoc-size-toolbar` |
-| 칩 높이 | 26px | `--knoc-size-chip` |
+| 그리드 행 높이 | 32px | `--knoc-grid-row-height` |
+| 그리드 헤더 높이 | 34px | `--knoc-grid-header-height` |
+| 그리드 셀 좌우 패딩 | 8px | `--knoc-space-dense-4` |
+| 트리 행 높이 | 28px | `--knoc-tree-row-height` |
+| 트리 들여쓰기 단위 | 14px | `--knoc-tree-indent` |
+| 툴바 높이 | 40px | `--knoc-toolbar-height` |
+| 칩 높이 | 26px | `--knoc-chip-height` |
 | 필터 팝오버 폭 | 380px 고정 | — |
 | 칸반 컬럼 폭 | 260px 고정 | — |
 | 문서 아이콘(이모지) | 52px, 제목과 10px 간격 | — |
@@ -154,31 +154,41 @@ SEED 토큰 레이어에는 400과 700만 있습니다. **600은 워드마크 �
 ### `vite.config.ts`
 
 ```ts
-import { defineConfig } from "vite";
+import { fileURLToPath } from "node:url";
+import { defineConfig, defaultClientConditions } from "vite";
 import react from "@vitejs/plugin-react";
 import tailwindcss from "@tailwindcss/vite";
-import { seed } from "@seed-design/vite-plugin";
+import { seedDesignPlugin } from "@seed-design/vite-plugin";
 
 export default defineConfig({
-  plugins: [
-    react(),
-    tailwindcss(),
-    seed({ theme: "seed" }),
-  ],
+  plugins: [react(), tailwindcss(), seedDesignPlugin()],
+  resolve: {
+    // SEED 컴포넌트가 recipes/*.layered.mjs 를 집게 한다.
+    // Vite 6+ 에서 conditions 는 기본값을 덮어쓰므로 반드시 펼쳐서 넣는다.
+    conditions: [...defaultClientConditions, "seed-layered"],
+    // tsconfig.app.json 의 paths 와 짝을 맞춘다.
+    alias: { "@": fileURLToPath(new URL("./src", import.meta.url)) },
+  },
 });
 ```
 
-### `src/styles/app.css`
+### `src/index.css`
 
 순서가 중요합니다. KnocSpace 레이어는 반드시 SEED 다음.
 
 ```css
+@layer theme, base, seed-base, components, seed-components, utilities;
+
+@import "@seed-design/css/base.layered.css";
 @import "tailwindcss";
-@import "@seed-design/css/theme.css";
 @import "@seed-design/tailwind4-theme";
-@import "./knocspace.css";
-@import "./blocknote-bridge.css";
+@import "./styles/knocspace.css";
+
+/* 문서가 CSS 번들에 영향을 주지 않게 한다 */
+@source not "**/*.md";
 ```
+
+`blocknote-bridge.css` 는 Sprint 3 에서 추가합니다.
 
 ### `src/styles/knocspace.css`
 
@@ -237,13 +247,12 @@ export default defineConfig({
   --knoc-space-comfy-6: 32px;
   --knoc-space-comfy-7: 48px;
 
-  --knoc-size-grid-row:    32px;
-  --knoc-size-grid-header: 34px;
-  --knoc-size-grid-cell-x: var(--knoc-space-dense-4);
-  --knoc-size-tree-row:    28px;
-  --knoc-size-tree-indent: 14px;
-  --knoc-size-toolbar:     40px;
-  --knoc-size-chip:        26px;
+  --knoc-grid-row-height:    32px;
+  --knoc-grid-header-height: 34px;
+  --knoc-tree-row-height:    28px;
+  --knoc-tree-indent:        14px;
+  --knoc-toolbar-height:     40px;
+  --knoc-chip-height:        26px;
 
   --knoc-type-grid-size: 13px;
   --knoc-type-grid-line: 1.35;
@@ -270,15 +279,27 @@ export default defineConfig({
   --spacing-dense-6: var(--knoc-space-dense-6);
   --spacing-dense-7: var(--knoc-space-dense-7);
 
-  --height-grid-row:   var(--knoc-size-grid-row);
-  --height-tree-row:   var(--knoc-size-tree-row);
+  --spacing-comfy-1: var(--knoc-space-comfy-1);
+  --spacing-comfy-2: var(--knoc-space-comfy-2);
+  --spacing-comfy-3: var(--knoc-space-comfy-3);
+  --spacing-comfy-4: var(--knoc-space-comfy-4);
+  --spacing-comfy-5: var(--knoc-space-comfy-5);
+  --spacing-comfy-6: var(--knoc-space-comfy-6);
+  --spacing-comfy-7: var(--knoc-space-comfy-7);
+
+  --spacing-doc-gutter: var(--knoc-doc-gutter);
+
+  --height-tree-row:   var(--knoc-tree-row-height);
+  --height-grid-row:   var(--knoc-grid-row-height);
+  --height-topbar:     var(--knoc-topbar-height);
+
   --width-sidebar:     var(--knoc-sidebar-default);
   --max-width-measure: var(--knoc-doc-measure);
 
   --color-grid-line: var(--knoc-color-grid-line);
   --color-grid-edge: var(--knoc-color-grid-edge);
 }
-/* 사용: class="h-grid-row px-dense-4 border-grid-line" */
+/* 사용: class="h-grid-row px-dense-4 border-grid-line max-w-measure" */
 ```
 
 다크모드는 `<html data-seed-scale-color="dark">`. 별도 팔레트를 만들지 않습니다.

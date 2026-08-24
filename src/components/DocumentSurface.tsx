@@ -11,7 +11,7 @@ export interface DocumentSurfaceProps {
 
 export function DocumentSurface({ children }: DocumentSurfaceProps) {
   return (
-    <main className="mx-auto w-full max-w-[var(--knoc-doc-measure)] px-[var(--knoc-doc-gutter)] py-x6">
+    <main className="mx-auto w-full max-w-measure px-doc-gutter py-x6">
       {children ?? <DocumentPlaceholder />}
     </main>
   );

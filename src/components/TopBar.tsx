@@ -14,7 +14,7 @@ export interface TopBarProps {
 
 export function TopBar({ children, actions }: TopBarProps) {
   return (
-    <header className="sticky top-0 z-10 flex h-[var(--knoc-topbar-height)] shrink-0 items-center justify-between gap-x4 border-b border-stroke-neutral-muted bg-bg-layer-default px-x4">
+    <header className="sticky top-0 z-10 flex h-topbar shrink-0 items-center justify-between gap-x4 border-b border-stroke-neutral-muted bg-bg-layer-default px-x4">
       <div className="flex min-w-0 items-center gap-x2">
         {children ?? (
           <span className="t3-regular truncate text-fg-neutral-subtle">

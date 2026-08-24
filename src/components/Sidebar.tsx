@@ -94,7 +94,7 @@ function SidebarPlaceholder() {
         {["검색", "새 페이지", "즐겨찾기"].map((label) => (
           <span
             key={label}
-            className="t3-regular flex h-[var(--knoc-tree-row-height)] items-center truncate rounded-r1 px-x2 text-fg-neutral-muted"
+            className="t3-regular flex h-tree-row items-center truncate rounded-r1 px-x2 text-fg-neutral-muted"
           >
             {label}
           </span>
@@ -108,7 +108,7 @@ function SidebarPlaceholder() {
           <span
             key={row}
             aria-hidden
-            className="h-[var(--knoc-tree-row-height)] rounded-r1 bg-bg-neutral-weak-alpha"
+            className="h-tree-row rounded-r1 bg-bg-neutral-weak-alpha"
             style={{ marginLeft: `calc(var(--knoc-tree-indent) * ${row % 2})` }}
           />
         ))}
