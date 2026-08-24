@@ -8,8 +8,12 @@ React 19 · Vite · TypeScript · Tailwind 4 · SEED
 
 ## 개발 순서는 ROADMAP.md를 따른다
 
-무엇을 어떤 순서로 만드는지는 `ROADMAP.md`. 스프린트별 할 일은 `docs/roadmap/`.
+무엇을 어떤 순서로 만드는지는 `ROADMAP.md`. 스프린트별 할 일은 `docs/roadmap/sprint-1.md` ~ `sprint-5.md`.
 새 기능을 시작하기 전에 지금이 어느 스프린트인지 확인한다.
+
+프론트 스프린트는 `F1 F2 …`, 백엔드(`knocspace-api`)는 `B1 B2 …`로 부른다.
+F1~F3은 mock으로 화면을 끝내고, F4에서 Page API, F5에서 User API를 붙인다.
+백엔드와 맞춰야 할 것은 `docs/roadmap/backend-sync.md`.
 
 ## UI 작업 전에 DESIGN.md를 읽는다
 

@@ -25,12 +25,13 @@ src/
 **`src/api/`** — 서버 호출. 이 폴더 밖에서 `fetch`나 `localStorage`를 부르지 않습니다.
 
 ```
-client.ts       모든 호출이 지나가는 곳. Sprint 9에서 이 파일만 fetch로 바뀝니다
+client.ts       모든 호출이 지나가는 곳. F4에서 이 파일만 fetch로 바뀝니다
 storage.ts      localStorage 접근
 pages.ts        페이지 CRUD
-search.ts       Sprint 5
-files.ts        Sprint 6
-databases.ts    Sprint 7
+auth.ts         F5
+databases.ts    F6
+search.ts       F8
+files.ts        F9
 ```
 
 **`src/types/api.ts`** — 타입의 유일한 출처. 백엔드에 그대로 넘길 수 있는 상태로 유지합니다.
@@ -52,9 +53,11 @@ usePageTree.ts  usePage.ts  useCreatePage.ts  useSavePage.ts
 ```
 page-tree/   트리 펼침·평탄화·드래그
 editor/      문서 내용을 다루는 유일한 곳
-search/      Sprint 5
-database/    Sprint 7~8
-collab/      Sprint 10
+auth/        F5
+share/       F5
+database/    F6~F7
+search/      F8
+collab/      F10
 ```
 
 **`src/components/`** — 순수 UI. props만 받고 서버를 모릅니다.
@@ -63,20 +66,21 @@ collab/      Sprint 10
 AppShell.tsx  Sidebar.tsx  TopBar.tsx  DocumentSurface.tsx
 Breadcrumb.tsx  SaveStatus.tsx
 tree/        트리 행·목록
-ui/          Spinner  Skeleton  EmptyState  ErrorState  Menu  Toast
+ui/          Spinner  Skeleton  EmptyState  ErrorState  ErrorBoundary
+             Menu  Toast  Dialog  IconButton  InlineInput  messages.ts
 ```
 
 **`src/routes/`** — 화면 단위.
 
 ```
-router.tsx  RootLayout.tsx  PageRoute.tsx  TrashRoute.tsx  NotFound.tsx
+router.tsx  RootLayout.tsx  PageRoute.tsx  LoginRoute.tsx  TrashRoute.tsx  NotFound.tsx
 ```
 
 ---
 
 ## 지켜야 할 경계
 
-이 표가 지켜지면 Sprint 9(실서버 전환)에서 화면 코드를 한 줄도 안 고칩니다.
+이 표가 지켜지면 F4(Page API 연결)와 F5(User API 연결)에서 화면 코드를 한 줄도 안 고칩니다.
 
 | 폴더 | 아는 것 | 몰라야 하는 것 |
 |---|---|---|
@@ -98,12 +102,13 @@ React Router v7. 라우트마다 `React.lazy`로 나눠서, 에디터와 표가 
 
 | 경로 | 화면 | 생기는 시점 |
 |---|---|---|
-| `/` | 마지막 방문 페이지로 이동 (없으면 빈 화면) | Sprint 1 |
-| `/p/:pageId` | 문서 | Sprint 1 (틀) → 2~3 (내용) |
-| `/trash` | 휴지통 | Sprint 5 |
-| `/db/:dbId` | 데이터베이스 | Sprint 7 |
-| `/login` | 로그인 | Sprint 9 |
-| `*` | 404 | Sprint 1 |
+| `/` | 마지막 방문 페이지로 이동 (없으면 빈 화면) | F1 (틀) → F2 |
+| `/p/:pageId` | 문서 | F1 (틀) → F2~F3 (내용) |
+| `/dev/ui` | 컴포넌트 카탈로그 (개발 모드만) | F1 |
+| `/login` | 로그인 | F5 |
+| `/db/:dbId` | 데이터베이스 | F6 |
+| `/trash` | 휴지통 | F8 |
+| `*` | 404 | F1 |
 
 ---
 
@@ -137,7 +142,7 @@ export const qk = {
 
 ## 에디터 구조 — 나중에 Yjs를 붙이기 위한 준비
 
-Sprint 10에서 실시간 협업을 붙입니다. 그때 에디터를 다시 만들지 않으려면 Sprint 3에서 아래를 지켜야 합니다.
+F10에서 실시간 협업을 붙입니다. 그때 에디터를 다시 만들지 않으려면 F3에서 아래를 지켜야 합니다.
 
 **1. 문서의 원본은 에디터 하나뿐입니다.**
 블록 내용을 React state로 복사해 두지 않습니다. 복사본이 생기는 순간 협업에서 어느 쪽이 맞는지 알 수 없게 됩니다.
@@ -146,20 +151,20 @@ Sprint 10에서 실시간 협업을 붙입니다. 그때 에디터를 다시 만
 서버가 번호를 주기를 기다리지 않습니다. 여러 명이 동시에 편집할 때 id가 먼저 정해져 있어야 병합이 됩니다.
 
 **3. 문서 내용은 `features/editor/` 밖에서 열어보지 않습니다.**
-`Page.content`는 다른 코드 입장에서 그냥 덩어리입니다. Sprint 10에서 이 필드가 Yjs 데이터로 바뀌어도 나머지가 안 깨집니다.
+`Page.content`는 다른 코드 입장에서 그냥 덩어리입니다. F10에서 이 필드가 Yjs 데이터로 바뀌어도 나머지가 안 깨집니다.
 
 **4. 훅 하나로 감쌉니다.**
 
 ```ts
-// Sprint 3
+// F3
 const editor = useEditorDoc({ pageId, initialContent });
 
-// Sprint 10 — 이 훅 안쪽만 바뀌고, 쓰는 쪽은 그대로
+// F10 — 이 훅 안쪽만 바뀌고, 쓰는 쪽은 그대로
 const editor = useEditorDoc({ pageId, initialContent, collaboration });
 ```
 
 **5. 사용자 정보에 `color`를 미리 넣어둡니다.**
-Sprint 10의 커서 색으로 그대로 씁니다. 나중에 타입을 고치지 않기 위해서입니다.
+F10의 커서 색으로 그대로 씁니다. 나중에 타입을 고치지 않기 위해서입니다.
 
 ---
 
@@ -184,9 +189,9 @@ Sprint 10의 커서 색으로 그대로 씁니다. 나중에 타입을 고치지
 
 | 종류 | 도구 | 대상 | 시작 |
 |---|---|---|---|
-| 유닛 | Vitest | 트리 평탄화, 필터 변환, api mock | Sprint 1 |
-| 컴포넌트 | RTL + user-event | 트리 조작, 슬래시 메뉴, 셀 편집 | Sprint 2 |
-| E2E | Playwright | 핵심 흐름 | Sprint 4 |
+| 유닛 | Vitest | 트리 평탄화, 필터 변환, api mock | F1 |
+| 컴포넌트 | RTL + user-event | 공통 UI, 트리 조작, 슬래시 메뉴, 셀 편집 | F1 |
+| E2E | Playwright | 핵심 흐름 | F4 |
 
 **커버리지 목표는 두지 않습니다.** 대신 규칙 하나만 지킵니다 — **스프린트마다 E2E 1개 추가.**
 
@@ -217,4 +222,4 @@ Sprint 10의 커서 색으로 그대로 씁니다. 나중에 타입을 고치지
 
 ---
 
-← [MVP 범위](mvp.md) · 다음 → [Sprint 1](sprint-1.md)
+← [MVP 범위](mvp.md) · 다음 → [F1](sprint-1.md)
