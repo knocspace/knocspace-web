@@ -6,6 +6,11 @@ Notion 형태의 워크스페이스 웹앱. 프론트엔드 전용 레포.
 React 19 · Vite · TypeScript · Tailwind 4 · SEED
 패키지 매니저는 **npm**. (pnpm은 이 환경에서 설치 실패)
 
+## 개발 순서는 ROADMAP.md를 따른다
+
+무엇을 어떤 순서로 만드는지는 `ROADMAP.md`. 스프린트별 할 일은 `docs/roadmap/`.
+새 기능을 시작하기 전에 지금이 어느 스프린트인지 확인한다.
+
 ## UI 작업 전에 DESIGN.md를 읽는다
 
 SEED 스킬이 알려주는 값은 SEED 원본(모바일, 터치) 기준이다.
