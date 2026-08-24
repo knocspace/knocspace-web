@@ -85,7 +85,7 @@ const clamp = (value: number, min: number, max: number) =>
   Math.min(Math.max(value, min), max);
 
 export function useSidebarResize(): UseSidebarResizeResult {
-  const dimensions = useMemo(readDimensions, []);
+  const dimensions = useMemo(() => readDimensions(), []);
 
   const [state, setState] = useState<PersistedState>(() => {
     const persisted = loadPersisted();
