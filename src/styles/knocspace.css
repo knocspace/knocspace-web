@@ -111,6 +111,11 @@
    * 행 호버 배경 위에 버튼 배경을 겹치면 28px 안에서 두 겹이 보인다. */
   --knoc-tree-action-size: 24px;
   --knoc-toolbar-height: 40px;
+  /* 토스트 폭 — DESIGN.md §10. SEED recipe 는 width:100% · max-width:560px 라
+   * 글자수를 따라 84px 에서 560px 까지 움직인다. 그러면 되돌리기 버튼의
+   * 가로 위치가 메시지마다 달라져서, 연달아 지울 때 같은 자리를 못 누른다.
+   * 고정하면 버튼이 항상 오른쪽 끝 같은 자리에 앉는다. */
+  --knoc-toast-width: 280px;
   --knoc-chip-height: 26px;
   /* 빈 화면·에러 화면 본문 최대 폭 — DESIGN.md §9.
    * 문서 measure(720px)를 따르지 않는다. 제목 한 줄과 설명 두 줄이
@@ -165,6 +170,7 @@
   --size-tree-action:  var(--knoc-tree-action-size);
 
   --width-sidebar:     var(--knoc-sidebar-default);
+  --width-toast:       var(--knoc-toast-width);
   --max-width-measure: var(--knoc-doc-measure);
   --max-width-empty:   var(--knoc-empty-measure);
 

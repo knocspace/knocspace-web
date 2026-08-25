@@ -127,7 +127,7 @@ export const errorMessages = {
     action: "홈으로",
   },
 
-  /** 영역 하나만 실패 — SEED InlineBanner. subject 는 위와 같다. */
+  /** 영역 하나만 실패 — SEED PageBanner. subject 는 위와 같다. */
   inline: (subject: string) => ({
     title: `${subject}${objectParticle(subject)} 불러오지 못했어요`,
     action: "다시 시도",
