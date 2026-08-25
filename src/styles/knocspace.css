@@ -112,6 +112,11 @@
   --knoc-tree-action-size: 24px;
   --knoc-toolbar-height: 40px;
   --knoc-chip-height: 26px;
+  /* 빈 화면·에러 화면 본문 최대 폭 — DESIGN.md §9.
+   * 문서 measure(720px)를 따르지 않는다. 제목 한 줄과 설명 두 줄이
+   * 읽기 좋게 앉는 폭이고, 넓은 창에서 설명이 화면을 가로지르면
+   * 가운데 정렬이 무의미해진다. */
+  --knoc-empty-measure: 320px;
 
   /* 포커스 링 — DESIGN.md §6.
    * halo 는 링과 그 아래 표면을 떼어놓는 1px 선이다. bg-layer-default 라서
@@ -161,6 +166,7 @@
 
   --width-sidebar:     var(--knoc-sidebar-default);
   --max-width-measure: var(--knoc-doc-measure);
+  --max-width-empty:   var(--knoc-empty-measure);
 
   --color-grid-line: var(--knoc-color-grid-line);
   --color-grid-edge: var(--knoc-color-grid-edge);

@@ -12,3 +12,17 @@
  * 경로가 ../ 로 시작하는 것에 주의. @source 는 이 CSS 파일 기준이고
  * 탐지 범위는 프로젝트 루트라, src 기준 패턴만 쓰면 루트의 .md 가 안 빠진다. */
 @source not "../**/*.md";
+
+/* 한글 줄바꿈 — DESIGN.md §2 · §8.
+ *
+ * keep-all 은 어절 안쪽에서 끊는 걸 막는다. 이게 없으면 "삭제됐어 / 요" 처럼
+ * 어절 중간이 갈린다. 비-CJK 텍스트에서는 normal 과 동작이 같으므로 코드나
+ * URL 에 부작용이 없고, white-space: pre 인 <pre> 는 애초에 줄바꿈을 안 한다.
+ *
+ * 어절 "사이" 가 끊기는 건 이걸로 못 막는다. 문장이 둘이면 컴포넌트가
+ * 사이를 <br> 로 직접 끊고, 제목엔 text-balance, 설명엔 text-pretty 를 건다. */
+@layer base {
+  body {
+    word-break: keep-all;
+  }
+}
