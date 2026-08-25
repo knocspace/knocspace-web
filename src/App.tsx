@@ -1,19 +1,8 @@
-import { AppShell } from "@/components/AppShell";
-import { DocumentSurface } from "@/components/DocumentSurface";
-import { useSidebarResize } from "@/hooks/useSidebarResize";
+import { RouterProvider } from "react-router";
+import { router } from "@/routes/router";
+
+/** 라우터를 켜는 것 외에는 아무것도 하지 않는다. 화면은 전부 routes/ 에 있다. */
 
 export default function App() {
-  const sidebar = useSidebarResize();
-
-  return (
-    <AppShell
-      sidebarWidth={sidebar.width}
-      sidebarCollapsed={sidebar.collapsed}
-      sidebarResizing={sidebar.resizing}
-      onSidebarExpand={sidebar.expand}
-      resizeHandleProps={sidebar.handleProps}
-    >
-      <DocumentSurface />
-    </AppShell>
-  );
+  return <RouterProvider router={router} />;
 }

@@ -43,12 +43,12 @@
 
 데이터가 없어도 화면 사이를 오갈 수 있게 먼저 뚫어 둡니다.
 
-- [ ] `routes/router.tsx`
-- [ ] `routes/RootLayout.tsx` — `AppShell` + `<Outlet />`
-- [ ] `routes/PageRoute.tsx` — 지금은 URL의 `pageId`만 글자로 출력합니다
-- [ ] `routes/NotFound.tsx`
-- [ ] `App.tsx`를 `RouterProvider` 한 줄로 줄이기
-- [ ] **`useSidebarResize`를 `RootLayout`으로 옮기기** — 페이지를 옮겨도 사이드바 폭이 유지돼야 합니다
+- [x] `routes/router.tsx`
+- [x] `routes/RootLayout.tsx` — `AppShell` + `<Outlet />`
+- [x] `routes/PageRoute.tsx` — 지금은 URL의 `pageId`만 글자로 출력합니다
+- [x] `routes/NotFound.tsx`
+- [x] `App.tsx`를 `RouterProvider` 한 줄로 줄이기
+- [x] **`useSidebarResize`를 `RootLayout`으로 옮기기** — 페이지를 옮겨도 사이드바 폭이 유지돼야 합니다
 
 | 경로 | 지금 | 채우는 시점 |
 |---|---|---|
