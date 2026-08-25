@@ -1,5 +1,7 @@
-import { Outlet } from "react-router";
+import { Outlet, useNavigate } from "react-router";
 import { AppShell } from "@/components/AppShell";
+import { ErrorBoundary } from "@/components/ui/ErrorBoundary";
+import { ToastProvider } from "@/components/ui/Toast";
 import { useSidebarResize } from "@/hooks/useSidebarResize";
 
 /**
@@ -12,16 +14,23 @@ import { useSidebarResize } from "@/hooks/useSidebarResize";
 
 export function RootLayout() {
   const sidebar = useSidebarResize();
+  const navigate = useNavigate();
 
   return (
-    <AppShell
-      sidebarWidth={sidebar.width}
-      sidebarCollapsed={sidebar.collapsed}
-      sidebarResizing={sidebar.resizing}
-      onSidebarExpand={sidebar.expand}
-      resizeHandleProps={sidebar.handleProps}
-    >
-      <Outlet />
-    </AppShell>
+    <ToastProvider>
+      <AppShell
+        sidebarWidth={sidebar.width}
+        sidebarCollapsed={sidebar.collapsed}
+        sidebarResizing={sidebar.resizing}
+        onSidebarExpand={sidebar.expand}
+        resizeHandleProps={sidebar.handleProps}
+      >
+        {/* Outlet 안쪽만 감싼다. 화면 하나가 죽어도 사이드바와 상단바는
+          * 살아 있어야 다른 페이지로 갈 수 있다 (DESIGN.md §9). */}
+        <ErrorBoundary onGoHome={() => navigate("/")}>
+          <Outlet />
+        </ErrorBoundary>
+      </AppShell>
+    </ToastProvider>
   );
 }

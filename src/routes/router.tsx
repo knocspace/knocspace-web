@@ -3,6 +3,7 @@ import { DocumentSurface } from "@/components/DocumentSurface";
 import { NotFound } from "./NotFound";
 import { PageRoute } from "./PageRoute";
 import { RootLayout } from "./RootLayout";
+import { UiCatalogRoute } from "./UiCatalogRoute";
 
 /**
  * URL 과 화면의 대응표. 라우팅 지식은 이 파일 밖으로 새지 않는다.
@@ -22,7 +23,10 @@ export const router = createBrowserRouter([
       // TODO(F2): 홈. 지금은 기존 자리표시 문서를 그대로 둔다.
       { index: true, element: <DocumentSurface /> },
       { path: "p/:pageId", element: <PageRoute /> },
-      // TODO(F1-5): /dev/ui 카탈로그 — import.meta.env.DEV 일 때만 등록
+      // 개발 모드에서만. 프로덕션에서는 이 경로도 404 로 떨어진다.
+      ...(import.meta.env.DEV
+        ? [{ path: "dev/ui", element: <UiCatalogRoute /> }]
+        : []),
       { path: "*", element: <NotFound /> },
     ],
   },
