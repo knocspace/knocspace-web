@@ -50,7 +50,7 @@ export function Sidebar({
           onClick={onExpand}
           aria-label="사이드바 펼치기"
           aria-expanded={false}
-          className="flex flex-1 flex-col items-center gap-x2 py-x3 hover:bg-bg-neutral-weak-alpha focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-stroke-focus-ring"
+          className="flex flex-1 flex-col items-center gap-x2 py-x3 knoc-focus-ring-inset hover:bg-bg-neutral-weak-alpha"
         >
           <BrandMark size={18} />
           {Array.from({ length: 3 }, (_, index) => (

@@ -214,7 +214,7 @@ F10의 커서 색으로 그대로 씁니다. 나중에 타입을 고치지 않�
 
 ## 접근성
 
-- 포커스 링은 결정 전까지 SEED 기본값을 그대로 둡니다. **없애지 않습니다** (DESIGN.md §6)
+- 포커스 링은 `knoc-focus-ring` · `knoc-focus-ring-inset` 두 클래스로만 붙입니다. 값을 다시 쓰거나 **없애지 않습니다** (DESIGN.md §6)
 - 트리는 `role="tree"`, 표는 `role="grid"`, 메뉴는 `role="menu"` + 키보드로 전부 조작 가능
 - 아이콘 버튼에는 전부 `aria-label`. 아이콘은 seed-icon만 씁니다
 - 저장 상태 변화는 `aria-live="polite"`

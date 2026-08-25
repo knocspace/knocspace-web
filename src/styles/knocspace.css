@@ -11,6 +11,17 @@
 /* ── 강조색: carrot → purple ─────────────────────────────────────
  * SEED 가 carrot 을 참조하는 semantic 토큰은 아래 8개가 전부다.
  * 컴포넌트는 무수정으로 따라온다.
+ *
+ * 단계는 carrot 매핑에서 한 칸 진한 쪽으로 옮겼다. 흰 글자를 얹는
+ * solid 계열이 SEED 기본 단계에서는 대비 2.9:1 로 라벨이 흐리다.
+ *
+ * "진한 쪽"이 모드마다 반대 방향인 것에 주의. 팔레트가 뒤집혀서
+ * 라이트는 번호가 클수록, 다크는 작을수록 진하다.
+ * 진하게 = 라이트 +1, 다크 -1. 그래야 두 모드가 같은 보라로 보인다.
+ *
+ * 옅은 배경으로 쓰는 weak 3종(100/200/300)은 건드리지 않았다.
+ * 그건 브랜드 색 자체가 아니라 표면 틴트라, 단계를 올리면 트리 선택
+ * 배경만 진해진다.
  */
 
 /* light */
@@ -18,33 +29,41 @@
 :root[data-seed-color-mode="system"][data-seed-user-color-scheme="light"],
 :root[data-seed-color-mode="light-only"],
 :root [data-seed-color-mode="light-only"] {
-  --seed-color-fg-brand: var(--seed-color-palette-purple-600);
-  --seed-color-fg-brand-contrast: var(--seed-color-palette-purple-700);
-
-  --seed-color-bg-brand-solid: var(--seed-color-palette-purple-600);
-  --seed-color-bg-brand-solid-pressed: var(--seed-color-palette-purple-700);
-  --seed-color-bg-brand-weak: var(--seed-color-palette-purple-100);
-  --seed-color-bg-brand-weak-pressed: var(--seed-color-palette-purple-200);
-
-  --seed-color-stroke-brand-solid: var(--seed-color-palette-purple-700);
-  --seed-color-stroke-brand-weak: var(--seed-color-palette-purple-300);
-}
-
-/* dark — purple 팔레트는 다크에서 반전된다(100 이 가장 어둡다).
- * 그래서 carrot 의 다크 매핑과 같은 단계를 쓴다. 라이트 값을 복사하지 말 것. */
-:root[data-seed-color-mode="system"][data-seed-user-color-scheme="dark"],
-:root[data-seed-color-mode="dark-only"],
-:root [data-seed-color-mode="dark-only"] {
   --seed-color-fg-brand: var(--seed-color-palette-purple-700);
-  --seed-color-fg-brand-contrast: var(--seed-color-palette-purple-700);
+  --seed-color-fg-brand-contrast: var(--seed-color-palette-purple-800);
 
   --seed-color-bg-brand-solid: var(--seed-color-palette-purple-700);
   --seed-color-bg-brand-solid-pressed: var(--seed-color-palette-purple-800);
   --seed-color-bg-brand-weak: var(--seed-color-palette-purple-100);
   --seed-color-bg-brand-weak-pressed: var(--seed-color-palette-purple-200);
 
-  --seed-color-stroke-brand-solid: var(--seed-color-palette-purple-700);
+  --seed-color-stroke-brand-solid: var(--seed-color-palette-purple-800);
   --seed-color-stroke-brand-weak: var(--seed-color-palette-purple-300);
+
+  /* 포커스 링 — DESIGN.md §6 에서 중립 링으로 확정. blue-600 은 라이트에서
+   * 흰 배경 대비 2.9:1 이라 비텍스트 3:1 을 못 넘고, purple 과 색상환에서
+   * 붙어 있어 강조색 위에서 탁해 보인다. */
+  --seed-color-stroke-focus-ring: var(--seed-color-palette-gray-900);
+}
+
+/* dark — 라이트 값을 복사하지 말 것. 팔레트가 뒤집혀서(100 이 가장 어둡다)
+ * 같은 보라로 보이려면 번호가 라이트보다 한 단계 낮아야 한다.
+ * 라이트 purple-700 #8969ea ↔ 다크 purple-600 #8e6bee. */
+:root[data-seed-color-mode="system"][data-seed-user-color-scheme="dark"],
+:root[data-seed-color-mode="dark-only"],
+:root [data-seed-color-mode="dark-only"] {
+  --seed-color-fg-brand: var(--seed-color-palette-purple-600);
+  --seed-color-fg-brand-contrast: var(--seed-color-palette-purple-600);
+
+  --seed-color-bg-brand-solid: var(--seed-color-palette-purple-600);
+  --seed-color-bg-brand-solid-pressed: var(--seed-color-palette-purple-700);
+  --seed-color-bg-brand-weak: var(--seed-color-palette-purple-100);
+  --seed-color-bg-brand-weak-pressed: var(--seed-color-palette-purple-200);
+
+  --seed-color-stroke-brand-solid: var(--seed-color-palette-purple-600);
+  --seed-color-stroke-brand-weak: var(--seed-color-palette-purple-300);
+
+  --seed-color-stroke-focus-ring: var(--seed-color-palette-gray-900);
 }
 
 /* ── KnocSpace 전용 변수 (--knoc-) ───────────────────────────────
@@ -85,6 +104,13 @@
   --knoc-toolbar-height: 40px;
   --knoc-chip-height: 26px;
 
+  /* 포커스 링 — DESIGN.md §6.
+   * halo 는 링과 그 아래 표면을 떼어놓는 1px 선이다. bg-layer-default 라서
+   * 라이트에서 흰색, 다크에서 gray-100 으로 알아서 뒤집힌다. */
+  --knoc-focus-ring-width: 2px;
+  --knoc-focus-ring-halo-width: 1px;
+  --knoc-color-focus-ring-halo: var(--seed-color-bg-layer-default);
+
   /* 격자선 — DESIGN.md 5절.
    * stroke-neutral-subtle/muted 는 static-black-alpha(라이트) ↔ static-white-alpha(다크)로
    * SEED 가 알아서 뒤집는다. alpha 라서 행 호버/선택 배경 위에서도 색이 어긋나지 않는다.
@@ -95,7 +121,9 @@
 }
 
 /* Tailwind 유틸리티 노출 — DESIGN.md 4절.
- * 여기 등록한 것만 클래스로 쓴다. h-[var(--knoc-...)] 같은 임의값 표기는 쓰지 않는다.
+ * 여기 등록한 것만 클래스로 쓴다. 대괄호 임의값 표기는 쓰지 않는다 — 새 치수가
+ * 필요하면 이 블록에 먼저 노출한다. (이 주석에 예시를 적으면 안 된다.
+ * CSS 파일도 소스 탐지 대상이라 그 문자열로 유틸리티가 생성된다.)
  * toolbar·chip 높이는 Sprint 7 에서 실제로 쓸 때 추가한다. */
 @theme inline {
   --spacing-dense-1: var(--knoc-space-dense-1);
@@ -125,4 +153,29 @@
 
   --color-grid-line: var(--knoc-color-grid-line);
   --color-grid-edge: var(--knoc-color-grid-edge);
+}
+
+/* 포커스 링 — DESIGN.md §6 ─────────────────────────────────────────
+ * outline 이 아니라 box-shadow 2겹이다. outline-offset 은 그 자리에
+ * 배경을 비출 뿐 선을 그리지 않아서, 보라 버튼 위에서는 링이 버튼에
+ * 그대로 붙어 보인다.
+ *
+ * @layer components 안에 둔다. 이 파일의 나머지는 layer 밖이라 무엇보다
+ * 우선하지만, 컴포넌트 클래스까지 그러면 Tailwind 유틸리티로 못 덮는다.
+ */
+@layer components {
+  .knoc-focus-ring:focus-visible {
+    outline: none;
+    box-shadow:
+      0 0 0 var(--knoc-focus-ring-halo-width) var(--knoc-color-focus-ring-halo),
+      0 0 0 calc(var(--knoc-focus-ring-halo-width) + var(--knoc-focus-ring-width))
+        var(--seed-color-stroke-focus-ring);
+  }
+
+  /* 링이 밖으로 나갈 자리가 없을 때 — 레일 버튼, 트리 행, 그리드 셀.
+   * halo 는 안쪽으로 그릴 수 없으니 뺀다. */
+  .knoc-focus-ring-inset:focus-visible {
+    outline: var(--knoc-focus-ring-width) solid var(--seed-color-stroke-focus-ring);
+    outline-offset: calc(-1 * var(--knoc-focus-ring-width));
+  }
 }

@@ -5,7 +5,7 @@
 | | |
 |---|---|
 | 기간 | 1주 (약 15시간) |
-| 선행 | **포커스 링 색 결정** (DESIGN.md §6) |
+| 선행 | 없음 |
 | 백엔드 | B1 진행 중 — 기다리지 않습니다 |
 | 우선순위 | P0 |
 
@@ -33,23 +33,9 @@
 
 ### 1. 준비 (1시간)
 
-**정리 — 토큰 이름이 문서와 코드가 다릅니다**
-
-코드를 정답으로 두고 `DESIGN.md`를 고칩니다.
-
-| DESIGN.md | 실제 코드 |
-|---|---|
-| `--knoc-size-tree-row` | `--knoc-tree-row-height` |
-| `--knoc-size-tree-indent` | `--knoc-tree-indent` |
-| `--knoc-size-grid-row` | `--knoc-grid-row-height` |
-| `src/styles/app.css` | `src/index.css` |
-
-- [ ] `DESIGN.md` §4 표와 설정 파일 항목 수정
-- [ ] 기존 컴포넌트 4개(`Sidebar` `TopBar` `DocumentSurface` `AppShell`)에 남은 `h-[var(--knoc-...)]` 를 `h-tree-row` · `h-topbar` 같은 유틸리티로 교체
-
-**포커스 링 결정을 먼저 합니다.** 이번 주에 만드는 컴포넌트가 전부 이 값을 쓰기 때문에, 나중에 바꾸면 10개를 다시 손봐야 합니다.
-
-- [ ] DESIGN.md §6에 결정 기록
+- [x] `DESIGN.md` 를 SEED 2.5 토큰 이름으로 정합. 옛 이름 대응표는 [DESIGN.md §0](../../DESIGN.md)
+- [x] 포커스 링 확정 — [DESIGN.md §6](../../DESIGN.md). 컴포넌트는 `knoc-focus-ring` · `knoc-focus-ring-inset` 두 클래스만 씁니다
+- [x] 브랜드 purple 단계 확정 — [DESIGN.md §2](../../DESIGN.md)
 
 ---
 
@@ -77,23 +63,27 @@
 
 `components/ui/`. **전부 props만 받습니다.** 서버도, Query도, 라우터도 모릅니다.
 
-| 파일 | 내용 | 처음 쓰이는 곳 |
-|---|---|---|
-| `Spinner.tsx` | 크기 2종 | 어디나 |
-| `Skeleton.tsx` | 치수를 받는 회색 블록. 지금 컴포넌트에 흩어진 자리표시 코드를 여기로 모읍니다 | F2 트리 |
-| `EmptyState.tsx` | 아이콘 / 제목 / 설명 / 버튼. 문구는 DESIGN.md §9에서 가져와 상수로 | F2 첫 실행 |
-| `ErrorState.tsx` | 원인 + 다시 시도. 사과하지 않는 문구 | F2 |
-| `ErrorBoundary.tsx` | 라우트 단위 | 이번 주 |
-| `Menu.tsx` | 우클릭·드롭다운 메뉴. `role="menu"`, 키보드로 열고 닫고 이동 | F2 행 메뉴 |
-| `Toast.tsx` | 사용자가 한 행동의 결과에만. 조회 실패에는 안 씁니다 | F2 삭제 |
-| `Dialog.tsx` | 확인·취소. 포커스 가둠, Esc 닫기 | F4 저장 충돌 |
-| `IconButton.tsx` | `aria-label` 필수. 아이콘은 seed-icon만 | F2 트리 행 |
-| `InlineInput.tsx` | 제자리 편집 — Enter 확정 / Esc 취소 / 포커스 아웃 확정 | F2 제목·이름 변경 |
+- [ ] **SEED 대응 6종 규격 대조 (30분).** 맞으면 감싸고, 안 맞는 이유를 아래 칸에 적습니다
+
+| 파일 | SEED | 내용 | 처음 쓰이는 곳 |
+|---|---|---|---|
+| `Spinner.tsx` | `LoadingIndicator` | 크기 2종 | 어디나 |
+| `Skeleton.tsx` | `Skeleton` | 치수를 받는 회색 블록. 지금 컴포넌트에 흩어진 자리표시 코드를 여기로 모읍니다 | F2 트리 |
+| `EmptyState.tsx` | `ContentPlaceholder` | 아이콘 / 제목 / 설명 / 버튼. 문구는 DESIGN.md §9에서 가져와 상수로 | F2 첫 실행 |
+| `ErrorState.tsx` | — | 원인 + 다시 시도. 사과하지 않는 문구 | F2 |
+| `ErrorBoundary.tsx` | — | 라우트 단위 | 이번 주 |
+| `Menu.tsx` | `Menu` | 우클릭·드롭다운 메뉴. `role="menu"`, 키보드로 열고 닫고 이동 | F2 행 메뉴 |
+| `Toast.tsx` | `Snackbar` | 사용자가 한 행동의 결과에만. 조회 실패에는 안 씁니다 | F2 삭제 |
+| `Dialog.tsx` | `Dialog` | 확인·취소. 포커스 가둠, Esc 닫기 | F4 저장 충돌 |
+| `IconButton.tsx` | `ActionButton` | `aria-label` 필수. 아이콘은 seed-icon만 | F2 트리 행 |
+| `InlineInput.tsx` | — | 제자리 편집 — Enter 확정 / Esc 취소 / 포커스 아웃 확정 | F2 제목·이름 변경 |
+
+SEED 칸이 찬 7종은 **직접 만들지 않습니다.** 7시간은 6종을 직접 만든다고 잡은 값이라, 대조 결과에 따라 줄어듭니다.
 
 **규칙 세 가지**
 
-1. SEED에 있는 컴포넌트는 새로 만들지 않고 감쌉니다. 위 목록은 SEED에 없거나(트리 밀도 때문에) 규격이 안 맞는 것들입니다
-2. `!important`나 자손 선택자로 SEED를 덮지 않습니다 (DESIGN.md §6)
+1. SEED에 있는 컴포넌트는 새로 만들지 않고 감쌉니다 (위 표의 SEED 칸)
+2. `!important`나 자손 선택자로 SEED를 덮지 않습니다 (DESIGN.md §1)
 3. 문구를 컴포넌트 안에 하드코딩하지 않습니다. `components/ui/messages.ts` 한 곳에 모읍니다
 
 ---
