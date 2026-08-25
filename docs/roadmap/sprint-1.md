@@ -94,8 +94,10 @@ SEED 칸이 찬 7종은 **직접 만들지 않습니다.** 7시간은 6종을 �
 
 - [ ] `components/tree/TreeRow.tsx` — 높이 28px, 들여쓰기 14px × depth, 호버하면 액션 버튼, 선택되면 `bg-brand-weak`
 - [ ] `components/tree/PageTree.tsx` — `rows` · `selectedId` · 콜백만 받습니다. `role="tree"`
-- [ ] `components/Breadcrumb.tsx` — 조상 경로. 4단계가 넘으면 가운데를 `…`로 접습니다
-- [ ] `components/SaveStatus.tsx` — 상태 문자열만 받아 그립니다. `aria-live="polite"` (실제 저장은 F3)
+- [x] `components/Breadcrumb.tsx` — 조상 경로. 4단계가 넘으면 가운데를 `…`로 접습니다
+- [x] `components/SaveStatus.tsx` — 상태 문자열만 받아 그립니다. `aria-live="polite"` (실제 저장은 F3)
+
+**트리 둘은 보류합니다.** 행 데이터 모양(`TreeRowData`)이 백엔드의 트리 응답과 같은 것이라 `knocspace-api` 와 같이 정한 뒤에 만듭니다.
 
 행 데이터의 모양만 먼저 정합니다. 실제 타입은 F2에서 `PageSummary`로 바뀝니다.
 

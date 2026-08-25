@@ -5,6 +5,10 @@ import IconMoreVertRegular from "@seed-design/icon/IconMoreVertRegular";
 import IconSearchRegular from "@seed-design/icon/IconSearchRegular";
 import IconTrashRegular from "@seed-design/icon/IconTrashRegular";
 import IconWriteRegular from "@seed-design/icon/IconWriteRegular";
+import { Breadcrumb } from "@/components/Breadcrumb";
+import type { BreadcrumbItem } from "@/components/Breadcrumb";
+import { SaveStatus } from "@/components/SaveStatus";
+import type { SaveState } from "@/components/SaveStatus";
 import { Dialog } from "@/components/ui/Dialog";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { ErrorState } from "@/components/ui/ErrorState";
@@ -66,6 +70,38 @@ function Slot({ label, children, wide, grow }: {
   );
 }
 
+/** 상단바 44px 흉내. Breadcrumb·SaveStatus 는 이 안에서만 제대로 보인다 */
+function TopBarFrame({ children }: { children: React.ReactNode }) {
+  return (
+    <div className="flex h-topbar w-full items-center gap-x2 rounded-r1_5 border border-stroke-neutral-muted bg-bg-layer-default px-x4">
+      {children}
+    </div>
+  );
+}
+
+/* 더미 경로. F2 에서 PageSummary 조상 배열이 이 자리에 온다. */
+const CRUMBS: BreadcrumbItem[] = [
+  { id: "ws", title: "워크스페이스" },
+  { id: "product", title: "제품 기획" },
+  { id: "design", title: "디자인" },
+  { id: "tokens", title: "토큰 대조표" },
+];
+
+const DEEP_CRUMBS: BreadcrumbItem[] = [
+  { id: "ws", title: "워크스페이스" },
+  { id: "product", title: "제품 기획" },
+  { id: "front", title: "프론트엔드" },
+  { id: "design", title: "디자인" },
+  { id: "tokens", title: "토큰 대조표" },
+];
+
+const LONG_CRUMBS: BreadcrumbItem[] = [
+  ...DEEP_CRUMBS.slice(0, -1),
+  { id: "long", title: "SEED 2.5 토큰 이름 대조표와 옛 이름 대응 기록, 그리고 남은 미결정 목록" },
+];
+
+const SAVE_STATES: SaveState[] = ["idle", "saving", "saved", "offline", "error"];
+
 export function UiCatalogRoute() {
   const [mode, setMode] = useState<"light-only" | "dark-only">("light-only");
   const [menuOpen, setMenuOpen] = useState(false);
@@ -76,6 +112,8 @@ export function UiCatalogRoute() {
   const [docTitle, setDocTitle] = useState("2분기 로드맵");
   const [titleEditing, setTitleEditing] = useState(false);
   const [selected, setSelected] = useState(false);
+  const [picked, setPicked] = useState<string | null>(null);
+  const [saveState, setSaveState] = useState<SaveState>("saving");
   const toast = useToast();
 
   /* 컬러 모드는 <html> 에만 건다 — DESIGN.md §4.
@@ -391,6 +429,85 @@ export function UiCatalogRoute() {
                 className="t12-bold"
               />
             </div>
+          </Slot>
+        </Section>
+
+        {/* ── §4 레이아웃 ─────────────────────────────────────────
+          * 공통 UI 10종이 아니라 sprint-1 §4 다. 도메인 화면이지만 아직
+          * 데이터를 모르고, 더미 배열을 props 로 받아 그린다.
+          * PageTree · TreeRow 는 백엔드와 트리 모양을 같이 정한 뒤에 만든다. */}
+
+        <Section
+          title="레이아웃 1 · Breadcrumb"
+          note="상단바 44px 안. 4단계까지는 그대로, 5단계부터 첫 항목 + … + 마지막 둘로 접습니다. 줄이는 것은 마지막 항목 하나뿐입니다."
+        >
+          <Slot label="2단계" wide>
+            <TopBarFrame>
+              <Breadcrumb items={CRUMBS.slice(2)} onSelect={setPicked} />
+            </TopBarFrame>
+          </Slot>
+
+          <Slot label="4단계 — 접기 직전" wide>
+            <TopBarFrame>
+              <Breadcrumb items={CRUMBS} onSelect={setPicked} />
+            </TopBarFrame>
+          </Slot>
+
+          <Slot label="5단계 — 가운데가 접힙니다. … 위에 올리면 접힌 제목이 보입니다" wide>
+            <TopBarFrame>
+              <Breadcrumb items={DEEP_CRUMBS} onSelect={setPicked} />
+            </TopBarFrame>
+          </Slot>
+
+          <Slot label="긴 제목 — 마지막만 줄입니다. 조상은 안 줄입니다" wide>
+            <TopBarFrame>
+              <Breadcrumb items={LONG_CRUMBS} onSelect={setPicked} />
+            </TopBarFrame>
+          </Slot>
+
+          <Slot label="현재 페이지 하나 — 구분자가 안 붙습니다" wide>
+            <TopBarFrame>
+              <Breadcrumb items={CRUMBS.slice(3)} onSelect={setPicked} />
+            </TopBarFrame>
+          </Slot>
+
+          <span className="t2-regular text-fg-neutral-subtle">
+            마지막으로 누른 조상 — {picked ?? "없음"}
+          </span>
+        </Section>
+
+        <Section
+          title="레이아웃 2 · SaveStatus"
+          note="상단바 오른쪽. 변경이 없으면 아무것도 안 그립니다. ‘저장됨’ 은 2초 뒤 사라집니다 — 버튼으로 상태를 바꿔서 확인하세요. 실패만 색과 굵기를 쓰고 버튼이 붙습니다."
+        >
+          <div className="flex flex-wrap gap-x2">
+            {SAVE_STATES.map((state) => (
+              <button
+                key={state}
+                type="button"
+                onClick={() => setSaveState(state)}
+                className={[
+                  "knoc-focus-ring t3-regular rounded-r1_5 border px-x3 py-x1",
+                  state === saveState
+                    ? "border-stroke-brand-solid text-fg-brand"
+                    : "border-stroke-neutral-weak text-fg-neutral-muted",
+                ].join(" ")}
+              >
+                {state}
+              </button>
+            ))}
+          </div>
+
+          <Slot label="상단바 오른쪽 — 브레드크럼과 같은 줄에 앉습니다" wide>
+            <TopBarFrame>
+              <Breadcrumb items={CRUMBS.slice(2)} />
+              <div className="ml-auto">
+                <SaveStatus
+                  status={saveState}
+                  onRetry={() => setSaveState("saving")}
+                />
+              </div>
+            </TopBarFrame>
           </Slot>
         </Section>
 

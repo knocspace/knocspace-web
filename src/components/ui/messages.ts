@@ -151,3 +151,41 @@ export const boundaryMessages = {
   /** 개발 빌드에서만. 기본 접힘. */
   detail: "기술 정보 보기",
 } as const;
+
+/* ── 레이아웃 ────────────────────────────────────────────────── */
+
+/**
+ * 상단바 — 여기부터는 §9 가 아니라 DESIGN.md §10 에서 온 문구다.
+ *
+ * §9 는 빈 화면과 에러 화면만 다룬다. 상단바 문구는 화면이 아니라 상태
+ * 표시라 §10 의 컴포넌트 규격 쪽에 적혀 있고, 값의 출처는 거기다.
+ */
+
+export const breadcrumbMessages = {
+  /** nav 의 이름. 화면에는 안 보이고 스크린리더만 읽는다 */
+  label: "현재 위치",
+} as const;
+
+/**
+ * 문서가 아닌 화면의 이름. 상단바 왼쪽에 한 항목으로 뜬다.
+ *
+ * 문서 화면(/p/:pageId)은 여기 없다. 그건 경로가 서버에서 오기 때문이다 —
+ * 이 표에 적을 수 있는 건 주소만 보고 이미 아는 이름뿐이다.
+ */
+export const routeMessages = {
+  home: "홈",
+  uiCatalog: "컴포넌트 카탈로그",
+} as const;
+
+/**
+ * 저장 상태 — DESIGN.md §10.
+ *
+ * "변경 없음" 에 해당하는 문구가 없는 것이 확정이다. 아무것도 안 그린다.
+ */
+export const saveStatusMessages = {
+  saving: "저장 중",
+  saved: "저장됨",
+  offline: "오프라인 — 연결되면 저장할게요",
+  failed: "저장 안 됨",
+  retry: "다시 시도",
+} as const;
