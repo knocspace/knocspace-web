@@ -60,16 +60,31 @@ export function useToast() {
           if (hasUndo) liveUndo.current -= 1;
         },
         render: () => (
-          /* 폭 고정 — DESIGN.md §10. SEED recipe 의 width:100% 를 덮는다.
-           * 유틸리티 레이어가 seed-components 보다 뒤라 !important 가 필요 없다. */
-          <SnackbarRoot className="w-toast">
-            {/* SnackbarContent 를 빼면 안 된다. 폭만 고정하고 이걸 안 씌우면
-              * root 가 그냥 flex 라 메시지 뒤에 버튼이 따라붙는다 — 폭을 고정한
-              * 이유(버튼 자리 고정)가 그대로 사라진다.
+          /* 폭은 내용을 따른다 — DESIGN.md §10. SEED recipe 의 width:100% 를
+           * 덮는다. region 이 화면 폭을 다 차지해서 그대로 두면 짧은 문구도
+           * 560px(recipe 의 max-width)까지 늘어난다. max-width 는 그대로 둔다.
+           *
+           * 표면은 살짝 비친다 — bg-toast-surface 는 bg-neutral-inverted 에
+           * 알파를 섞은 값이고, backdrop-blur-toast 가 뒤를 흐린다. 흐림이
+           * 없으면 뒤의 글자가 그대로 비쳐서 메시지가 읽히지 않는다.
+           *
+           * 셋 다 유틸리티 레이어라 seed-components 보다 뒤에 와서
+           * !important 없이 이긴다. */
+          <SnackbarRoot className="w-auto bg-toast-surface backdrop-blur-toast">
+            {/* SnackbarContent 를 빼면 안 된다. 이걸 안 씌우면 root 가 그냥
+              * flex 라 메시지와 버튼 사이 간격이 사라진다.
               * content 가 flex-grow:1 · justify-content:space-between 이라
               * 메시지는 왼쪽, 버튼은 오른쪽 끝에 붙는다.
-              * 최상위로는 안 내보내서 네임스페이스로 집는다. */}
-            <Snackbar.Content>
+              * 최상위로는 안 내보내서 네임스페이스로 집는다.
+              *
+              * 되돌리기가 있으면 여백을 넓힌다 — DESIGN.md §10.
+              * SEED 기본값은 문구 사이 10px · 오른쪽 16px 인데, 그러면
+              * 되돌리기가 문장 끝에 붙은 낱말처럼 보인다. 버튼은 히트 영역이
+              * 좌우로 8px 씩 더 나가니(recipe 의 :after) 화면에서 보이는
+              * 여백보다 실제로는 더 좁다. 20px 씩 벌린다.
+              * 되돌리기가 없으면 건드리지 않는다 — 글자만 있는 토스트는
+              * 오른쪽 여백을 넓힐 이유가 없다. */}
+            <Snackbar.Content className={hasUndo ? "gap-x5 pr-x2_5" : undefined}>
               <SnackbarMessage>{message}</SnackbarMessage>
               {actionLabel && onAction && (
                 <SnackbarActionButton

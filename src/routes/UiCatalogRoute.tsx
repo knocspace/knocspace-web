@@ -274,7 +274,7 @@ export function UiCatalogRoute() {
 
         <Section
           title="7 · Toast"
-          note="하단 왼쪽. 동시에 하나만. 완료된 사실로 씁니다."
+          note="하단 가운데. 동시에 하나만. 완료된 사실로 씁니다."
         >
           <Slot label="눌러 보세요">
             <button

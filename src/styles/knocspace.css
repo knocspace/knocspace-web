@@ -111,11 +111,21 @@
    * 행 호버 배경 위에 버튼 배경을 겹치면 28px 안에서 두 겹이 보인다. */
   --knoc-tree-action-size: 24px;
   --knoc-toolbar-height: 40px;
-  /* 토스트 폭 — DESIGN.md §10. SEED recipe 는 width:100% · max-width:560px 라
-   * 글자수를 따라 84px 에서 560px 까지 움직인다. 그러면 되돌리기 버튼의
-   * 가로 위치가 메시지마다 달라져서, 연달아 지울 때 같은 자리를 못 누른다.
-   * 고정하면 버튼이 항상 오른쪽 끝 같은 자리에 앉는다. */
-  --knoc-toast-width: 280px;
+  /* 토스트 표면 — DESIGN.md §10. 폭은 고정하지 않는다(내용을 따른다).
+   * 여기서 정하는 건 비침이다.
+   *
+   * 알파를 색 토큰 하나로 만들어 둔다. 유틸리티에서 섞으면 라이트/다크가
+   * 갈릴 때마다 두 군데를 고쳐야 하는데, bg-neutral-inverted 가 이미
+   * 테마별로 뒤집히므로 그 위에 알파만 얹으면 한 줄로 끝난다.
+   *
+   * 흐림이 필요한 이유: 88% 만으로는 뒤의 본문 글자가 그대로 비쳐서
+   * 흰 글씨와 겹친다. 8px 이면 형태만 남고 글자는 뭉갠다. */
+  --knoc-color-toast-surface: color-mix(
+    in srgb,
+    var(--seed-color-bg-neutral-inverted) 88%,
+    transparent
+  );
+  --knoc-toast-blur: 8px;
   --knoc-chip-height: 26px;
   /* 빈 화면·에러 화면 본문 최대 폭 — DESIGN.md §9.
    * 문서 measure(720px)를 따르지 않는다. 제목 한 줄과 설명 두 줄이
@@ -170,12 +180,14 @@
   --size-tree-action:  var(--knoc-tree-action-size);
 
   --width-sidebar:     var(--knoc-sidebar-default);
-  --width-toast:       var(--knoc-toast-width);
   --max-width-measure: var(--knoc-doc-measure);
   --max-width-empty:   var(--knoc-empty-measure);
 
+  --blur-toast: var(--knoc-toast-blur);
+
   --color-grid-line: var(--knoc-color-grid-line);
   --color-grid-edge: var(--knoc-color-grid-edge);
+  --color-toast-surface: var(--knoc-color-toast-surface);
 }
 
 /* 포커스 링 — DESIGN.md §6 ─────────────────────────────────────────
