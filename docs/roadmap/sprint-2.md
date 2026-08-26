@@ -138,7 +138,8 @@ export class ApiError extends Error {
   - `?slow=1` → 3초 지연 (Skeleton 확인용)
   - `?fail=save` → 저장 실패 (F3~F4 테스트에 필요)
   - 모든 오류를 `ApiError`로 통일
-- [ ] `api/pages.ts` — `getPageTree` / `getPage` / `createPage` / `updatePage` / `deletePage`. 삭제는 `deletedAt`만 채웁니다
+- [ ] `api/pages.ts` — `getPages` / `getPage` / `createPage` / `updatePage` / `deletePage`. 삭제는 `deletedAt`만 채웁니다
+  - `getPages` 입니다. 서버는 `GET /pages` 로 **평평한 `PageSummary[]`** 를 주고 트리 조립은 프론트가 합니다 — `getPageTree` 라고 쓰면 서버가 트리를 주는 것처럼 읽힙니다
 - [ ] `api/seed.ts` — 첫 실행 시 샘플 페이지 5개(2단계 중첩). F4에서 제거
 
 **mock의 응답 모양을 실제 API 응답과 똑같이 맞춥니다.** 껍데기(`{ data: ... }`)를 씌울지 말지도 지금 정합니다.
@@ -163,7 +164,8 @@ export class ApiError extends Error {
 - [ ] `flattenTree.ts` — 페이지 목록 + 펼쳐진 id 집합 → F1에서 정한 평평한 배열
 
   ```ts
-  interface FlatRow {
+  // F1의 components/tree/types.ts 를 그대로 잇습니다. 이름이 갈리면 안 됩니다
+  interface TreeItemData {
     page: PageSummary;
     depth: number;
     isExpanded: boolean;
@@ -172,7 +174,7 @@ export class ApiError extends Error {
   ```
 
 - [ ] `useExpandedIds.ts` — 펼침 상태를 localStorage에 유지
-- [ ] `PageTreeContainer.tsx` — 훅과 `components/tree/PageTree`를 잇는 유일한 곳
+- [ ] `PageTreeContainer.tsx` — 훅과 `components/tree/PageTree`를 잇는 유일한 곳. `PageTree` 는 여기서만 쓰입니다
 
 ---
 

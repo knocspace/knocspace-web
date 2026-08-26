@@ -21,7 +21,7 @@
 
 - 라우팅 골격과 `RootLayout`
 - 공통 UI 10종 (`components/ui/`)
-- 레이아웃 컴포넌트 — `Breadcrumb`, `PageTree`, `TreeRow` (전부 props만 받습니다)
+- 레이아웃 컴포넌트 — `Breadcrumb`, `PageTree`, `PageTreeItem` (전부 props만 받습니다)
 - 컴포넌트 카탈로그 화면 `/dev/ui`
 - 테스트 환경
 
@@ -92,18 +92,18 @@ SEED 칸이 찬 7종은 **직접 만들지 않습니다.** 7시간은 6종을 �
 
 도메인 화면이지만 **아직 데이터를 모릅니다.** 더미 배열을 props로 받아 그립니다.
 
-- [ ] `components/tree/TreeRow.tsx` — 높이 28px, 들여쓰기 14px × depth, 호버하면 액션 버튼, 선택되면 `bg-brand-weak`
-- [ ] `components/tree/PageTree.tsx` — `rows` · `selectedId` · 콜백만 받습니다. `role="tree"`
+- [ ] `components/tree/PageTree.tsx` — `items` · `selectedId` · 콜백만 받습니다. `role="tree"`
+- [ ] `components/tree/PageTreeItem.tsx` — `role="treeitem"`. 높이 28px, 들여쓰기 14px × depth, 호버하면 액션 버튼, 선택되면 `bg-brand-weak`
 - [x] `components/Breadcrumb.tsx` — 조상 경로. 4단계가 넘으면 가운데를 `…`로 접습니다
 - [x] `components/SaveStatus.tsx` — 상태 문자열만 받아 그립니다. `aria-live="polite"` (실제 저장은 F3)
 
-**트리 둘은 보류합니다.** 행 데이터 모양(`TreeRowData`)이 백엔드의 트리 응답과 같은 것이라 `knocspace-api` 와 같이 정한 뒤에 만듭니다.
+**기다릴 것이 없습니다.** 백엔드는 트리를 주지 않습니다 — `GET /pages` 가 `PageSummary[]` 평평한 배열을 주고, 트리로 조립하는 것은 프론트입니다 (`knocspace-api` 의 `docs/roadmap/api-contract.md`). `depth` 와 `isExpanded` 는 서버에 없는 화면 상태이고, 서버와 겹치는 것은 `hasChildren` 하나인데 그 뜻도 이미 확정입니다 — "삭제되지 않은 자식이 1개 이상".
 
-행 데이터의 모양만 먼저 정합니다. 실제 타입은 F2에서 `PageSummary`로 바뀝니다.
+항목 데이터의 모양을 먼저 정합니다. F2에서 `flattenTree` 가 `PageSummary` + 펼친 id 집합으로 같은 이름의 타입을 만듭니다.
 
 ```ts
 // components/tree/types.ts
-export interface TreeRowData {
+export interface TreeItemData {
   id: string;
   title: string;
   icon: string | null;
@@ -112,6 +112,10 @@ export interface TreeRowData {
   isExpanded: boolean;
 }
 ```
+
+**이름 규칙** — 컴포넌트에는 `Page` 를 붙이고(`PageTree` · `PageTreeItem`), 타입에는 안 붙입니다. F2에서 모양이 `{ page: PageSummary, depth, … }` 가 되면 `page` 가 이름과 필드에 두 번 나옵니다.
+
+`Row` 는 쓰지 않습니다. `role="tree"` 의 자식은 `treeitem` 이고 `row` 는 `grid` · `treegrid` 안에만 있는 role 인데 이 트리에는 열이 없습니다. 게다가 `Row` 는 F6에서 **데이터베이스 행**이라는 실제 타입으로 들어옵니다.
 
 **중첩을 재귀 컴포넌트로 그리지 않습니다.** 평평한 배열이어야 F6에서 가상 스크롤이 붙습니다 (DESIGN.md §5).
 
