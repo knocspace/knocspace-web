@@ -10,7 +10,7 @@ import type { BreadcrumbItem } from "@/components/Breadcrumb";
 import { SaveStatus } from "@/components/SaveStatus";
 import { PageTree } from "@/components/tree/PageTree";
 import type { TreeItemData } from "@/components/tree/PageTreeItem";
-import { flattenTree } from "@/features/page-tree/flattenTree";
+import { visibleItems } from "@/features/page-tree/visibleItems";
 import type { SaveState } from "@/components/SaveStatus";
 import { Dialog } from "@/components/ui/Dialog";
 import { EmptyState } from "@/components/ui/EmptyState";
@@ -91,7 +91,7 @@ function SidebarFrame({ children }: { children: React.ReactNode }) {
   );
 }
 
-/* 더미 트리. F2 에서 flattenTree(PageSummary[], 펼친 id) 가 이 자리에 온다.
+/* 더미 트리. F2 에서 visibleItems(PageSummary[], 펼친 id) 가 이 자리에 온다.
  * 여기서는 depth 가 손으로 적힌 값이다 — 컴포넌트는 계산을 안 한다. */
 const TREE: TreeItemData[] = [
   { id: "product", title: "제품 기획", icon: null, depth: 0, hasChildren: true, isExpanded: true },
@@ -481,7 +481,7 @@ export function UiCatalogRoute() {
           <Slot label="사이드바 안 — 클릭으로 열고, 화살표를 눌러 펼칩니다">
             <SidebarFrame>
               <PageTree
-                items={flattenTree(TREE, expanded)}
+                items={visibleItems(TREE, expanded)}
                 selectedId={openPage}
                 onSelect={setOpenPage}
                 onToggle={(id) =>
@@ -513,7 +513,7 @@ export function UiCatalogRoute() {
           <Slot label="드래그 중 — 원본은 40% 로 남습니다 (실제 드래그는 F8)">
             <SidebarFrame>
               <PageTree
-                items={flattenTree(TREE, expanded)}
+                items={visibleItems(TREE, expanded)}
                 selectedId={openPage}
                 draggingId="roadmap"
                 onSelect={setOpenPage}

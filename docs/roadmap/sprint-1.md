@@ -99,7 +99,7 @@ SEED 칸이 찬 7종은 **직접 만들지 않습니다.** 7시간은 6종을 �
 
 **기다릴 것이 없습니다.** 백엔드는 트리를 주지 않습니다 — `GET /pages` 가 `PageSummary[]` 평평한 배열을 주고, 트리로 조립하는 것은 프론트입니다 (`knocspace-api` 의 `docs/roadmap/api-contract.md`). `depth` 와 `isExpanded` 는 서버에 없는 화면 상태이고, 서버와 겹치는 것은 `hasChildren` 하나인데 그 뜻도 이미 확정입니다 — "삭제되지 않은 자식이 1개 이상".
 
-항목 데이터의 모양을 먼저 정합니다. F2에서 `flattenTree` 가 `PageSummary` + 펼친 id 집합으로 같은 이름의 타입을 만듭니다.
+항목 데이터의 모양을 먼저 정합니다. F2에서 `visibleItems` 가 `PageSummary` + 펼친 id 집합으로 같은 이름의 타입을 만듭니다.
 
 ```ts
 // components/tree/PageTreeItem.tsx

@@ -10,7 +10,7 @@ import type { TreeItemData } from "@/components/tree/PageTreeItem";
  * 직접 계산하는 것으로 바뀌고, **나가는 모양은 그대로다** — 그래서 `PageTree`
  * 는 그때 안 바뀐다.
  */
-export function flattenTree(
+export function visibleItems(
   rows: TreeItemData[],
   expandedIds: readonly string[],
 ): TreeItemData[] {

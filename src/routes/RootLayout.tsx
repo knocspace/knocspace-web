@@ -6,7 +6,7 @@ import { PageTree } from "@/components/tree/PageTree";
 import type { TreeItemData } from "@/components/tree/PageTreeItem";
 import { ErrorBoundary } from "@/components/ui/ErrorBoundary";
 import { ToastProvider } from "@/components/ui/Toast";
-import { flattenTree } from "@/features/page-tree/flattenTree";
+import { visibleItems } from "@/features/page-tree/visibleItems";
 import { useSidebarResize } from "@/hooks/useSidebarResize";
 
 /**
@@ -21,7 +21,7 @@ import { useSidebarResize } from "@/hooks/useSidebarResize";
  * 사이드바에 그릴 페이지 목록.
  *
  * TODO(F2): `usePageTree()` 로 바꾼다. 그때 이 상수와 아래 useState 가 사라지고
- * `features/page-tree/PageTreeContainer` 하나가 그 자리에 온다 — `flattenTree`
+ * `features/page-tree/PageTreeContainer` 하나가 그 자리에 온다 — `visibleItems`
  * 는 입력만 `PageSummary[]` 로 바뀌고 `PageTree` 는 안 바뀐다.
  *
  * 크럼(아래)이 URL 의 pageId 를 임시로 쓰는 것과 같은 이유로 여기 있다.
@@ -99,7 +99,7 @@ export function RootLayout() {
         }}
         sidebar={
           <PageTree
-            items={flattenTree(SIDEBAR_PAGES, expandedIds)}
+            items={visibleItems(SIDEBAR_PAGES, expandedIds)}
             selectedId={pageId ?? null}
             onSelect={(id) => navigate(`/p/${id}`)}
             onToggle={(id) =>

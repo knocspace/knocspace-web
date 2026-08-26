@@ -21,7 +21,7 @@ import { editorPlaceholders, treeMessages } from "../ui/messages";
 
 /**
  * 항목 하나를 그리는 값 — sprint-1 §4. 자식을 품지 않고 `depth` 로만 계층을
- * 말한다. F2 에서 `flattenTree` 가 `PageSummary[]` + 펼친 id 집합으로 만든다.
+ * 말한다. F2 에서 `visibleItems` 가 `PageSummary[]` + 펼친 id 집합으로 만든다.
  */
 export interface TreeItemData {
   id: string;

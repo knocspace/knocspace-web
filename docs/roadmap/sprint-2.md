@@ -161,7 +161,7 @@ export class ApiError extends Error {
 
 ### 4. 트리 로직 (`features/page-tree/`) (2시간)
 
-- [ ] `flattenTree.ts` — 페이지 목록 + 펼쳐진 id 집합 → F1에서 정한 평평한 배열
+- [ ] `visibleItems.ts` — 페이지 목록 + 펼쳐진 id 집합 → F1에서 정한 평평한 배열
 
   ```ts
   // F1의 components/tree/types.ts 를 그대로 잇습니다. 이름이 갈리면 안 됩니다
@@ -203,7 +203,7 @@ export class ApiError extends Error {
 
 ### 7. 테스트 (1시간)
 
-- [ ] `flattenTree` 유닛 테스트
+- [ ] `visibleItems` 유닛 테스트
 - [ ] `createPage` 하면 트리에 나타난다 / 없는 id로 `getPage` 하면 `not_found` / 저장 데이터가 깨져 있으면 안전하게 초기화된다
 - [ ] "만들기 → 목록에 나타남 → 클릭 → 열림" 통합 테스트 1개
 
