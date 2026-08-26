@@ -6,6 +6,7 @@ import { PageTree } from "@/components/tree/PageTree";
 import type { TreeItemData } from "@/components/tree/PageTreeItem";
 import { ErrorBoundary } from "@/components/ui/ErrorBoundary";
 import { ToastProvider } from "@/components/ui/Toast";
+import { pathFromRoot } from "@/features/page-tree/pathFromRoot";
 import { visibleItems } from "@/features/page-tree/visibleItems";
 import { useSidebarResize } from "@/hooks/useSidebarResize";
 
@@ -60,10 +61,11 @@ export function RootLayout() {
 
   /* 상단바에 올릴 경로. 화면 종류에 따라 출처가 다르다.
    *
-   * 문서 화면 — 조상도 제목도 서버에서 온다. 지금 알 수 있는 건 URL 의
-   * pageId 하나뿐이라 그것만 현재 페이지로 그린다.
-   * TODO(F2): usePage(pageId) 의 조상 배열로 바꾼다. 그때 title 이 id 가
-   * 아닌 진짜 제목이 되고, 조상이 앞에 붙는다.
+   * 문서 화면 — 사이드바에 그리는 그 목록에서 조상을 뽑는다. 트리와 상단바가
+   * 같은 배열을 보므로 둘이 어긋날 수가 없다. 접기 전 원본으로 부르는
+   * 이유는 pathFromRoot 에 적어 뒀다.
+   * TODO(F2): 목록이 usePageTree() 로 바뀐다. pathFromRoot 는 그때 parentId
+   * 를 타는 것으로 바뀌고, 여기 이 세 줄은 그대로다.
    *
    * 그 밖의 화면 — 카탈로그처럼 문서가 아닌 곳은 주소만 보고 이름을 안다.
    * 라우트가 handle.crumb 으로 스스로 밝히고 여기서 주워 온다. 앞으로
@@ -74,16 +76,26 @@ export function RootLayout() {
   const pageId = pageMatch?.params.pageId;
   const matches = useMatches();
 
-  const crumbs: BreadcrumbItem[] = pageId
-    ? [{ id: pageId, title: pageId }]
-    : matches.flatMap((match) => {
-        const crumb = routeCrumb(match.handle);
-        /* id 를 pathname 으로 두는 건 이 갈래에서만이다. 지금은 이름이
-         * 하나뿐이라 현재 페이지가 되고, 현재 페이지는 누를 수 없어서
-         * onCrumbSelect 로 새어 나가지 않는다. 중첩된 화면이 생기면
-         * 그때 이 갈래의 이동 규칙을 따로 정한다. */
-        return crumb ? [{ id: match.pathname, title: crumb }] : [];
-      });
+  let crumbs: BreadcrumbItem[];
+  if (pageId) {
+    const path = pathFromRoot(SIDEBAR_PAGES, pageId);
+    /* 목록에 없는 id — 주소를 직접 친 경우다. 제목을 알 길이 없으니 id 를
+     * 그대로 쓴다. 빈 상단바보다는 낫고, F2 에서는 없는 페이지가 404 로
+     * 가면서 이 갈래가 사라진다. */
+    crumbs =
+      path.length > 0
+        ? path.map(({ id, title }) => ({ id, title }))
+        : [{ id: pageId, title: pageId }];
+  } else {
+    crumbs = matches.flatMap((match) => {
+      const crumb = routeCrumb(match.handle);
+      /* id 를 pathname 으로 두는 건 이 갈래에서만이다. 지금은 이름이
+       * 하나뿐이라 현재 페이지가 되고, 현재 페이지는 누를 수 없어서
+       * onCrumbSelect 로 새어 나가지 않는다. 중첩된 화면이 생기면
+       * 그때 이 갈래의 이동 규칙을 따로 정한다. */
+      return crumb ? [{ id: match.pathname, title: crumb }] : [];
+    });
+  }
 
   return (
     <ToastProvider>
