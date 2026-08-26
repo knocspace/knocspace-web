@@ -1,8 +1,12 @@
+import { useState } from "react";
 import { Outlet, useMatch, useMatches, useNavigate } from "react-router";
 import { AppShell } from "@/components/AppShell";
 import type { BreadcrumbItem } from "@/components/Breadcrumb";
+import { PageTree } from "@/components/tree/PageTree";
+import type { TreeItemData } from "@/components/tree/PageTreeItem";
 import { ErrorBoundary } from "@/components/ui/ErrorBoundary";
 import { ToastProvider } from "@/components/ui/Toast";
+import { flattenTree } from "@/features/page-tree/flattenTree";
 import { useSidebarResize } from "@/hooks/useSidebarResize";
 
 /**
@@ -12,6 +16,25 @@ import { useSidebarResize } from "@/hooks/useSidebarResize";
  * 이동할 때마다 언마운트된다. 훅을 그 안에 두면 페이지를 옮길 때마다
  * 폭 상태가 사라지고 localStorage 에서 다시 읽히면서 한 번 튄다.
  */
+
+/**
+ * 사이드바에 그릴 페이지 목록.
+ *
+ * TODO(F2): `usePageTree()` 로 바꾼다. 그때 이 상수와 아래 useState 가 사라지고
+ * `features/page-tree/PageTreeContainer` 하나가 그 자리에 온다 — `flattenTree`
+ * 는 입력만 `PageSummary[]` 로 바뀌고 `PageTree` 는 안 바뀐다.
+ *
+ * 크럼(아래)이 URL 의 pageId 를 임시로 쓰는 것과 같은 이유로 여기 있다.
+ * 목록만 가짜고, **어느 페이지가 열려 있는지와 이동은 진짜다** — 라우터가 한다.
+ */
+const SIDEBAR_PAGES: TreeItemData[] = [
+  { id: "product", title: "제품 기획", icon: null, depth: 0, hasChildren: true, isExpanded: false },
+  { id: "roadmap", title: "2분기 로드맵", icon: null, depth: 1, hasChildren: true, isExpanded: false },
+  { id: "tokens", title: "토큰 대조표", icon: null, depth: 2, hasChildren: false, isExpanded: false },
+  { id: "focus", title: "포커스 링 결정", icon: null, depth: 2, hasChildren: false, isExpanded: false },
+  { id: "design", title: "디자인 시스템 정리", icon: null, depth: 1, hasChildren: false, isExpanded: false },
+  { id: "notes", title: "회의록", icon: null, depth: 0, hasChildren: false, isExpanded: false },
+];
 
 /**
  * 라우트가 handle 에 담아 둔 화면 이름. 없으면 null.
@@ -30,6 +53,10 @@ function routeCrumb(handle: unknown): string | null {
 export function RootLayout() {
   const sidebar = useSidebarResize();
   const navigate = useNavigate();
+
+  /* TODO(F2): `useExpandedIds()` — 펼침 상태는 localStorage 에 남아야 한다.
+   * 지금은 새로고침하면 초기값으로 돌아간다. */
+  const [expandedIds, setExpandedIds] = useState<string[]>(["product"]);
 
   /* 상단바에 올릴 경로. 화면 종류에 따라 출처가 다르다.
    *
@@ -70,6 +97,20 @@ export function RootLayout() {
           crumbs,
           onCrumbSelect: (id) => navigate(`/p/${id}`),
         }}
+        sidebar={
+          <PageTree
+            items={flattenTree(SIDEBAR_PAGES, expandedIds)}
+            selectedId={pageId ?? null}
+            onSelect={(id) => navigate(`/p/${id}`)}
+            onToggle={(id) =>
+              setExpandedIds((ids) =>
+                ids.includes(id) ? ids.filter((each) => each !== id) : [...ids, id],
+              )
+            }
+            /* TODO(F2): 행 메뉴와 하위 페이지 추가. 지금은 ⋯ 와 + 가 보이기만
+             * 하고 아무 일도 안 한다 — 만들기·이름 바꾸기·삭제가 전부 sprint-2 §5 다. */
+          />
+        }
       >
         {/* Outlet 안쪽만 감싼다. 화면 하나가 죽어도 사이드바와 상단바는
           * 살아 있어야 다른 페이지로 갈 수 있다 (DESIGN.md §9). */}

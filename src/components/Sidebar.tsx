@@ -1,5 +1,6 @@
 import type { PointerEvent, ReactNode } from "react";
 import { BrandMark } from "./BrandMark";
+import { TreeSkeleton } from "./ui/Skeleton";
 
 /**
  * 좌측 사이드바. 폭과 접힘 상태는 바깥에서 받는다.
@@ -20,6 +21,11 @@ export interface SidebarProps {
     onPointerUp: (event: PointerEvent<HTMLElement>) => void;
     onPointerCancel: (event: PointerEvent<HTMLElement>) => void;
   };
+  /**
+   * 페이지 트리가 들어오는 자리. 워크스페이스 락업과 "페이지" 라벨 같은
+   * 사이드바 자체의 뼈대는 여기서 그린다 — 바깥이 매번 다시 조립할 것이 아니다.
+   * 없으면 `TreeSkeleton` 이 자리를 지킨다.
+   */
   children?: ReactNode;
 }
 
@@ -63,7 +69,28 @@ export function Sidebar({
         </button>
       ) : (
         <div className="flex min-w-0 flex-1 flex-col gap-x4 overflow-y-auto p-x3">
-          {children ?? <SidebarPlaceholder />}
+          <div className="flex items-center gap-x2">
+            <BrandMark size={18} />
+            <span className="t3-bold truncate text-fg-neutral">워크스페이스</span>
+          </div>
+
+          {/* 검색 · 새 페이지 · 즐겨찾기 — 각각 F8 · F2 · F8 이다. 지금은
+            * 트리 행과 같은 리듬(28px)만 잡아 두는 자리표시다. */}
+          <div className="flex flex-col gap-dense-1">
+            {["검색", "새 페이지", "즐겨찾기"].map((label) => (
+              <span
+                key={label}
+                className="t3-regular flex h-tree-row items-center truncate rounded-r1 px-x2 text-fg-neutral-muted"
+              >
+                {label}
+              </span>
+            ))}
+          </div>
+
+          <div className="flex min-w-0 flex-col gap-dense-1">
+            <span className="t3-bold px-x2 text-fg-neutral-subtle">페이지</span>
+            {children ?? <TreeSkeleton />}
+          </div>
         </div>
       )}
 
@@ -79,40 +106,5 @@ export function Sidebar({
         className="absolute inset-y-0 right-0 w-x1 translate-x-1/2 cursor-col-resize touch-none bg-bg-transparent transition-colors duration-d1 hover:bg-bg-brand-solid data-resizing:bg-bg-brand-solid"
       />
     </aside>
-  );
-}
-
-function SidebarPlaceholder() {
-  return (
-    <>
-      <div className="flex items-center gap-x2">
-        <BrandMark size={18} />
-        <span className="t3-bold truncate text-fg-neutral">워크스페이스</span>
-      </div>
-
-      <div className="flex flex-col gap-x1">
-        {["검색", "새 페이지", "즐겨찾기"].map((label) => (
-          <span
-            key={label}
-            className="t3-regular flex h-tree-row items-center truncate rounded-r1 px-x2 text-fg-neutral-muted"
-          >
-            {label}
-          </span>
-        ))}
-      </div>
-
-      <div className="flex flex-col gap-x1">
-        <span className="t3-bold px-x2 text-fg-neutral-subtle">페이지</span>
-        {/* 트리 자리표시 */}
-        {[0, 1, 2, 3].map((row) => (
-          <span
-            key={row}
-            aria-hidden
-            className="h-tree-row rounded-r1 bg-bg-neutral-weak-alpha"
-            style={{ marginLeft: `calc(var(--knoc-tree-indent) * ${row % 2})` }}
-          />
-        ))}
-      </div>
-    </>
   );
 }
