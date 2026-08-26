@@ -189,3 +189,21 @@ export const saveStatusMessages = {
   failed: "저장 안 됨",
   retry: "다시 시도",
 } as const;
+
+/**
+ * 페이지 트리 — DESIGN.md §10.
+ *
+ * 눈에 보이는 문구가 거의 없다. 트리는 제목이 곧 내용이라 라벨을 붙일 자리가
+ * 없고, 여기 있는 것은 대부분 스크린리더만 읽는 이름이다.
+ *
+ * 액션 버튼 이름에 제목을 넣는 이유 — 페이지 50개면 "메뉴 열기" 버튼이
+ * 50개다. 스크린리더 사용자가 버튼 목록을 열면 같은 이름 50개가 나온다.
+ */
+export const treeMessages = {
+  /** tree 의 이름. 화면에는 안 보인다 */
+  label: "페이지 목록",
+  expand: "펼치기",
+  collapse: "접기",
+  more: (title: string) => `${title} 메뉴 열기`,
+  addChild: (title: string) => `${title} 안에 하위 페이지 추가`,
+} as const;

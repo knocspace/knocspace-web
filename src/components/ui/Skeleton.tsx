@@ -44,7 +44,7 @@ export function Skeleton({ width, height, shape = "text" }: SkeletonProps) {
  * 트리 자리표시 — 28px 행을 그대로 차지한다.
  *
  * 로드 후 레이아웃이 흔들리면 여기 값이 틀린 것이다. 행 높이·들여쓰기는
- * TreeRow 와 같은 토큰을 읽는다.
+ * PageTreeItem 과 같은 토큰을 읽는다.
  */
 export function TreeSkeleton({ rows = 4 }: { rows?: number }) {
   // 실제 목록처럼 보이도록 길이와 깊이를 섞는다. 전부 같은 폭이면 표처럼 보인다.
@@ -56,7 +56,7 @@ export function TreeSkeleton({ rows = 4 }: { rows?: number }) {
   ];
 
   return (
-    <div className="flex flex-col gap-x1" aria-busy="true">
+    <div className="flex flex-col gap-dense-1" aria-busy="true">
       {Array.from({ length: rows }, (_, index) => {
         const row = shape[index % shape.length];
         return (

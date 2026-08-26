@@ -92,8 +92,8 @@ SEED 칸이 찬 7종은 **직접 만들지 않습니다.** 7시간은 6종을 �
 
 도메인 화면이지만 **아직 데이터를 모릅니다.** 더미 배열을 props로 받아 그립니다.
 
-- [ ] `components/tree/PageTree.tsx` — `items` · `selectedId` · 콜백만 받습니다. `role="tree"`
-- [ ] `components/tree/PageTreeItem.tsx` — `role="treeitem"`. 높이 28px, 들여쓰기 14px × depth, 호버하면 액션 버튼, 선택되면 `bg-brand-weak`
+- [x] `components/tree/PageTree.tsx` — `items` · `selectedId` · 콜백만 받습니다. `role="tree"`
+- [x] `components/tree/PageTreeItem.tsx` — `role="treeitem"`. 높이 28px, 들여쓰기 14px × depth, 호버하면 액션 버튼, 선택되면 `bg-brand-weak`
 - [x] `components/Breadcrumb.tsx` — 조상 경로. 4단계가 넘으면 가운데를 `…`로 접습니다
 - [x] `components/SaveStatus.tsx` — 상태 문자열만 받아 그립니다. `aria-live="polite"` (실제 저장은 F3)
 
@@ -102,7 +102,7 @@ SEED 칸이 찬 7종은 **직접 만들지 않습니다.** 7시간은 6종을 �
 항목 데이터의 모양을 먼저 정합니다. F2에서 `flattenTree` 가 `PageSummary` + 펼친 id 집합으로 같은 이름의 타입을 만듭니다.
 
 ```ts
-// components/tree/types.ts
+// components/tree/PageTreeItem.tsx
 export interface TreeItemData {
   id: string;
   title: string;

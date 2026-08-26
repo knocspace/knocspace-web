@@ -414,7 +414,11 @@ BlockNote CSS를 끄거나 덮지 않습니다. 변수만 SEED로 되돌려 가�
 - 문장형 대소문자, 군더더기 없이. 느낌표 없음.
 - 해요체. 합니다체·반말 금지. (이 문서 같은 스펙 산문은 합니다체.)
 - **이모지**: UI 크롬에 금지. 유저가 고르는 문서 아이콘은 예외 — 그건 콘텐츠입니다.
-- 아이콘은 seed-icon만. 유니코드나 이모지를 아이콘 대신 쓰지 않습니다. 필요한 아이콘이 없으면 `daangn/seed-icon`에서 가져오고, 직접 그리지 않습니다.
+- 아이콘은 seed-icon만. 유니코드나 이모지를 아이콘 대신 쓰지 않습니다. 필요한 아이콘이 없으면 가져오고, 직접 그리지 않습니다.
+  - **패키지는 `@karrotmarket/react-monochrome-icon`(seed-icon v3)입니다.** 339종 × `Fill`·`Line` 두 두께. 개별 경로로 집습니다 — `@karrotmarket/react-monochrome-icon/IconPlusLine`
+  - `@seed-design/icon`(v2, `Fill`·`Regular`·`Thin`)은 **쓰지 않습니다.** `@seed-design/react-icon`이 npm에서 deprecated 됐고 저장소도 2025-03에 멈췄습니다
+  - **이름이 뜻이 아니라 모양입니다.** 빈 페이지는 `IconVertrectangleFoldedLine`(세로 사각형 + 접힌 모서리)이고, `file`로 찾으면 안 나옵니다. 뜻으로 찾을 때는 [seed-design.io](https://seed-design.io) 검색을 쓰거나 패키지의 `.d.ts` 안 `@alias` 주석을 grep 합니다 — 별칭에 `문서 · 파일 · paper` 가 걸려 있습니다
+  - 이름으로 없다고 판단하지 마세요. `daangn/seed-icon`(v2) 저장소를 뒤지고 "없다"고 결론 내린 적이 있습니다
 
 ### 설명은 버튼이 못 담는 것만
 

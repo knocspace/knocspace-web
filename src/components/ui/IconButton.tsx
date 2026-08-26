@@ -98,7 +98,12 @@ export function IconButton({
     ? "bg-bg-brand-weak"
     : isDisabled
       ? "bg-bg-transparent"
-      : "bg-bg-transparent hover:bg-bg-neutral-weak-alpha";
+      : size === 24
+        ? // 24 는 트리 행 안에서만 산다. 행이 이미 bg-neutral-weak-alpha 로
+          // 호버돼 있어서, 버튼도 같은 값이면 눌러도 아무 일이 없어 보인다.
+          // 한 단계 진한 pressed 를 쓴다 (knocspace.css 의 tree-action 주석).
+          "bg-bg-transparent hover:bg-bg-neutral-weak-alpha-pressed"
+        : "bg-bg-transparent hover:bg-bg-neutral-weak-alpha";
 
   if (size === 24) {
     return (

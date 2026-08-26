@@ -1,4 +1,4 @@
-import IconSearchRegular from "@seed-design/icon/IconSearchRegular";
+import IconMagnifyingglassLine from "@karrotmarket/react-monochrome-icon/IconMagnifyingglassLine";
 import { useNavigate } from "react-router";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { emptyMessages } from "@/components/ui/messages";
@@ -12,7 +12,7 @@ import { emptyMessages } from "@/components/ui/messages";
  * 404 를 에러가 아니라 빈 화면으로 다룬다 — 뭐가 실패한 게 아니다.
  * 그래서 ErrorState 가 아니라 EmptyState 다.
  *
- * 배럴(@seed-design/icon)이 아니라 개별 경로로 집는다. 배럴을 쓰면
+ * 배럴(@karrotmarket/react-monochrome-icon)이 아니라 개별 경로로 집는다. 배럴을 쓰면
  * 아이콘 하나 때문에 dev 서버가 600개 모듈을 더 변환한다.
  */
 
@@ -22,7 +22,7 @@ export function NotFound() {
   return (
     <EmptyState
       {...emptyMessages.notFound}
-      icon={IconSearchRegular}
+      icon={IconMagnifyingglassLine}
       onAction={() => navigate("/")}
     />
   );

@@ -10,8 +10,8 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@karrotmarket/react-monochrome-icon": "^1.26.0",
     "@seed-design/css": "^2.5.0",
-    "@seed-design/icon": "^0.6.2",
     "@seed-design/react": "^2.3.0",
     "@seed-design/tailwind4-theme": "^2.3.0",
     "@seed-design/vite-plugin": "^2.1.0",

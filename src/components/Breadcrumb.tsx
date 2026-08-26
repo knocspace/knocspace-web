@@ -1,4 +1,4 @@
-import IconChevronRightRegular from "@seed-design/icon/IconChevronRightRegular";
+import IconChevronRightLine from "@karrotmarket/react-monochrome-icon/IconChevronRightLine";
 import { breadcrumbMessages } from "./ui/messages";
 
 /**
@@ -41,7 +41,7 @@ const ANCESTOR = "t3-regular shrink-0 whitespace-nowrap text-fg-neutral-subtle";
  */
 function Separator() {
   return (
-    <IconChevronRightRegular
+    <IconChevronRightLine
       size={16}
       aria-hidden
       className="shrink-0 text-fg-neutral-subtle"

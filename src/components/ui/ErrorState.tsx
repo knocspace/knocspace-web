@@ -1,4 +1,4 @@
-import IconWarningRegular from "@seed-design/icon/IconWarningRegular";
+import IconExclamationmarkTriangleLine from "@karrotmarket/react-monochrome-icon/IconExclamationmarkTriangleLine";
 import {
   PageBannerButton,
   PageBannerContent,
@@ -70,7 +70,7 @@ export function ErrorState({
 
   return (
     <EmptyState
-      icon={IconWarningRegular}
+      icon={IconExclamationmarkTriangleLine}
       title={title}
       description={description}
       action={action}

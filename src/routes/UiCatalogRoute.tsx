@@ -1,13 +1,16 @@
 import { useEffect, useState } from "react";
-import IconAddRegular from "@seed-design/icon/IconAddRegular";
-import IconEditRegular from "@seed-design/icon/IconEditRegular";
-import IconMoreVertRegular from "@seed-design/icon/IconMoreVertRegular";
-import IconSearchRegular from "@seed-design/icon/IconSearchRegular";
-import IconTrashRegular from "@seed-design/icon/IconTrashRegular";
-import IconWriteRegular from "@seed-design/icon/IconWriteRegular";
+import IconPlusLine from "@karrotmarket/react-monochrome-icon/IconPlusLine";
+import IconPencilLine from "@karrotmarket/react-monochrome-icon/IconPencilLine";
+import IconDot3VerticalLine from "@karrotmarket/react-monochrome-icon/IconDot3VerticalLine";
+import IconMagnifyingglassLine from "@karrotmarket/react-monochrome-icon/IconMagnifyingglassLine";
+import IconTrashcanLine from "@karrotmarket/react-monochrome-icon/IconTrashcanLine";
+import IconDocumentPenLine from "@karrotmarket/react-monochrome-icon/IconDocumentPenLine";
 import { Breadcrumb } from "@/components/Breadcrumb";
 import type { BreadcrumbItem } from "@/components/Breadcrumb";
 import { SaveStatus } from "@/components/SaveStatus";
+import { PageTree } from "@/components/tree/PageTree";
+import type { TreeItemData } from "@/components/tree/PageTreeItem";
+import { flattenTree } from "@/features/page-tree/flattenTree";
 import type { SaveState } from "@/components/SaveStatus";
 import { Dialog } from "@/components/ui/Dialog";
 import { EmptyState } from "@/components/ui/EmptyState";
@@ -79,6 +82,36 @@ function TopBarFrame({ children }: { children: React.ReactNode }) {
   );
 }
 
+/** 사이드바 240px 흉내. 트리는 basement 표면 위에서만 제대로 보인다 */
+function SidebarFrame({ children }: { children: React.ReactNode }) {
+  return (
+    <div className="w-sidebar rounded-r1_5 border border-stroke-neutral-muted bg-bg-layer-basement p-dense-3">
+      {children}
+    </div>
+  );
+}
+
+/* 더미 트리. F2 에서 flattenTree(PageSummary[], 펼친 id) 가 이 자리에 온다.
+ * 여기서는 depth 가 손으로 적힌 값이다 — 컴포넌트는 계산을 안 한다. */
+const TREE: TreeItemData[] = [
+  { id: "product", title: "제품 기획", icon: null, depth: 0, hasChildren: true, isExpanded: true },
+  { id: "roadmap", title: "2분기 로드맵", icon: null, depth: 1, hasChildren: true, isExpanded: true },
+  { id: "tokens", title: "토큰 대조표", icon: null, depth: 2, hasChildren: false, isExpanded: false },
+  { id: "focus", title: "포커스 링 결정", icon: null, depth: 2, hasChildren: false, isExpanded: false },
+  { id: "design", title: "디자인 시스템 정리", icon: "🎨", depth: 1, hasChildren: false, isExpanded: false },
+  { id: "notes", title: "회의록", icon: null, depth: 0, hasChildren: true, isExpanded: false },
+  { id: "empty", title: "", icon: null, depth: 0, hasChildren: false, isExpanded: false },
+];
+
+/* 문서 아이콘 세 갈래. icon 이 null 이면 PageTreeItem 이 빈 페이지
+ * (IconVertrectangleFoldedLine)를 그리고, 선택된 행에서는 그 아이콘만
+ * fg-brand 로 선다 (시안 B). */
+const ICON_CASES: TreeItemData[] = [
+  { id: "none", title: "icon: null — 빈 종이", icon: null, depth: 0, hasChildren: false, isExpanded: false },
+  { id: "emoji", title: "icon: \"📐\" — 이모지", icon: "📐", depth: 0, hasChildren: false, isExpanded: false },
+  { id: "selected", title: "선택되면 fg-brand", icon: null, depth: 0, hasChildren: false, isExpanded: false },
+];
+
 /* 더미 경로. F2 에서 PageSummary 조상 배열이 이 자리에 온다. */
 const CRUMBS: BreadcrumbItem[] = [
   { id: "ws", title: "워크스페이스" },
@@ -114,6 +147,10 @@ export function UiCatalogRoute() {
   const [selected, setSelected] = useState(false);
   const [picked, setPicked] = useState<string | null>(null);
   const [saveState, setSaveState] = useState<SaveState>("saving");
+  /* 트리의 펼침·선택은 바깥이 가진다. 컴포넌트는 값으로 받고 콜백으로 알린다 —
+   * F2 에서 이 두 줄이 useExpandedIds 와 라우터의 pageId 로 바뀐다. */
+  const [expanded, setExpanded] = useState<string[]>(["product", "roadmap"]);
+  const [openPage, setOpenPage] = useState<string | null>("roadmap");
   const toast = useToast();
 
   /* 컬러 모드는 <html> 에만 건다 — DESIGN.md §4.
@@ -207,7 +244,7 @@ export function UiCatalogRoute() {
             <div className="flex" style={{ minHeight: 220 }}>
               <EmptyState
                 {...emptyMessages.firstRun}
-                icon={IconWriteRegular}
+                icon={IconDocumentPenLine}
                 actionVariant="brandSolid"
                 onAction={() => toast.show({ message: "페이지를 만들었어요" })}
               />
@@ -217,7 +254,7 @@ export function UiCatalogRoute() {
             <div className="flex" style={{ minHeight: 220 }}>
               <EmptyState
                 {...emptyMessages.searchNoResult("포커스 링")}
-                icon={IconSearchRegular}
+                icon={IconMagnifyingglassLine}
                 onAction={() => toast.show({ message: "본문까지 찾았어요" })}
               />
             </div>
@@ -282,19 +319,19 @@ export function UiCatalogRoute() {
                 {
                   id: "rename",
                   label: "이름 바꾸기",
-                  icon: IconEditRegular,
+                  icon: IconPencilLine,
                   onSelect: () => setEditing(true),
                 },
                 {
                   id: "add",
                   label: "하위 페이지 추가",
-                  icon: IconAddRegular,
+                  icon: IconPlusLine,
                   onSelect: () => toast.show({ message: "하위 페이지를 만들었어요" }),
                 },
                 {
                   id: "delete",
                   label: "삭제",
-                  icon: IconTrashRegular,
+                  icon: IconTrashcanLine,
                   isDestructive: true,
                   onSelect: () => setDangerOpen(true),
                 },
@@ -367,17 +404,17 @@ export function UiCatalogRoute() {
           <div className="flex gap-x4">
             <Slot label="24 · 트리 행">
               <IconButton
-                icon={IconMoreVertRegular}
+                icon={IconDot3VerticalLine}
                 ariaLabel="더 보기"
                 size={24}
                 onClick={() => setMenuOpen(true)}
               />
-              <IconButton icon={IconAddRegular} ariaLabel="하위 페이지 추가" size={24} />
+              <IconButton icon={IconPlusLine} ariaLabel="하위 페이지 추가" size={24} />
             </Slot>
             <Slot label="32 · 툴바">
-              <IconButton icon={IconAddRegular} ariaLabel="추가" size={32} />
+              <IconButton icon={IconPlusLine} ariaLabel="추가" size={32} />
               <IconButton
-                icon={IconSearchRegular}
+                icon={IconMagnifyingglassLine}
                 ariaLabel="검색"
                 size={32}
                 isSelected={selected}
@@ -385,8 +422,8 @@ export function UiCatalogRoute() {
               />
             </Slot>
             <Slot label="40 · 헤더">
-              <IconButton icon={IconMoreVertRegular} ariaLabel="더 보기" size={40} />
-              <IconButton icon={IconAddRegular} ariaLabel="추가" size={40} isDisabled />
+              <IconButton icon={IconDot3VerticalLine} ariaLabel="더 보기" size={40} />
+              <IconButton icon={IconPlusLine} ariaLabel="추가" size={40} isDisabled />
             </Slot>
           </div>
         </Section>
@@ -435,10 +472,65 @@ export function UiCatalogRoute() {
         {/* ── §4 레이아웃 ─────────────────────────────────────────
           * 공통 UI 10종이 아니라 sprint-1 §4 다. 도메인 화면이지만 아직
           * 데이터를 모르고, 더미 배열을 props 로 받아 그린다.
-          * PageTree · TreeRow 는 백엔드와 트리 모양을 같이 정한 뒤에 만든다. */}
+          * 트리는 접힘·선택을 안 가진다. 여기서 만들어 내려보낸다. */}
 
         <Section
-          title="레이아웃 1 · Breadcrumb"
+          title="레이아웃 1 · PageTree · PageTreeItem"
+          note={'role="tree" 하나에 role="treeitem" 여럿입니다. 탭 정지점은 하나뿐이라 Tab 한 번으로 트리를 지나갑니다 — 안에서는 화살표로 움직입니다. 행에 올리면 액션 둘이 나오고, 키보드로는 메뉴 키가 같은 것을 엽니다.'}
+        >
+          <Slot label="사이드바 안 — 클릭으로 열고, 화살표를 눌러 펼칩니다">
+            <SidebarFrame>
+              <PageTree
+                items={flattenTree(TREE, expanded)}
+                selectedId={openPage}
+                onSelect={setOpenPage}
+                onToggle={(id) =>
+                  setExpanded((ids) =>
+                    ids.includes(id) ? ids.filter((each) => each !== id) : [...ids, id],
+                  )
+                }
+                onAdd={(id) => toast.show({ message: `${id} 안에 하위 페이지를 만들어요` })}
+                onMenu={(id) => toast.show({ message: `${id} 행 메뉴 — F2 에서 Menu 가 붙습니다` })}
+                onRename={(id) => toast.show({ message: `${id} 이름 바꾸기 — F2 에서 InlineInput 이 붙습니다` })}
+              />
+            </SidebarFrame>
+          </Slot>
+
+          {/* icon 은 F9 전까지 서버가 늘 null 로 준다(api-contract §6). 그래서
+            * 폴백이 어떻게 생겼는지가 사실상 트리의 기본 모습이다. */}
+          <Slot label="문서 아이콘 세 갈래 — icon 을 안 주면 컴포넌트가 빈 종이를 그립니다">
+            <SidebarFrame>
+              <PageTree
+                items={ICON_CASES}
+                selectedId="selected"
+                onSelect={() => {}}
+                onToggle={() => {}}
+                label="문서 아이콘 예시"
+              />
+            </SidebarFrame>
+          </Slot>
+
+          <Slot label="드래그 중 — 원본은 40% 로 남습니다 (실제 드래그는 F8)">
+            <SidebarFrame>
+              <PageTree
+                items={flattenTree(TREE, expanded)}
+                selectedId={openPage}
+                draggingId="roadmap"
+                onSelect={setOpenPage}
+                onToggle={() => {}}
+              />
+            </SidebarFrame>
+          </Slot>
+
+          <Slot label="불러오는 중 — TreeSkeleton 이 28px 행 자리를 그대로 차지합니다">
+            <SidebarFrame>
+              <TreeSkeleton rows={5} />
+            </SidebarFrame>
+          </Slot>
+        </Section>
+
+        <Section
+          title="레이아웃 2 · Breadcrumb"
           note="상단바 44px 안. 4단계까지는 그대로, 5단계부터 첫 항목 + … + 마지막 둘로 접습니다. 줄이는 것은 마지막 항목 하나뿐입니다."
         >
           <Slot label="2단계" wide>
@@ -477,7 +569,7 @@ export function UiCatalogRoute() {
         </Section>
 
         <Section
-          title="레이아웃 2 · SaveStatus"
+          title="레이아웃 3 · SaveStatus"
           note="상단바 오른쪽. 변경이 없으면 아무것도 안 그립니다. ‘저장됨’ 은 2초 뒤 사라집니다 — 버튼으로 상태를 바꿔서 확인하세요. 실패만 색과 굵기를 쓰고 버튼이 붙습니다."
         >
           <div className="flex flex-wrap gap-x2">
