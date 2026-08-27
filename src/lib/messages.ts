@@ -193,6 +193,25 @@ export const saveStatusMessages = {
 } as const;
 
 /**
+ * 사이드바 — DESIGN.md §10.
+ *
+ * 검색 · 새 페이지 · 즐겨찾기는 F8 · F2 · F8 에서 진짜 버튼이 된다. 지금은
+ * 트리 행과 같은 리듬(28px)만 잡아 두는 자리표시라 문구만 여기 둔다.
+ *
+ * 워크스페이스 이름은 F5 에서 서버가 준다. 그때 이 값은 폴백이 된다.
+ */
+export const sidebarMessages = {
+  workspace: "워크스페이스",
+  /** 트리 위 섹션 라벨 */
+  pages: "페이지",
+  shortcuts: ["검색", "새 페이지", "즐겨찾기"],
+  /** 레일을 눌렀을 때 — 화면에는 안 보이고 스크린리더만 읽는다 */
+  expand: "사이드바 펼치기",
+  /** 폭 조절 핸들. role="separator" 의 이름이다 */
+  resizeHandle: "사이드바 폭 조절",
+} as const;
+
+/**
  * 페이지 트리 — DESIGN.md §10.
  *
  * 눈에 보이는 문구가 거의 없다. 트리는 제목이 곧 내용이라 라벨을 붙일 자리가

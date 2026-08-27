@@ -63,7 +63,7 @@
 
 `components/ui/`. **전부 props만 받습니다.** 서버도, Query도, 라우터도 모릅니다.
 
-컴포넌트 하나가 파일 하나입니다 — 본체와 스토리가 형제 파일이고 배럴은 두지 않습니다. 아래 표의 `Spinner.tsx` 는 `ui/Spinner.tsx` 입니다 ([구조 문서](architecture.md)).
+컴포넌트 하나가 폴더 하나입니다 — 본체와 스토리가 같은 폴더에 있고 배럴은 두지 않습니다. 아래 표의 `Spinner.tsx` 는 `ui/Spinner/Spinner.tsx` 입니다 ([구조 문서](architecture.md)).
 
 - [x] **SEED 대응 6종 규격 대조 (30분).** 결과는 [DESIGN.md §10](../../DESIGN.md) — 직접 만드는 것은 4종, 감싸되 값을 덮는 것이 3종입니다
 
@@ -86,7 +86,7 @@ SEED 칸이 찬 7종은 **직접 만들지 않습니다.** 7시간은 6종을 �
 
 1. SEED에 있는 컴포넌트는 새로 만들지 않고 감쌉니다 (위 표의 SEED 칸)
 2. `!important`나 자손 선택자로 SEED를 덮지 않습니다 (DESIGN.md §1)
-3. 문구를 컴포넌트 안에 하드코딩하지 않습니다. `components/ui/messages.ts` 한 곳에 모읍니다
+3. 문구를 컴포넌트 안에 하드코딩하지 않습니다. `lib/messages.ts` 한 곳에 모읍니다
 
 ---
 
@@ -94,8 +94,8 @@ SEED 칸이 찬 7종은 **직접 만들지 않습니다.** 7시간은 6종을 �
 
 도메인 화면이지만 **아직 데이터를 모릅니다.** 더미 배열을 props로 받아 그립니다.
 
-- [x] `components/PageTree.tsx` — `items` · `selectedId` · 콜백만 받습니다. `role="tree"`
-- [x] `components/PageTreeItem.tsx` — `role="treeitem"`. 높이 28px, 들여쓰기 14px × depth, 호버하면 액션 버튼, 선택되면 `bg-brand-weak`
+- [x] `components/PageTree/PageTree.tsx` — `items` · `selectedId` · 콜백만 받습니다. `role="tree"`
+- [x] `components/PageTree/PageTreeItem.tsx` — `role="treeitem"`. 높이 28px, 들여쓰기 14px × depth, 호버하면 액션 버튼, 선택되면 `bg-brand-weak`
 - [x] `components/Breadcrumb/` — 조상 경로. 4단계가 넘으면 가운데를 `…`로 접습니다
 - [x] `components/SaveStatus/` — 상태 문자열만 받아 그립니다. `aria-live="polite"` (실제 저장은 F3)
 
@@ -104,7 +104,7 @@ SEED 칸이 찬 7종은 **직접 만들지 않습니다.** 7시간은 6종을 �
 항목 데이터의 모양을 먼저 정합니다. F2에서 `visibleItems` 가 `PageSummary` + 펼친 id 집합으로 같은 이름의 타입을 만듭니다.
 
 ```ts
-// components/PageTreeItem.tsx
+// components/PageTree/PageTreeItem.tsx
 export interface TreeItemData {
   id: string;
   title: string;
@@ -143,9 +143,9 @@ export interface TreeItemData {
 
 ### 6. 마무리 (30분)
 
-- [ ] README를 실제 문서로 교체 — 실행 방법, 폴더 구조
-- [ ] `CLAUDE.md`의 구조 트리를 [구조 문서](architecture.md) 기준으로 갱신
-- [ ] 커밋 나누기
+- [x] README를 실제 문서로 교체 — 실행 방법, 폴더 구조
+- [x] `CLAUDE.md`의 구조 트리를 [구조 문서](architecture.md) 기준으로 갱신
+- [x] 커밋 나누기
 
 ```
 docs:  토큰 이름 정합
@@ -159,12 +159,15 @@ chore: 컴포넌트 카탈로그를 스토리북으로
 
 ## 완료 조건
 
-- [ ] `npm run build` · `npm run lint` 두 개 통과
-- [ ] `npm run storybook` 에서 10종이 라이트·다크 양쪽에서 정상으로 보인다
-- [ ] 10종 전부 마우스 없이 조작된다
-- [ ] `src/components/` 안에서 `useQuery`·`fetch`·`localStorage`를 import 하는 곳 0개
-- [ ] 이상한 경로 → NotFound, 라우트를 옮겨도 사이드바 폭이 유지된다
-- [ ] UI 문구가 `messages.ts` 밖에 하드코딩된 곳 0개
+- [x] `npm run build` · `npm run lint` 두 개 통과
+- [ ] `npm run storybook` 에서 10종이 라이트·다크 양쪽에서 정상으로 보인다 — **눈으로 확인할 것만 남았습니다**
+- [x] 10종 전부 마우스 없이 조작된다 — 누르는 것은 전부 `<button>` 이거나 SEED 파트이고,
+      직접 키를 다루는 넷(`Menu` · `Dialog` · `InlineInput` · `PageTree`)은 각자 핸들러를 갖습니다
+- [x] `src/components/` 안에서 `useQuery`·`fetch`·`localStorage`를 import 하는 곳 0개
+- [x] 이상한 경로 → NotFound, 라우트를 옮겨도 사이드바 폭이 유지된다 — `path: "*"` 와
+      `RootLayout` 의 `useSidebarResize`
+- [x] UI 문구가 `messages.ts` 밖에 하드코딩된 곳 0개 — 사이드바 라벨과 문서 자리표시를
+      `lib/messages.ts` 로 옮겼습니다 (`RootLayout` 의 더미 트리는 문구가 아니라 F2 까지 쓸 가짜 데이터입니다)
 
 [공통 완료 조건](conventions.md)도 함께 확인합니다.
 

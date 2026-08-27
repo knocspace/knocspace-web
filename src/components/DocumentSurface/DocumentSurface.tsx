@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { editorPlaceholders } from "@/lib/messages";
 
 /**
  * 문서 표면. measure 720px 중앙 정렬 + 좌우 거터 56px.
@@ -20,7 +21,7 @@ export function DocumentSurface({ children }: DocumentSurfaceProps) {
 function DocumentPlaceholder() {
   return (
     <div className="flex flex-col gap-x4">
-      <span className="t9-bold text-fg-neutral">제목 없음</span>
+      <span className="t9-bold text-fg-neutral">{editorPlaceholders.title}</span>
 
       {/* 에디터 자리표시. 실제 표면은 BlockNote 가 맡는다. */}
       {[100, 92, 74, 96, 61].map((widthPercent, index) => (
