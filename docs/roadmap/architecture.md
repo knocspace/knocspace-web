@@ -217,13 +217,34 @@ F10의 커서 색으로 그대로 씁니다. 나중에 타입을 고치지 않�
 
 ## 테스트
 
+**컴포넌트 테스트는 두지 않습니다.** F1 에서 스토리북으로 갈음하기로 했고
+([F1 §5](sprint-1.md#5-컴포넌트-카탈로그--스토리북-1시간)) 그대로 갑니다. RTL · user-event 는
+쓰지 않습니다 — `role` · 이름 · 대비는 스토리마다 도는 `addon-a11y` 의 axe 가 봅니다.
+
 | 종류 | 도구 | 대상 | 시작 |
 |---|---|---|---|
-| 유닛 | Vitest | 트리 평탄화, 필터 변환, api mock | F1 |
-| 컴포넌트 | RTL + user-event | 공통 UI, 트리 조작, 슬래시 메뉴, 셀 편집 | F1 |
-| E2E | Playwright | 핵심 흐름 | F4 |
+| 컴포넌트 | 스토리북 + addon-a11y | 공통 UI, 트리 조작, 셀 편집 | F1 ✅ |
+| 유닛 | Vitest | 순수 함수 — `visibleItems` · `slashItems` · api mock | F3 |
+| E2E | Playwright | 핵심 흐름, **에디터 위에 뜨는 것 전부** | F4 |
 
-**커버리지 목표는 두지 않습니다.** 대신 규칙 하나만 지킵니다 — **스프린트마다 E2E 1개 추가.**
+**커버리지 목표는 두지 않습니다.** 규칙은 둘입니다 — **새 컴포넌트에 스토리 1개**,
+그리고 **F4 부터 스프린트마다 E2E 1개.**
+
+### 렌더링이 필요하면 유닛으로 쓰지 않습니다
+
+유닛은 **DOM 없이 도는 것만** 맡습니다. 화면에 뜨는 것을 jsdom 으로 확인하려 들면 안 됩니다 —
+슬래시 메뉴 · 포맷 툴바 · 드래그 핸들은 floating-ui 가 위치를 계산해서 띄우는데, jsdom 은
+레이아웃이 없어서 모든 rect 가 0 이고 `elementFromPoint` 도 없습니다. 폴리필을 다 채워도
+메뉴 높이가 `0px` 로 남습니다 ([F3 §0 확인 결과](../decisions/f3-blocknote-surface.md)).
+
+그래서 **목록 · 상태를 만드는 부분을 컴포넌트 밖으로 빼 두고, 그 함수만 검사합니다.**
+뜨는 것 자체는 F4 의 Playwright 로 넘깁니다.
+
+> **아직 러너가 없습니다.** `package.json` 에 `test` 스크립트가 없습니다. F3 §6 에서 켭니다 —
+> **`vite.config.ts` 는 안 건드립니다.** vitest 기본 `environment: "node"` 로 충분합니다.
+> `BlockNoteEditor.create()` 도 `getDefaultSlashMenuItems` 도 `document` 없이 돕니다 (확인함).
+> 컴포넌트를 안 띄우기로 한 이상 jsdom 이 필요한 자리가 없어서, `jsdom` 과
+> `@testing-library/*` 는 devDependencies 에서 빼도 됩니다.
 
 ---
 
