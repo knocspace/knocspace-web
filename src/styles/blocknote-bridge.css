@@ -1,0 +1,137 @@
+/* BlockNote ↔ SEED 경계 — DESIGN.md §7
+ *
+ * BlockNote CSS 를 끄거나 덮지 않는다. 변수만 SEED 쪽을 가리키게 바꾼다.
+ * 규칙을 어기면 BlockNote 를 올릴 때마다 깨진다.
+ *
+ * 라이브러리 CSS 자체(@blocknote/mantine/style.css)는 여기서 안 부른다.
+ * 에디터 청크가 자기 것으로 들고 온다 — features/editor/BlockEditor.tsx.
+ * 이 파일은 변수 한 뭉치뿐이라 첫 화면에 얹혀도 무게가 없다.
+ *
+ * ── 선택자가 DESIGN.md §7 의 .bn-container 한 겹이 아닌 이유
+ *
+ * bn-root 와 bn-container 는 같은 엘리먼트에 함께 붙는다. BlockNote 기본값은
+ * `.bn-root`(0,1,0) 와 `.bn-root[data-color-scheme="dark"]`(0,2,0) 두 벌로
+ * 오고, 다크 쪽이 더 세다. .bn-container 한 겹(0,1,0)으로는 다크에서 진다.
+ *
+ * 그래서 같은 엘리먼트를 세 겹으로 짚어 (0,3,0) 으로 올린다. 자손 선택자도
+ * !important 도 아니고 여전히 변수 선언뿐이라 §7 의 금지에는 걸리지 않는다.
+ * 덤으로 로딩 순서에서도 자유롭다 — 에디터 CSS 는 지연 로드라 이 파일보다
+ * 늦게 붙는데, 같은 명시도였다면 나중 것이 이겼을 자리다.
+ *
+ * data-color-scheme 은 값을 보지 않는다. 라이트/다크를 여기서 가르지 않기
+ * 때문이다 — 오른쪽의 SEED 토큰이 이미 모드에 따라 스스로 뒤집힌다.
+ */
+.bn-container.bn-root[data-color-scheme] {
+  --bn-colors-editor-text: var(--seed-color-fg-neutral);
+  --bn-colors-editor-background: var(--seed-color-bg-layer-default);
+  --bn-colors-menu-text: var(--seed-color-fg-neutral);
+  --bn-colors-menu-background: var(--seed-color-bg-layer-floating);
+  --bn-colors-tooltip-text: var(--seed-color-fg-neutral-inverted);
+  --bn-colors-tooltip-background: var(--seed-color-bg-neutral-inverted);
+  --bn-colors-hovered-background: var(--seed-color-bg-neutral-weak-alpha);
+  --bn-colors-selected-text: var(--seed-color-palette-static-white);
+  --bn-colors-selected-background: var(--seed-color-bg-brand-solid);
+  --bn-colors-disabled-text: var(--seed-color-fg-disabled);
+  --bn-colors-border: var(--seed-color-stroke-neutral-muted);
+  --bn-colors-side-menu: var(--seed-color-fg-neutral-subtle);
+  --bn-font-family: inherit;
+  --bn-border-radius: var(--seed-radius-r1_5);
+
+  /* 하이라이트 팔레트 — DESIGN.md §7.
+   *
+   * 글자는 500, 배경은 200. 라이트/다크 두 벌을 쓰지 않는다. SEED 팔레트가
+   * 모드에 따라 뒤집혀서(라이트는 번호가 클수록 진하고 다크는 반대) 한 벌로
+   * 양쪽이 맞는다.
+   *
+   * SEED 팔레트에 없는 brown · pink 는 BlockNote 기본값 그대로 둔다. 없는
+   * 색을 여기서 새로 만들면 그게 곧 시스템 밖의 색이 된다 (DESIGN.md §1).
+   * orange 는 SEED 의 carrot 이다 — 이름만 다르고 같은 자리의 색이다. */
+  --bn-colors-highlights-gray-text: var(--seed-color-palette-gray-500);
+  --bn-colors-highlights-gray-background: var(--seed-color-palette-gray-200);
+  --bn-colors-highlights-red-text: var(--seed-color-palette-red-500);
+  --bn-colors-highlights-red-background: var(--seed-color-palette-red-200);
+  --bn-colors-highlights-orange-text: var(--seed-color-palette-carrot-500);
+  --bn-colors-highlights-orange-background: var(--seed-color-palette-carrot-200);
+  --bn-colors-highlights-yellow-text: var(--seed-color-palette-yellow-500);
+  --bn-colors-highlights-yellow-background: var(--seed-color-palette-yellow-200);
+  --bn-colors-highlights-green-text: var(--seed-color-palette-green-500);
+  --bn-colors-highlights-green-background: var(--seed-color-palette-green-200);
+  --bn-colors-highlights-blue-text: var(--seed-color-palette-blue-500);
+  --bn-colors-highlights-blue-background: var(--seed-color-palette-blue-200);
+  --bn-colors-highlights-purple-text: var(--seed-color-palette-purple-500);
+  --bn-colors-highlights-purple-background: var(--seed-color-palette-purple-200);
+}
+
+/* ── 체크박스 강조색 — DESIGN.md §7
+ *
+ * accent-color 는 변수가 아닌데도 여기 넣는다. BlockNote 가 이 속성을 선언한
+ * 적이 없어서 "덮는" 것이 아니고, 컨테이너 한 겹에 걸어 상속으로 내려보내므로
+ * 자손 선택자도 아니다.
+ *
+ * 안 걸면 체크 표시가 SEED 보라가 아니라 OS 기본 파랑이다. 라이트/다크는
+ * mantine 이 .bn-mantine 에 color-scheme 을 걸어 둬서 알아서 따라간다 —
+ * 어긋나는 건 강조색이지 명암이 아니다. */
+.bn-container.bn-root[data-color-scheme] {
+  accent-color: var(--seed-color-bg-brand-solid);
+}
+
+/* ── 여기서부터 자손 선택자 — DESIGN.md §7 이 연 것만 있다
+ *
+ * BlockNote 가 색과 글꼴을 전부 변수로 뺀 것은 아니다. 아래 것들은 값이 CSS 에
+ * 박혀 있어서 변수로는 닿지 않는다. **여기 없는 자손 선택자는 새로 쓰지 않는다.**
+ * 늘려야 하면 DESIGN.md §7 을 먼저 고친다.
+ *
+ * !important 는 안 쓴다. 전부 명시도로 이긴다.
+ */
+
+/* 인용 · 구분선 — 값이 #7d797a 로 박혀 있다.
+ * (0,2,1) 대 (0,1,1) 로 이긴다.
+ *
+ * 색만 덮고 굵기는 남긴다. border-left 가 아니라 border-left-color 를 쓰는
+ * 이유다 — BlockNote 가 2px 을 3px 로 바꾸면 그 변경이 그대로 따라온다.
+ * 인용의 막대를 글자와 같은 색으로 두는 것도 BlockNote 의 선택 그대로다. */
+.bn-container [data-content-type="quote"] blockquote {
+  color: var(--seed-color-fg-neutral-muted);
+  border-left-color: var(--seed-color-fg-neutral-muted);
+}
+
+.bn-container [data-content-type="divider"] hr {
+  border-top-color: var(--seed-color-stroke-neutral-muted);
+}
+
+/* 코드 블록 — 반경만 가져오고 배경은 그대로 둔다.
+ * 표면을 뒤집으려면 Shiki 문법색까지 같이 뒤집어야 해서 DESIGN.md §6 에
+ * 미결정으로 열려 있다. 라이트에서도 검정으로 남는 것이 지금의 답이다.
+ *
+ * .bn-block-content 를 한 겹 더 붙여 (0,3,0) 으로 올린다. 두 겹이면
+ * (0,2,0) 으로 동점인데, 에디터 CSS 가 지연 로드라 나중에 붙어서 동점이면 진다. */
+.bn-container .bn-block-content[data-content-type="codeBlock"] {
+  border-radius: var(--seed-radius-r1_5);
+}
+
+/* 본문 글꼴 — .bn-default-styles 가 Inter 스택을 직접 박아 놨다.
+ *
+ * --bn-font-family 로는 못 고친다. 그 변수를 읽는 것은 .bn-root 하나뿐인데
+ * (.bn-root { font-family: var(--bn-font-family) }), .bn-default-styles 는
+ * 그 안쪽 .bn-editor 에 같이 붙어서 자기 선언으로 상속을 끊는다.
+ *
+ * 안 고치면 사이드바는 Segoe UI 인데 본문만 Inter · Open Sans 로 나온다.
+ * 스택이 달라서 한글 대체 글꼴도 같이 갈린다 — 문서만 따로 노는 이유다.
+ *
+ * inherit 로 되돌리면 앱이 정한 것을 그대로 따라간다. 글꼴 이름을 여기 적지
+ * 않는 것이 중요하다 — 적는 순간 앱 글꼴이 바뀔 때 여기만 남는다. */
+.bn-container .bn-default-styles {
+  font-family: inherit;
+}
+
+/* 제목 크기·줄간은 여기 없다. 일부러 없다.
+ *
+ * 문서 **안쪽** 제목(제목1·2·3 블록)의 크기는 BlockNote 것을 따르기로 했다 —
+ * 제목1 3em(48px) · 제목2 2em(32px) · 제목3 1.3em(20.8px), 줄간 1.5.
+ * 한 번 26 · 20 · 17px 로 줄여 봤는데 본문과의 위계가 눌려서 되돌렸다.
+ *
+ * DESIGN.md §2 의 34px 은 페이지 제목이지 블록이 아니다. 그 자리는 아직
+ * 없다 — F3 §3 에서 PageTitle 을 만들 때 생긴다.
+ *
+ * 줄이려면 --level 만 바꾸면 되지만(BlockNote 가 이미 읽는 변수다), 그 전에
+ * DESIGN.md §2 와 §7 을 먼저 고친다. */

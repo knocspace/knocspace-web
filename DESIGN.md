@@ -154,12 +154,20 @@ Tailwind 색 유틸리티로 노출된 것은 `grid-line` 과 `grid-edge` 둘뿐
 |---|---|---|---|
 | 그리드 셀 · 트리 행 | 13px / 1.35 | 400 | SEED `t3-regular` |
 | 그리드 헤더 | 12.5px | 700 | `fg-neutral-subtle` |
-| 문서 본문 | 16px / 1.55 | 400 | SEED `t5-regular` |
-| 문서 제목1 / 2 / 3 | 26 / 20 / 17px | 700 | −0.03 / −0.025 / −0.02em |
+| 문서 본문 | 16px / 1.5 | 400 | BlockNote 기본. `t5` 와 크기는 같고 줄간만 다릅니다 |
+| 문서 **안쪽** 제목1 / 2 / 3 | **BlockNote 기본** 48 / 32 / 20.8px | 700 | 자간 없음 |
 | 토큰명·코드 | 13px | 400 | Roboto Mono |
 | 워드마크 | — | **600** | Pretendard SemiBold, −0.035em, 최소 13px |
 
-SEED 의 `t` 스케일은 11 · 12 · 13 · 14 · 16 · 18 · 20 · 22 · 24px 입니다(`t1`~`t9`). 문서 제목의 26px · 17px 과 문서 제목 34px 은 이 스케일 밖이라 `--knoc-` 로 따로 정해야 합니다 — **아직 만들지 않았습니다.** 에디터가 생기는 F3 에서 추가합니다.
+**문서 제목 34px 과 문서 안쪽 제목은 다른 것입니다.** 34px 은 페이지 한 장의 이름이고
+(`PageTitle` — F3 §3 에서 만듭니다), 제목1·2·3 은 본문에 넣는 블록입니다. BlockNote 에는 페이지 제목이 없어서 —
+문서가 블록 배열 하나가 전부입니다 — 제목 자리는 우리가 만듭니다.
+
+**문서 안쪽 제목의 크기와 줄간은 BlockNote 것을 따릅니다.** 26 · 20 · 17px 로 줄여 봤지만
+본문과의 위계가 눌려서 되돌렸습니다. 우리 값으로 다시 가려면 `--level` 만 바꾸면 되지만
+(BlockNote 가 이미 읽는 변수입니다), 그때 이 표와 §7 을 함께 고칩니다.
+
+SEED 의 `t` 스케일은 11 · 12 · 13 · 14 · 16 · 18 · 20 · 22 · 24px 입니다(`t1`~`t9`). 문서 제목 34px 은 이 스케일 밖이라 `--knoc-` 로 따로 정해야 합니다 — **아직 만들지 않았습니다.** `PageTitle` 이 생기는 F3 §3 에서 추가합니다. 에디터 밖이라 `blocknote-bridge.css` 를 안 거칩니다.
 
 SEED 토큰 레이어에는 400과 700만 있습니다. **600은 워드마크 전용 예외**이고 본문에는 쓰지 않습니다. 한글은 `word-break: keep-all`.
 
@@ -227,13 +235,15 @@ export default defineConfig({
 @import "tailwindcss";
 @import "@seed-design/tailwind4-theme";
 @import "./styles/knocspace.css";
+@import "./styles/blocknote-bridge.css";
 
 /* 문서가 CSS 번들에 영향을 주지 않게 한다. 경로는 이 CSS 파일 기준이고
  * 탐지 범위는 프로젝트 루트라 ../ 가 필요하다 */
 @source not "../**/*.md";
 ```
 
-`blocknote-bridge.css` 는 Sprint 3 에서 추가합니다.
+`blocknote-bridge.css` 는 §7 입니다. 라이브러리 CSS 자체(`@blocknote/mantine/style.css`)는
+여기가 아니라 에디터 컴포넌트가 부릅니다 — 지연 로드라 청크가 자기 CSS 를 들고 갑니다.
 
 ### `src/styles/knocspace.css`
 
@@ -293,7 +303,7 @@ border-grid-line       border-grid-edge
 
 - BlockNote CSS를 끄지 않고 변수만 다시 가리킵니다(§7).
 - 슬래시 메뉴와 포맷 툴바만 SEED 표면으로 교체. 블록 내부는 손대지 않음.
-- 슬래시 메뉴: 폭 320px, 행 높이 32px, 각 항목에 마크다운 단축 표기 표시.
+- 슬래시 메뉴: 폭 320px, 행 높이 32px, 각 항목에 마크다운 단축 표기 표시. **10줄** — 제목이 1·2·3 세 줄로 나와서, 전부 펼치면 320px + 패딩입니다. 폭과 같아지므로 잘라야 할지는 실제로 띄워 보고 정합니다.
 - 포맷 툴바: 높이 34px, 반경 `r1_5`(6px), FAB 그림자(`0 2px 6px rgba(0,0,0,.16)`), 켜진 버튼만 `bg-brand-weak`.
 - SEED에서 빌리는 것: 색·타입·반경 전부 / 메뉴 = `ActionSheet` 스타일 / 툴바 = `bg-layer-floating`
 
@@ -314,7 +324,7 @@ border-grid-line       border-grid-edge
 
 ## 6. 미결정과 확정 기록
 
-열려 있는 것은 **그리드(32px) 행의 dense 버튼** 하나입니다. 트리 행(28px)은 F1 에서 닫혔습니다. 코드에서 미결정 항목을 마주치면 임의로 값을 넣지 말고 결정을 요청하세요.
+열려 있는 것은 **그리드(32px) 행의 dense 버튼** · **슬래시 메뉴 아이콘** · **코드 블록 표면** 셋입니다. 트리 행(28px)은 F1 에서 닫혔습니다. 코드에서 미결정 항목을 마주치면 임의로 값을 넣지 말고 결정을 요청하세요.
 
 ### 포커스 링 — F1 에서 확정 (브랜드 링)
 
@@ -343,6 +353,48 @@ knoc-focus-ring-inset   링이 밖으로 나갈 자리가 없을 때 —
 ```
 
 정의는 `knocspace.css` 의 `@layer components` 에 있습니다. 컴포넌트는 클래스 이름만 붙이고 값을 다시 쓰지 않습니다. **포커스 링을 없애지 마세요** — 접근성 요구사항입니다.
+
+### 슬래시 메뉴 아이콘 — 열려 있음 (F3 §2 전에 닫아야 함)
+
+BlockNote 기본 아이콘은 인라인 SVG 로 박혀 있고 seed-icon 이 아닙니다. §8 을 지키려면 우리가 붙여야 하는데, **seed-icon 680개에 없는 것이 있습니다.**
+
+| 블록 | seed-icon |
+|---|---|
+| 인용 | `IconQuotationmark2LeftLine` — 별칭에 `인용` |
+| 불릿 | `IconDothorizline3VerticalLine` — 별칭에 `bullets` · `목록` |
+| 체크박스 | `IconHorizline3VerticalCheckmarkLine` — 별칭에 `체크` · `목록` |
+| 본문 | `IconHorizline3VerticalLine` — 모양은 맞지만 별칭이 `더보기` 쪽 |
+| 구분선 | `IconMinusLine` — 별칭이 `빼기` · `제거` |
+| 제목1·2·3 | `IconHashLine` 하나뿐. **1·2·3 을 구분할 수 없습니다** |
+| 번호 목록 | **없음** |
+| 코드 블록 | **없음** |
+
+§8 은 "필요한 아이콘이 없으면 가져오고, 직접 그리지 않습니다" 입니다. 어디서 가져올지가 안 정해져 있어 후보 셋을 남깁니다.
+
+- **A. 아이콘 없이 글자만.** 320px 폭에 제목과 마크다운 표기면 행이 비어 보이지 않습니다. 가장 싸고 §8 을 어기지 않습니다
+- **B. 마크다운 표기를 왼쪽 자리에.** `#` · `##` · `-` · `1.` 을 모노스페이스로 세웁니다. 아이콘이 아니라 글자라 §8 밖이고, 배지 자리는 비웁니다
+- **C. 없는 다섯을 SEED 팀에 요청.** 이번 주 안에는 안 옵니다
+
+근거는 [F3 §0 확인 결과](docs/decisions/f3-blocknote-surface.md)에 있습니다.
+
+### 코드 블록 표면 — 열려 있음 (F3 밖으로 미뤄도 됩니다)
+
+코드 블록은 라이트 모드에서도 **항상 검정**입니다 — `rgb(22 22 22)` 가 CSS 에 박혀 있고,
+그게 BlockNote 의 의도입니다. Shiki 문법색도 `.shiki { color: var(--shiki-dark) }` 로
+다크에 고정돼 있습니다. §7 의 예외에서는 **반경만** 가져오고 배경은 그대로 뒀습니다.
+
+뒤집으려면 둘을 같이 해야 합니다 — 표면을 SEED 토큰으로, 문법색을 라이트에서
+`--shiki-light` 로. 후보 둘입니다.
+
+- **A. 지금처럼 다크 고정.** 코드는 문서 표면과 다른 규칙을 갖는다고 선언합니다. 0줄.
+  대신 [F3 완료 조건](docs/roadmap/sprint-3.md#완료-조건)의 "라이트·다크 모두 SEED 토큰"
+  에 코드 블록을 예외로 적어야 합니다
+- **B. 모드를 따라가게.** 2~3줄이지만, github-light 문법색이 SEED 표면 위에서 읽히는지
+  **브라우저에서 봐야** 정해집니다. jsdom 으로는 확인이 안 됩니다
+
+F3 은 A 로 두고, D1 에서 코드 블록을 다시 볼 때 닫는 것을 권합니다. `<select>` 언어
+선택기도 같은 자리에서 같이 봅니다 — 걷어내려면 코드 블록 스펙을 새로 짜야 하는데,
+`createCodeBlockConfig` · `createCodeBlock` 이 core 에서 export 되어 **가능은 합니다.**
 
 ### dense 버튼 변형 — 트리 행은 F1 에서 확정, 그리드는 열려 있음
 
@@ -373,10 +425,14 @@ SEED `ActionButton` 은 `xsmall` 이 32px 이라 28px 트리 행에도 32px 그�
 
 BlockNote CSS를 끄거나 덮지 않습니다. 변수만 SEED로 되돌려 가리킵니다.
 
+**그런데 변수가 안 달린 곳이 있습니다.** F3 §0 에서 전수 조사했습니다. 아래 「예외 네 줄」과
+「브라우저가 그리는 것」 두 절이 그 전부입니다. **목록에 없는 것은 덮지 마세요.**
+근거는 [F3 §0 확인 결과](docs/decisions/f3-blocknote-surface.md) 에 있습니다.
+
 ### `src/styles/blocknote-bridge.css`
 
 ```css
-.bn-container {
+.bn-container.bn-root[data-color-scheme] {
   --bn-colors-editor-text:         var(--seed-color-fg-neutral);
   --bn-colors-editor-background:   var(--seed-color-bg-layer-default);
   --bn-colors-menu-text:           var(--seed-color-fg-neutral);
@@ -391,16 +447,150 @@ BlockNote CSS를 끄거나 덮지 않습니다. 변수만 SEED로 되돌려 가�
   --bn-colors-side-menu:           var(--seed-color-fg-neutral-subtle);
   --bn-font-family:                inherit;
   --bn-border-radius:              var(--seed-radius-r1_5);
+
+  /* 하이라이트 — 글자 500 · 배경 200. 라이트/다크를 여기서 가르지 않습니다.
+     SEED 팔레트가 모드에 따라 스스로 뒤집혀서 한 벌로 양쪽이 맞습니다.
+     orange 는 SEED 의 carrot 입니다 — 이름만 다르고 같은 자리의 색입니다. */
+  --bn-colors-highlights-gray-text:         var(--seed-color-palette-gray-500);
+  --bn-colors-highlights-gray-background:   var(--seed-color-palette-gray-200);
+  --bn-colors-highlights-red-text:          var(--seed-color-palette-red-500);
+  --bn-colors-highlights-red-background:    var(--seed-color-palette-red-200);
+  --bn-colors-highlights-orange-text:       var(--seed-color-palette-carrot-500);
+  --bn-colors-highlights-orange-background: var(--seed-color-palette-carrot-200);
+  --bn-colors-highlights-yellow-text:       var(--seed-color-palette-yellow-500);
+  --bn-colors-highlights-yellow-background: var(--seed-color-palette-yellow-200);
+  --bn-colors-highlights-green-text:        var(--seed-color-palette-green-500);
+  --bn-colors-highlights-green-background:  var(--seed-color-palette-green-200);
+  --bn-colors-highlights-blue-text:         var(--seed-color-palette-blue-500);
+  --bn-colors-highlights-blue-background:   var(--seed-color-palette-blue-200);
+  --bn-colors-highlights-purple-text:       var(--seed-color-palette-purple-500);
+  --bn-colors-highlights-purple-background: var(--seed-color-palette-purple-200);
+
+  /* 변수가 아니라 속성입니다 — 아래 「브라우저가 그리는 것」 */
+  accent-color: var(--seed-color-bg-brand-solid);
 }
 ```
 
+**선택자가 한 겹이 아닌 이유 — F3 에서 확인했습니다.** `bn-root` 와 `bn-container` 는
+같은 엘리먼트에 함께 붙습니다. BlockNote 기본값은 `.bn-root`(0,1,0)와
+`.bn-root[data-color-scheme="dark"]`(0,2,0) 두 벌로 오고 다크 쪽이 더 셉니다.
+`.bn-container` 한 겹으로는 다크에서 집니다. 같은 엘리먼트를 세 겹으로 짚어
+(0,3,0)으로 올립니다 — 여전히 변수 선언뿐이라 아래의 금지에 걸리지 않고,
+에디터 CSS 가 지연 로드로 나중에 붙는 순서에도 흔들리지 않습니다.
+`data-color-scheme` 은 값을 보지 않습니다. 라이트/다크는 오른쪽 SEED 토큰이
+이미 스스로 뒤집습니다.
+
+**문서 거터는 BlockNote 가 그립니다.** `.bn-editor` 는 좌우 54px 을 자기 몫으로
+잡습니다. `DocumentSurface` 의 56px 과 겹치면 본문 폭이 608px 이 아니라 500px 이
+되므로, 에디터를 감싼 자리에서 거터를 도로 물립니다(`-mx-doc-gutter`). 남기는
+쪽이 BlockNote 인 이유는 그 자리가 드래그 핸들의 히트 영역이기 때문입니다 —
+아래 표의 오른쪽 열입니다. 결과 거터는 54px 로, 정한 값보다 2px 좁습니다.
+
+### 예외 네 줄 — 변수가 안 달린 곳
+
+BlockNote 가 색과 글꼴을 전부 변수로 뺀 것은 아닙니다. 변수로 안 닿는 것이 **색 셋 · 글꼴 하나**
+입니다. 아래 네 규칙만 자손 선택자를 씁니다.
+
+#### 색 셋 — 인용 · 구분선 · 코드 블록
+
+값이 CSS 에 박혀 있습니다. 하필 셋 다 F3 의 블록 8종 안에 있습니다.
+
+| 블록 | 박혀 있는 값 |
+|---|---|
+| 인용 | `color: #7d797a` · `border-left: 2px solid #7d797a` |
+| 구분선 | `border-top: 1px solid #7d797a` |
+| 코드 블록 | `background: rgb(22 22 22)` · `color: white` · `border-radius: 8px` |
+
+하이라이트 8색은 다릅니다. Block.css 에 같은 hex 가 있긴 하지만 `@blocknote/react` 쪽
+변수 버전이 번들에서 **뒤에** 와서 이깁니다. 변수로 안 닿는 것은 위 셋뿐입니다.
+
+닿는 길이 자손 선택자 하나뿐이라, **딱 이 세 규칙만 엽니다.**
+
+```css
+/* blocknote-bridge.css 맨 아래. 여기 없는 자손 선택자는 쓰지 않습니다. */
+.bn-container [data-content-type="quote"] blockquote {
+  color:             var(--seed-color-fg-neutral-muted);
+  border-left-color: var(--seed-color-fg-neutral-muted);
+}
+
+.bn-container [data-content-type="divider"] hr {
+  border-top-color: var(--seed-color-stroke-neutral-muted);
+}
+
+.bn-container .bn-block-content[data-content-type="codeBlock"] {
+  border-radius: var(--seed-radius-r1_5);
+}
+```
+
+**색만 덮고 굵기는 남깁니다.** `border-left` 가 아니라 `border-left-color` 를 쓰는 이유입니다.
+BlockNote 가 2px 을 3px 로 바꾸면 그 변경이 그대로 따라옵니다. 인용의 막대를 글자와 같은
+색으로 두는 것도 BlockNote 의 선택을 그대로 옮긴 것입니다.
+
+**`!important` 는 쓰지 않습니다.** 명시도로 이깁니다 — 인용·구분선은 (0,2,1) 대 (0,1,1).
+코드 블록만 `.bn-block-content` 를 한 겹 더 붙여 (0,3,0) 으로 올립니다. 두 겹이면 (0,2,0)
+으로 **동점**이 되는데, 에디터 CSS 가 지연 로드라 나중에 붙어서 동점이면 집니다.
+
+**코드 블록은 배경을 안 건드리고 반경만 가져옵니다.** 표면을 뒤집으려면 Shiki 문법색까지
+같이 뒤집어야 해서(`.shiki` 가 `--shiki-dark` 에 고정) §6 으로 넘겼습니다.
+
+#### 글꼴 하나 — 본문 서체
+
+**`--bn-font-family` 는 본문에 닿지 않습니다.** 그 변수를 읽는 규칙은 `.bn-root` 하나인데,
+`.bn-default-styles` 가 그 안쪽 `.bn-editor` 에 같이 붙어서 자기 선언으로 상속을 끊습니다.
+
+```css
+.bn-default-styles { font-family: Inter, SF Pro Display, …; font-size: 16px }
+```
+
+안 고치면 사이드바는 시스템 글꼴인데 **본문만 Inter · Open Sans** 로 나옵니다. 스택이 달라서
+한글 대체 글꼴도 같이 갈립니다 — 문서만 따로 노는 이유입니다.
+
+```css
+.bn-container .bn-default-styles {
+  font-family: inherit;   /* 글꼴 이름을 여기 적지 않습니다 */
+}
+```
+
+**`inherit` 로 되돌리고 글꼴 이름은 적지 않습니다.** 적는 순간 앱 글꼴이 바뀔 때 여기만
+남습니다.
+
+**크기와 줄간은 안 건드립니다.** `font-size: 16px` 는 §2 의 문서 본문과 같은 값이고, 제목
+크기(48 · 32 · 20.8px)와 줄간(1.5)은 BlockNote 것을 따르기로 했습니다 — §2.
+
+되돌아가려면 `--level` 만 바꾸면 됩니다. BlockNote 가 이미 읽는 변수라 `font-size` 를 새로
+쓸 일이 없습니다. 줄간은 `.bn-default-styles` 가 아니라 `.bn-block-outer` 에 걸어야 합니다 —
+앞엣것은 블록의 **조상**이라 BlockNote 가 그 아래에 다시 선언한 1.5 에 상속이 끊깁니다.
+그때 이 절과 §2 의 표를 함께 고칩니다.
+
+### 브라우저가 그리는 것 — 네 군데
+
+React 가 아니라 코어가 `document.createElement` 로 직접 그리는 DOM 입니다. 슬래시 메뉴처럼
+컴포넌트를 갈아 끼우는 방법이 통하지 않습니다.
+
+| 어디 | 무엇 | 어떻게 |
+|---|---|---|
+| 코드 블록 언어 선택기 | `<select>` + `<option>` 46개 | **그대로 둡니다** — §6 |
+| 체크박스 | `<input type="checkbox">` | `accent-color` 한 줄로 브랜드색이 됩니다 |
+| 토글 블록 버튼 | `<button>` ×2 | `bn-` 변수로 칠해져서 브리지가 닿습니다 |
+| 동영상·오디오 | `<video controls>` · `<audio controls>` | OS 플레이어. F3 밖입니다 |
+
+**`accent-color` 는 변수가 아닌데도 브리지에 넣습니다.** BlockNote 가 이 속성을 선언한 적이
+없어서 덮는 것이 아니고, 컨테이너 한 겹에 걸어 상속으로 내려보내므로 자손 선택자도 아닙니다.
+안 걸면 체크 표시가 SEED 보라가 아니라 **OS 기본 파랑**입니다.
+
+라이트/다크는 걱정하지 않아도 됩니다. mantine 이 `.bn-mantine` 에 `color-scheme` 을 걸어
+두어서 native 컨트롤이 모드를 따라갑니다. 어긋나는 것은 **모양과 강조색이지 명암이 아닙니다.**
+
 | SEED가 가져가는 것 | BlockNote에 남기는 것 |
 |---|---|
-| 모든 색 | 블록 상하 간격과 들여쓰기 계단 |
-| 서체와 크기 | 드래그 핸들 위치와 히트 영역 |
-| 반경 | 커서·선택 동작 |
+| 모든 색 — 예외 네 줄 포함 | 블록 상하 간격과 들여쓰기 계단 |
+| 서체 | 제목 크기 · 줄간 · 드래그 핸들 위치와 히트 영역 |
+| 반경 — 코드 블록 포함 | 커서·선택 동작 |
 | 슬래시 메뉴·포맷 툴바 표면 | 테이블 블록 내부 구조 |
-| 하이라이트 팔레트 8색 (SEED 스케일 500단계로 교체) | |
+| 하이라이트 팔레트 (글자 500 · 배경 200) | brown · pink — SEED 팔레트에 없어서 기본값 그대로 |
+| 체크박스 강조색 (`accent-color`) | 코드 블록 다크 표면과 Shiki 문법색 |
+| | 코드 블록 언어 선택기 — native `<select>` |
+| | 파일·이미지 블록 계열 색 (F3 밖) |
 
 오른쪽 열에 손대면 BlockNote 업그레이드마다 깨집니다.
 

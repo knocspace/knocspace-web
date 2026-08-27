@@ -4,6 +4,7 @@
 @import "tailwindcss";
 @import "@seed-design/tailwind4-theme";
 @import "./styles/knocspace.css";
+@import "./styles/blocknote-bridge.css";
 
 /* 문서는 CSS 번들에 영향을 주지 않는다.
  * 기본 소스 탐지가 .md 까지 훑어서, 문서의 클래스 예시가 실제 유틸리티로
