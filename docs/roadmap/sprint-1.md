@@ -22,10 +22,11 @@
 - 라우팅 골격과 `RootLayout`
 - 공통 UI 10종 (`components/ui/`)
 - 레이아웃 컴포넌트 — `Breadcrumb`, `PageTree`, `PageTreeItem` (전부 props만 받습니다)
-- 컴포넌트 카탈로그 화면 `/dev/ui`
-- 테스트 환경
+- 컴포넌트 카탈로그 — 스토리북
 
 **안 만드는 것** — `src/api/`, `src/types/api.ts`, TanStack Query 설정. 전부 [F2](sprint-2.md)입니다.
+
+자동 테스트도 넣지 않습니다. 스토리북에 더미 데이터를 넣고 눈으로 확인합니다 — 이 스프린트에서 만드는 것이 전부 props 만 받는 순수 UI 라, 스토리 몇 개면 상태를 다 재현할 수 있습니다.
 
 ---
 
@@ -54,7 +55,6 @@
 |---|---|---|
 | `/` | 빈 화면 | F2 |
 | `/p/:pageId` | id만 출력 | F2~F3 |
-| `/dev/ui` | 컴포넌트 카탈로그 | 이번 주 |
 | `*` | 404 | 이번 주 |
 
 ---
@@ -62,6 +62,8 @@
 ### 3. 공통 UI 10종 (7시간) ★ 이 스프린트의 핵심
 
 `components/ui/`. **전부 props만 받습니다.** 서버도, Query도, 라우터도 모릅니다.
+
+컴포넌트 하나가 파일 하나입니다 — 본체와 스토리가 형제 파일이고 배럴은 두지 않습니다. 아래 표의 `Spinner.tsx` 는 `ui/Spinner.tsx` 입니다 ([구조 문서](architecture.md)).
 
 - [x] **SEED 대응 6종 규격 대조 (30분).** 결과는 [DESIGN.md §10](../../DESIGN.md) — 직접 만드는 것은 4종, 감싸되 값을 덮는 것이 3종입니다
 
@@ -92,17 +94,17 @@ SEED 칸이 찬 7종은 **직접 만들지 않습니다.** 7시간은 6종을 �
 
 도메인 화면이지만 **아직 데이터를 모릅니다.** 더미 배열을 props로 받아 그립니다.
 
-- [x] `components/tree/PageTree.tsx` — `items` · `selectedId` · 콜백만 받습니다. `role="tree"`
-- [x] `components/tree/PageTreeItem.tsx` — `role="treeitem"`. 높이 28px, 들여쓰기 14px × depth, 호버하면 액션 버튼, 선택되면 `bg-brand-weak`
-- [x] `components/Breadcrumb.tsx` — 조상 경로. 4단계가 넘으면 가운데를 `…`로 접습니다
-- [x] `components/SaveStatus.tsx` — 상태 문자열만 받아 그립니다. `aria-live="polite"` (실제 저장은 F3)
+- [x] `components/PageTree.tsx` — `items` · `selectedId` · 콜백만 받습니다. `role="tree"`
+- [x] `components/PageTreeItem.tsx` — `role="treeitem"`. 높이 28px, 들여쓰기 14px × depth, 호버하면 액션 버튼, 선택되면 `bg-brand-weak`
+- [x] `components/Breadcrumb/` — 조상 경로. 4단계가 넘으면 가운데를 `…`로 접습니다
+- [x] `components/SaveStatus/` — 상태 문자열만 받아 그립니다. `aria-live="polite"` (실제 저장은 F3)
 
 **기다릴 것이 없습니다.** 백엔드는 트리를 주지 않습니다 — `GET /pages` 가 `PageSummary[]` 평평한 배열을 주고, 트리로 조립하는 것은 프론트입니다 (`knocspace-api` 의 `docs/roadmap/api-contract.md`). `depth` 와 `isExpanded` 는 서버에 없는 화면 상태이고, 서버와 겹치는 것은 `hasChildren` 하나인데 그 뜻도 이미 확정입니다 — "삭제되지 않은 자식이 1개 이상".
 
 항목 데이터의 모양을 먼저 정합니다. F2에서 `visibleItems` 가 `PageSummary` + 펼친 id 집합으로 같은 이름의 타입을 만듭니다.
 
 ```ts
-// components/tree/PageTreeItem.tsx
+// components/PageTreeItem.tsx
 export interface TreeItemData {
   id: string;
   title: string;
@@ -121,29 +123,25 @@ export interface TreeItemData {
 
 ---
 
-### 5. 컴포넌트 카탈로그 (1시간)
+### 5. 컴포넌트 카탈로그 — 스토리북 (1시간)
 
-- [x] `routes/UiCatalogRoute.tsx` — 위에서 만든 것을 전부 한 화면에 늘어놓습니다
-- [x] 라이트/다크 토글을 화면 안에 둡니다
-- [x] 개발 모드에서만 라우트를 등록합니다
+- [x] `.storybook/main.ts` — `vite.config.ts` 를 그대로 물려받습니다. 별칭·Tailwind·SEED 의 `seed-layered` 조건을 여기 다시 적지 않습니다
+- [x] `.storybook/preview.tsx` — `ToastProvider` 전역 데코레이터, 라이트/다크 툴바(`data-seed-color-mode` 를 `<html>` 에)
+- [x] `@storybook/addon-a11y` — 스토리마다 axe 를 돌립니다
+- [x] 스토리 13개 — 공통 UI 10종 + `PageTree` · `Breadcrumb` · `SaveStatus`
+- [x] `package.json` 에 `"storybook"`, `"build-storybook"`
 
-스토리북은 넣지 않습니다. 라우트 하나로 충분하고, 유지비가 안 듭니다.
+처음에는 `/dev/ui` 라우트 하나로 갔습니다. 635줄짜리 한 화면이 되면서
+`Section` · `Slot` · 상단바/사이드바 흉내 · 테마 토글을 직접 들고 있었는데,
+그게 스토리북이 기본으로 주는 것들이었습니다. F6~F7 에서 셀 렌더러 7종이
+들어오면 손으로 늘어놓을 수 없어서 여기서 바꿉니다.
 
----
-
-### 6. 테스트 환경 (1시간 30분)
-
-- [ ] `vitest.config.ts` — jsdom, setup 파일, `@` 별칭
-- [ ] `src/test/setup.ts` — jest-dom, localStorage 초기화
-- [ ] `package.json`에 `"test": "vitest"`, `"test:run": "vitest run"`
-- [ ] 첫 테스트 3개
-  - `Menu`를 키보드로 열고 항목 사이를 이동한다
-  - `InlineInput`에서 Esc를 누르면 원래 값으로 돌아간다
-  - `PageTree`가 depth만큼 들여쓴다
+격리로 얻은 것 하나 — `ErrorBoundary` 를 실제로 터뜨려 볼 수 있습니다.
+한 화면 카탈로그에서는 일부러 throw 하면 카탈로그가 통째로 죽었습니다.
 
 ---
 
-### 7. 마무리 (30분)
+### 6. 마무리 (30분)
 
 - [ ] README를 실제 문서로 교체 — 실행 방법, 폴더 구조
 - [ ] `CLAUDE.md`의 구조 트리를 [구조 문서](architecture.md) 기준으로 갱신
@@ -154,15 +152,15 @@ docs:  토큰 이름 정합
 feat:  라우팅 도입
 feat:  공통 UI 컴포넌트
 feat:  트리·경로 표시 컴포넌트
-test:  테스트 환경 구성
+chore: 컴포넌트 카탈로그를 스토리북으로
 ```
 
 ---
 
 ## 완료 조건
 
-- [ ] `npm run build` · `npm run lint` · `npm run test:run` 세 개 통과
-- [ ] `/dev/ui`에서 10종이 라이트·다크 양쪽에서 정상으로 보인다
+- [ ] `npm run build` · `npm run lint` 두 개 통과
+- [ ] `npm run storybook` 에서 10종이 라이트·다크 양쪽에서 정상으로 보인다
 - [ ] 10종 전부 마우스 없이 조작된다
 - [ ] `src/components/` 안에서 `useQuery`·`fetch`·`localStorage`를 import 하는 곳 0개
 - [ ] 이상한 경로 → NotFound, 라우트를 옮겨도 사이드바 폭이 유지된다
