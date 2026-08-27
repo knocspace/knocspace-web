@@ -164,7 +164,7 @@ export class ApiError extends Error {
 - [ ] `visibleItems.ts` — 페이지 목록 + 펼쳐진 id 집합 → F1에서 정한 평평한 배열
 
   ```ts
-  // F1의 components/tree/types.ts 를 그대로 잇습니다. 이름이 갈리면 안 됩니다
+  // F1의 components/PageTreeItem.tsx 를 그대로 잇습니다. 이름이 갈리면 안 됩니다
   interface TreeItemData {
     page: PageSummary;
     depth: number;
@@ -174,7 +174,7 @@ export class ApiError extends Error {
   ```
 
 - [ ] `useExpandedIds.ts` — 펼침 상태를 localStorage에 유지
-- [ ] `PageTreeContainer.tsx` — 훅과 `components/tree/PageTree`를 잇는 유일한 곳. `PageTree` 는 여기서만 쓰입니다
+- [ ] `PageTreeContainer.tsx` — 훅과 `components/PageTree`를 잇는 유일한 곳. `PageTree` 는 여기서만 쓰입니다
 
 ---
 

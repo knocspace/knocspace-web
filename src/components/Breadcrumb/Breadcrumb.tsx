@@ -1,5 +1,5 @@
 import IconChevronRightLine from "@karrotmarket/react-monochrome-icon/IconChevronRightLine";
-import { breadcrumbMessages } from "./ui/messages";
+import { breadcrumbMessages } from "@/lib/messages";
 
 /**
  * 조상 경로 — DESIGN.md §10, 시안 5번 아트보드.
@@ -7,14 +7,25 @@ import { breadcrumbMessages } from "./ui/messages";
  * 상단바 44px 안에 산다. props 만 받는다 — 라우터도 서버도 모른다.
  * F2 에서 PageSummary 조상 배열을 여기 모양으로 바꿔 넘긴다.
  *
- * 문서 아이콘을 넣지 않는다. 16px 넷 + 간격이면 80px 이고 그건 조상 제목
- * 하나가 더 들어갈 폭이다. icon 이 null 인 페이지가 섞이면 리듬도 깨진다.
- * 현재 페이지 아이콘은 바로 아래 제목 옆에 52px 로 이미 있다 (§2).
+ * **없는 아이콘을 채우지 않는다.** 유저가 고른 이모지가 있으면 그리고,
+ * 없으면 그 자리는 없다 — 기본 문서 아이콘으로 메우면 유저가 안 고른 것을
+ * 그리는 셈이다(§10). 트리 행은 반대로 늘 채운다. 거기서는 아이콘이 행의
+ * 시작점을 맞추는 격자지만 여기서는 글자 사이에 끼는 군더더기다.
+ *
+ * §10 은 여기에 아이콘을 아예 넣지 않기로 정해 뒀다 — 16px 넷 + 간격이면
+ * 80px 이고 그건 조상 제목 하나가 더 들어갈 폭이며, 현재 페이지 아이콘은
+ * 바로 아래 제목 옆에 52px 로 이미 있다(§2). 그래서 앱에서 넘기는 조상에는
+ * icon 을 안 담는다. 스토리북에서 담아 보면 그 결정이 무엇을 아꼈는지 보인다.
  */
 
 export interface BreadcrumbItem {
   id: string;
   title: string;
+  /**
+   * 유저가 고른 문서 아이콘 이모지. 없으면 아이콘 자리도 없다.
+   * §10 대로 앱에서는 안 넘긴다 — 넘기면 그려진다.
+   */
+  icon?: string | null;
 }
 
 export interface BreadcrumbProps {
@@ -46,6 +57,23 @@ function Separator() {
       aria-hidden
       className="shrink-0 text-fg-neutral-subtle"
     />
+  );
+}
+
+/**
+ * 문서 아이콘 한 칸. 트리 행과 같은 16px 칸이라 왼쪽 트리와 위 경로에서
+ * 같은 페이지가 다른 크기로 보이지 않는다. 없으면 아무것도 안 그린다.
+ */
+function DocIcon({ icon }: { icon?: string | null }) {
+  if (!icon) return null;
+
+  return (
+    <span
+      aria-hidden
+      className="flex size-x4 shrink-0 items-center justify-center leading-none"
+    >
+      {icon}
+    </span>
   );
 }
 
@@ -84,16 +112,22 @@ export function Breadcrumb({ items, onSelect }: BreadcrumbProps) {
               </>
             )}
 
+            {/* 아이콘이 없으면 DocIcon 이 null 이라 gap 도 안 생긴다 —
+              * inline-flex 는 빈 자식에 간격을 두지 않는다. */}
             {onSelect ? (
               <button
                 type="button"
                 onClick={() => onSelect(item.id)}
-                className={`${ANCESTOR} knoc-focus-ring rounded-r1 hover:text-fg-neutral-muted`}
+                className={`${ANCESTOR} knoc-focus-ring inline-flex items-center gap-x1 rounded-r1 hover:text-fg-neutral-muted`}
               >
+                <DocIcon icon={item.icon} />
                 {item.title}
               </button>
             ) : (
-              <span className={ANCESTOR}>{item.title}</span>
+              <span className={`${ANCESTOR} inline-flex items-center gap-x1`}>
+                <DocIcon icon={item.icon} />
+                {item.title}
+              </span>
             )}
           </li>
         ))}
@@ -104,8 +138,13 @@ export function Breadcrumb({ items, onSelect }: BreadcrumbProps) {
           * 폭을 벌어 줬고, 조상까지 줄이면 어느 것도 못 읽는 채로 넷이 남는다. */}
         <li className="flex min-w-0 items-center gap-x2">
           {shown.length > 0 && <Separator />}
-          <span aria-current="page" className="t3-regular truncate text-fg-neutral">
-            {current.title}
+          {/* truncate 는 글자에만 건다. 아이콘까지 같이 줄이면 반쪽만 남는다 */}
+          <span
+            aria-current="page"
+            className="t3-regular flex min-w-0 items-center gap-x1 text-fg-neutral"
+          >
+            <DocIcon icon={current.icon} />
+            <span className="truncate">{current.title}</span>
           </span>
         </li>
       </ol>

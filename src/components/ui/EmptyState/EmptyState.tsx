@@ -1,6 +1,6 @@
 import type { ComponentType, ReactNode } from "react";
 import { ActionButton } from "@seed-design/react";
-import type { Message } from "./messages";
+import type { Message } from "@/lib/messages";
 
 /**
  * 빈 화면 — DESIGN.md §9.

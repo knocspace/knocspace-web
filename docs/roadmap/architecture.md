@@ -36,11 +36,16 @@ files.ts        F9
 
 **`src/types/api.ts`** — 타입의 유일한 출처. 백엔드에 그대로 넘길 수 있는 상태로 유지합니다.
 
-**`src/lib/`** — React를 모르는 순수 함수.
+**`src/lib/`** — React를 모르는 순수 함수와 상수.
 
 ```
+messages.ts     화면 문구 한 곳 (DESIGN.md §9·§10 이 출처)
 queryClient.ts  queryKeys.ts  id.ts  debounce.ts
 ```
+
+`messages.ts` 는 컴포넌트가 아니라 여기 있습니다. `"페이지 목록"` · `"저장됨"` 은
+KnocSpace 문구라 `ui/` 의 기준("이 앱을 몰라도 되는 것")에 어긋나고, 부르는 쪽도
+`components/` 와 `routes/` 양쪽입니다.
 
 **`src/hooks/`** — 화면과 `api/` 사이의 유일한 다리. TanStack Query 래퍼만 둡니다.
 
@@ -62,13 +67,39 @@ collab/      F10
 
 **`src/components/`** — 순수 UI. props만 받고 서버를 모릅니다.
 
+**컴포넌트 하나가 폴더 하나입니다.** 본체·스토리·그 컴포넌트에서만 쓰는
+하위 부품이 한 폴더에 모입니다.
+
 ```
-AppShell.tsx  Sidebar.tsx  TopBar.tsx  DocumentSurface.tsx
-Breadcrumb.tsx  SaveStatus.tsx
-tree/        트리 행·목록
-ui/          Spinner  Skeleton  EmptyState  ErrorState  ErrorBoundary
-             Menu  Toast  Dialog  IconButton  InlineInput  messages.ts
+ui/Spinner/Spinner.tsx           본체
+ui/Spinner/Spinner.stories.tsx   스토리북
 ```
+
+배럴(`index.ts`)을 두지 않습니다. 배럴이 해 주는 건 경로를 한 마디 줄이는 것과
+폴더의 공개 API 를 선언하는 것뿐인데, 앱 안에서는 둘 다 값이 없습니다 —
+`@/components/ui/Spinner/Spinner` 는 이미 충분히 짧고, 내부용 파일을 직접
+import 하는 걸 막지도 못합니다. 대신 개발 모드에서 배럴이 re-export 하는 모듈을
+dev 서버가 전부 로드해 느려지고, 순환 import 가 생기기 쉽고, 컴포넌트를 하나
+추가할 때마다 고칠 파일이 하나 늘어납니다.
+
+그래서 import 규칙은 둘뿐입니다 — **같은 폴더 안은 `./`, 폴더를 넘으면 `@/`.**
+스토리북은 `src/**/*.stories.tsx` 글로브라 폴더가 깊어져도 그대로 찾습니다.
+
+가르는 기준은 하나입니다 — **`ui/` 는 KnocSpace 를 몰라도 되는 것.** Spinner 는 다른
+앱에 복붙해도 돌지만 Sidebar · PageTree 는 안 됩니다. 그래서 트리는 `ui/` 밖 루트입니다.
+
+```
+AppShell/  Sidebar/  TopBar/  BrandMark/  DocumentSurface/
+Breadcrumb/  SaveStatus/
+PageTree/   PageTree.tsx  PageTree.stories.tsx
+            PageTreeItem.tsx   ← 행은 목록 밖에서 안 쓰입니다
+ui/   Spinner/  Skeleton/  EmptyState/  ErrorState/  ErrorBoundary/
+      Menu/  Toast/  Dialog/  IconButton/  InlineInput/
+```
+
+`Toast/` 안에 `useToast.tsx` 가 같이 있습니다 — 표면과 띄우는 쪽이 짝입니다.
+`PageTreeItem` 처럼 한 컴포넌트에서만 쓰는 부품도 자기 폴더를 만들지 않고
+쓰는 쪽 폴더에 들어갑니다. "이건 PageTree 전용" 이 구조로 드러납니다.
 
 **`src/routes/`** — 화면 단위.
 
@@ -104,7 +135,6 @@ React Router v7. 라우트마다 `React.lazy`로 나눠서, 에디터와 표가 
 |---|---|---|
 | `/` | 마지막 방문 페이지로 이동 (없으면 빈 화면) | F1 (틀) → F2 |
 | `/p/:pageId` | 문서 | F1 (틀) → F2~F3 (내용) |
-| `/dev/ui` | 컴포넌트 카탈로그 (개발 모드만) | F1 |
 | `/login` | 로그인 | F5 |
 | `/db/:dbId` | 데이터베이스 | F6 |
 | `/trash` | 휴지통 | F8 |

@@ -8,7 +8,8 @@ import {
   MenuScrollArea,
   MenuTrigger,
 } from "@seed-design/react";
-import type { IconComponent } from "./EmptyState";
+import type { MenuRootProps } from "@seed-design/react";
+import type { IconComponent } from "@/components/ui/EmptyState/EmptyState";
 
 /**
  * 우클릭 · 드롭다운 메뉴 — DESIGN.md §10.
@@ -39,16 +40,56 @@ export interface MenuAction {
   isDisabled?: boolean;
 }
 
+/**
+ * 트리거를 기준으로 메뉴가 뜨는 자리. 앞이 붙는 변, 뒤가 그 변 위의 정렬이다.
+ *
+ * **바라는 자리지 정해진 자리가 아니다.** 공간이 없으면 flip 이 반대편으로 넘기고
+ * shift 가 뷰포트 안으로 밀어 넣는다 — 화면 아래쪽 트리 행에서 `"bottom-start"` 는
+ * 저절로 위로 뒤집힌다. 여기서 정하는 것은 "여유가 있을 때 어디에 뜨는가" 하나다.
+ *
+ * Floating UI 는 열둘을 알지만 여덟만 연다. 빠진 넷은 가운데 맞춤
+ * (`bottom` · `top` · `left` · `right`) 이다. 24px 짜리 ⋯ 에 200px 메뉴를
+ * 가운데 맞추면 행 밖으로 양쪽에 걸치고 어느 행의 것인지도 흐려진다 —
+ * 이 메뉴는 트리거의 모서리를 맞춘다. 나머지는 다 연다: `top-*` 을 flip 에만
+ * 맡기지 않는 것은, 아래로 열 자리가 있어도 위로 여는 게 맞는 트리거
+ * (화면 아래쪽에 고정된 것) 가 있기 때문이다.
+ *
+ * SEED 의 union 에서 Extract 로 뽑는다. SEED 가 이름을 바꾸면 여기가 never 가
+ * 되고 아래 기본값 대입에서 컴파일이 깨진다 — 문자열을 새로 적으면 안 깨진다.
+ */
+export type MenuPlacement = Extract<
+  NonNullable<MenuRootProps["placement"]>,
+  | "bottom-start"
+  | "bottom-end"
+  | "top-start"
+  | "top-end"
+  | "right-start"
+  | "right-end"
+  | "left-start"
+  | "left-end"
+>;
+
 export interface MenuProps {
   items: MenuAction[];
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  /** 뜨는 자리. 기본값 `"bottom-start"` — 트리거 아래, 왼쪽 끝 맞춤 */
+  placement?: MenuPlacement;
+  /** 트리거와의 거리(px). 기본값 4 */
+  gutter?: number;
   /** 트리거. asChild 로 넘어가므로 요소 하나여야 한다 */
   children: ReactNode;
 }
 
 /** 아이콘은 트리 행 액션 버튼과 같은 16px (§2) */
 const ICON_SIZE = 16;
+
+const DEFAULT_PLACEMENT: MenuPlacement = "bottom-start";
+
+/* 트리거와의 거리. SEED 기본은 0 인데, 붙어 있으면 트리거의 호버 배경과 메뉴
+ * 그림자가 한 덩어리로 보인다. 폭·반경과 달리 이건 트리거에 딸린 값이라
+ * (붙는 상대가 24px ⋯ 인지 40px 헤더 버튼인지에 따라 달라진다) prop 으로 연다. */
+const DEFAULT_GUTTER = 4;
 
 // SEED 값을 덮는 자리. 여기 밖에서 메뉴 치수를 쓰지 않는다.
 const CONTENT_STYLE = {
@@ -85,7 +126,14 @@ const LABEL_STYLE = {
 const ITEM_SURFACE =
   "before:inset-x-0 before:rounded-r1 after:inset-x-0 after:rounded-r1";
 
-export function Menu({ items, open, onOpenChange, children }: MenuProps) {
+export function Menu({
+  items,
+  open,
+  onOpenChange,
+  placement = DEFAULT_PLACEMENT,
+  gutter = DEFAULT_GUTTER,
+  children,
+}: MenuProps) {
   const normal = items.filter((item) => !item.isDestructive);
   const destructive = items.filter((item) => item.isDestructive);
 
@@ -108,7 +156,13 @@ export function Menu({ items, open, onOpenChange, children }: MenuProps) {
   return (
     // size 를 안 넘기면 medium(터치) 으로 그려진다. small 로 시작해 놓고
     // 남는 차이만 위에서 덮는다 — 덮을 값이 적을수록 SEED 업그레이드에 안전하다.
-    <MenuRoot open={open} onOpenChange={onOpenChange} size="small">
+    <MenuRoot
+      open={open}
+      onOpenChange={onOpenChange}
+      size="small"
+      placement={placement}
+      gutter={gutter}
+    >
       <MenuTrigger asChild>{children}</MenuTrigger>
       <MenuPositioner>
         <MenuContent style={CONTENT_STYLE}>

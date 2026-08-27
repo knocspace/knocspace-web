@@ -1,6 +1,6 @@
 import type { PointerEvent, ReactNode } from "react";
-import { BrandMark } from "./BrandMark";
-import { TreeSkeleton } from "./ui/Skeleton";
+import { BrandMark } from "@/components/BrandMark/BrandMark";
+import { TreeSkeleton } from "@/components/ui/Skeleton/Skeleton";
 
 /**
  * 좌측 사이드바. 폭과 접힘 상태는 바깥에서 받는다.

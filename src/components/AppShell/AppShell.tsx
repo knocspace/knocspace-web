@@ -1,7 +1,7 @@
 import type { PointerEvent, ReactNode } from "react";
-import { Sidebar } from "./Sidebar";
-import { TopBar } from "./TopBar";
-import type { TopBarProps } from "./TopBar";
+import { Sidebar } from "@/components/Sidebar/Sidebar";
+import { TopBar } from "@/components/TopBar/TopBar";
+import type { TopBarProps } from "@/components/TopBar/TopBar";
 
 /**
  * 3단 셸. 사이드바 | (상단바 / 본문).

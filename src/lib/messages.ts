@@ -174,20 +174,22 @@ export const breadcrumbMessages = {
  */
 export const routeMessages = {
   home: "홈",
-  uiCatalog: "컴포넌트 카탈로그",
 } as const;
 
 /**
  * 저장 상태 — DESIGN.md §10.
  *
- * "변경 없음" 에 해당하는 문구가 없는 것이 확정이다. 아무것도 안 그린다.
+ * 넷뿐이고 "변경 없음" 에 해당하는 문구가 없는 것이 확정이다. 아무것도 안 그린다.
+ *
+ * 실패 문구도 여기 없다. 자동 재시도까지 실패해서 사람이 손대야 하는 상황은
+ * 상단바가 아니라 본문 위 배너로 올라가고, 그 문구는 원인별로 갈린
+ * errorMessages 가 갖는다 (§9). 재시도 중인 동안은 저장이 아직 안 끝난
+ * 것이므로 saving 을 그대로 쓴다.
  */
 export const saveStatusMessages = {
   saving: "저장 중",
   saved: "저장됨",
   offline: "오프라인 — 연결되면 저장할게요",
-  failed: "저장 안 됨",
-  retry: "다시 시도",
 } as const;
 
 /**

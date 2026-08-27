@@ -4,8 +4,8 @@ import IconPlusLine from "@karrotmarket/react-monochrome-icon/IconPlusLine";
 import IconChevronRightLine from "@karrotmarket/react-monochrome-icon/IconChevronRightLine";
 import IconVertrectangleFoldedLine from "@karrotmarket/react-monochrome-icon/IconVertrectangleFoldedLine";
 import IconDot3HorizontalLine from "@karrotmarket/react-monochrome-icon/IconDot3HorizontalLine";
-import { IconButton } from "../ui/IconButton";
-import { editorPlaceholders, treeMessages } from "../ui/messages";
+import { IconButton } from "@/components/ui/IconButton/IconButton";
+import { editorPlaceholders, treeMessages } from "@/lib/messages";
 
 /**
  * 트리 항목 하나 — DESIGN.md §5 · §10, 시안 "트리 행 — 상태와 호버 액션".

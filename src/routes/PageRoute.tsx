@@ -1,5 +1,5 @@
 import { useParams } from "react-router";
-import { DocumentSurface } from "@/components/DocumentSurface";
+import { DocumentSurface } from "@/components/DocumentSurface/DocumentSurface";
 
 /**
  * /p/:pageId — 문서 한 장.

@@ -1,8 +1,8 @@
 import type { ReactNode } from "react";
-import { Breadcrumb } from "./Breadcrumb";
-import type { BreadcrumbItem } from "./Breadcrumb";
-import { SaveStatus } from "./SaveStatus";
-import type { SaveState } from "./SaveStatus";
+import { Breadcrumb } from "@/components/Breadcrumb/Breadcrumb";
+import type { BreadcrumbItem } from "@/components/Breadcrumb/Breadcrumb";
+import { SaveStatus } from "@/components/SaveStatus/SaveStatus";
+import type { SaveState } from "@/components/SaveStatus/SaveStatus";
 
 /**
  * 상단바. 본문 스크롤 컨테이너 안에서 sticky 로 붙는다.
@@ -21,7 +21,6 @@ export interface TopBarProps {
   onCrumbSelect?: (id: string) => void;
   /** 기본은 idle — 변경이 없으면 아무것도 안 그린다 (§10) */
   saveStatus?: SaveState;
-  onSaveRetry?: () => void;
   /** 공유 · 북마크 · 더보기. 아직 없어서 자리만 잡아 둔다 */
   actions?: ReactNode;
 }
@@ -30,7 +29,6 @@ export function TopBar({
   crumbs = [],
   onCrumbSelect,
   saveStatus = "idle",
-  onSaveRetry,
   actions,
 }: TopBarProps) {
   return (
@@ -41,7 +39,7 @@ export function TopBar({
       </div>
 
       <div className="flex shrink-0 items-center gap-x2">
-        <SaveStatus status={saveStatus} onRetry={onSaveRetry} />
+        <SaveStatus status={saveStatus} />
 
         {actions ?? (
           <>

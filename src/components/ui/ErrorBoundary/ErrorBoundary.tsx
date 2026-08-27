@@ -1,6 +1,6 @@
 import { Component, type ErrorInfo, type ReactNode } from "react";
 import { ActionButton } from "@seed-design/react";
-import { boundaryMessages } from "./messages";
+import { boundaryMessages } from "@/lib/messages";
 
 /**
  * 라우트 단위 fallback — DESIGN.md §9.

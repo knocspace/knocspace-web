@@ -1,6 +1,6 @@
 import type { CSSProperties } from "react";
 import { ActionButton, Icon as SeedIcon } from "@seed-design/react";
-import type { IconComponent } from "./EmptyState";
+import type { IconComponent } from "@/components/ui/EmptyState/EmptyState";
 
 /**
  * 아이콘만 있는 버튼 — DESIGN.md §10.

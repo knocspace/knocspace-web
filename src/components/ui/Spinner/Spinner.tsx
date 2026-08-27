@@ -66,7 +66,13 @@ export function Spinner({ size = "small", tone = "neutral", label }: SpinnerProp
         ...(tone === "brand" ? BRAND_TRACK : null),
       }}
       // value 를 넘기지 않으면 indeterminate 로 돈다.
-      role="status"
+      //
+      // role 은 덮지 않는다. SEED 가 role="progressbar" 와 함께
+      // aria-valuemin · aria-valuemax · aria-valuetext 를 붙이는데, role 만
+      // status 로 바꾸면 그 셋이 status 에 허용되지 않는 속성이 되어 axe 가
+      // aria-allowed-attr 로 잡는다. 더 큰 문제는 status 가 라이브 리전이라
+      // 읽히는 것이 "안에 든 글" 이라는 것 — 안에는 <circle> 둘뿐이라
+      // aria-label 을 줘도 아무 소리도 안 난다. progressbar 는 이름을 읽는다.
       aria-label={label}
       aria-hidden={label ? undefined : true}
     >

@@ -34,8 +34,12 @@ SEED 스킬이 알려주는 값은 SEED 원본(모바일, 터치) 기준이다.
 src/
 ├── api/          서버 호출(현재 mock)
 ├── types/api.ts  백엔드와의 계약
-├── hooks/        TanStack Query
+├── hooks/        공용 훅. 서버 상태는 TanStack Query, 그 외는 화면 동작 훅
 ├── features/     데이터 로직
-├── components/   순수 UI. props만 받는다
+├── components/   순수 UI. props만 받는다. 컴포넌트 하나에 폴더 하나
+│              (스토리·전용 하위 부품은 그 폴더 안. 배럴 index.ts 는 두지 않는다)
+├── routes/       화면. 위의 것들을 조립하는 유일한 자리
+├── lib/          어디에도 안 붙는 순수 유틸
+├── assets/       정적 파일
 └── styles/
 ```

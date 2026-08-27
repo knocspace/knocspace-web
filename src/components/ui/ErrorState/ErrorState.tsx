@@ -5,8 +5,8 @@ import {
   PageBannerRoot,
   PageBannerTitle,
 } from "@seed-design/react";
-import { EmptyState } from "./EmptyState";
-import type { Message } from "./messages";
+import { EmptyState } from "@/components/ui/EmptyState/EmptyState";
+import type { Message } from "@/lib/messages";
 
 /**
  * 조회 실패 — DESIGN.md §9.

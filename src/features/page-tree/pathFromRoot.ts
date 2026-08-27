@@ -1,4 +1,4 @@
-import type { TreeItemData } from "@/components/tree/PageTreeItem";
+import type { TreeItemData } from "@/components/PageTree/PageTreeItem";
 
 /**
  * 루트부터 그 페이지까지 — 상단바 경로에 쓴다.

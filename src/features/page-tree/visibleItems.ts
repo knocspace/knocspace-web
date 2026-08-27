@@ -1,4 +1,4 @@
-import type { TreeItemData } from "@/components/tree/PageTreeItem";
+import type { TreeItemData } from "@/components/PageTree/PageTreeItem";
 
 /**
  * 접힌 항목의 자손을 뺀 배열 — sprint-2 §4.

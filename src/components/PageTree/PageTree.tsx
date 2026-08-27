@@ -1,6 +1,6 @@
 import { useMemo, useRef, useState } from "react";
 import type { KeyboardEvent, MouseEvent, ReactNode } from "react";
-import { treeMessages } from "../ui/messages";
+import { treeMessages } from "@/lib/messages";
 import { PageTreeItem } from "./PageTreeItem";
 import type { TreeItemData } from "./PageTreeItem";
 

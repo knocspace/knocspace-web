@@ -33,6 +33,10 @@
 
 - [ ] `src/components/` 안에 `useQuery` import 0개
 - [ ] `src/api/` 밖에 `localStorage` 직접 호출 0개
+- [ ] `src/components/ui/` 안에 KnocSpace 문구 0개 — 아직 못 지킵니다.
+      `ErrorBoundary` 가 `boundaryMessages` 를 직접 부릅니다. 문구를 props 로
+      받게 바꿔야 `ui/` 가 다시 앱을 모르게 됩니다. (`Message` 타입 import 는
+      문구가 아니라 props 모양이라 괜찮습니다.)
 
 ---
 
@@ -83,7 +87,7 @@ docs:      문서
 | Database 도메인이 프론트 mock 기준으로 굳어짐 | F6~F7 재작업 | 백엔드 B5 설계를 F5 진행 중에 시작하고, mock을 만들기 전에 모양을 합의 ([연동 계약](backend-sync.md#f6-시작-전-합의할-것)) |
 | 디자인 미결정 2건을 방치 | 공통 컴포넌트를 전부 다시 수정 | 포커스 링은 **F1 전에**, 작은 버튼은 F6 전에 결정 |
 | 백엔드 일정 지연 | F4·F5 대기 | F3까지는 mock으로 완결. 막히면 F8(검색)을 먼저 진행하고 돌아옴. mock/실서버 전환 스위치를 남겨둠 |
-| 공통 컴포넌트가 부족한 채로 F2 진입 | F2~F3에서 UI를 만들다 일정이 밀림 | F1 완료 조건에 `/dev/ui` 카탈로그 확인을 넣음 |
+| 공통 컴포넌트가 부족한 채로 F2 진입 | F2~F3에서 UI를 만들다 일정이 밀림 | F1 완료 조건에 스토리북 확인을 넣음 |
 
 ---
 

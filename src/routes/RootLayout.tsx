@@ -1,11 +1,11 @@
 import { useState } from "react";
 import { Outlet, useMatch, useMatches, useNavigate } from "react-router";
-import { AppShell } from "@/components/AppShell";
-import type { BreadcrumbItem } from "@/components/Breadcrumb";
-import { PageTree } from "@/components/tree/PageTree";
-import type { TreeItemData } from "@/components/tree/PageTreeItem";
-import { ErrorBoundary } from "@/components/ui/ErrorBoundary";
-import { ToastProvider } from "@/components/ui/Toast";
+import { AppShell } from "@/components/AppShell/AppShell";
+import type { BreadcrumbItem } from "@/components/Breadcrumb/Breadcrumb";
+import { PageTree } from "@/components/PageTree/PageTree";
+import type { TreeItemData } from "@/components/PageTree/PageTreeItem";
+import { ErrorBoundary } from "@/components/ui/ErrorBoundary/ErrorBoundary";
+import { ToastProvider } from "@/components/ui/Toast/Toast";
 import { pathFromRoot } from "@/features/page-tree/pathFromRoot";
 import { visibleItems } from "@/features/page-tree/visibleItems";
 import { useSidebarResize } from "@/hooks/useSidebarResize";

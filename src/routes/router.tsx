@@ -1,10 +1,9 @@
 import { createBrowserRouter } from "react-router";
-import { DocumentSurface } from "@/components/DocumentSurface";
-import { routeMessages } from "@/components/ui/messages";
+import { DocumentSurface } from "@/components/DocumentSurface/DocumentSurface";
+import { routeMessages } from "@/lib/messages";
 import { NotFound } from "./NotFound";
 import { PageRoute } from "./PageRoute";
 import { RootLayout } from "./RootLayout";
-import { UiCatalogRoute } from "./UiCatalogRoute";
 
 /**
  * URL 과 화면의 대응표. 라우팅 지식은 이 파일 밖으로 새지 않는다.
@@ -15,8 +14,10 @@ import { UiCatalogRoute } from "./UiCatalogRoute";
  * 라우트별 React.lazy 는 화면이 무거워지는 F3 부터 붙인다.
  *
  * handle.crumb 은 그 화면이 상단바에 내놓을 이름이다. 문서가 아닌 화면
- * (카탈로그 · 앞으로의 휴지통 · 검색 · 설정)이 쓴다. 문서 화면은 경로가
- * 서버에서 오므로 여기 적지 않는다 — RootLayout 을 볼 것.
+ * (앞으로의 휴지통 · 검색 · 설정)이 쓴다. 문서 화면은 경로가 서버에서
+ * 오므로 여기 적지 않는다 — RootLayout 을 볼 것.
+ *
+ * 컴포넌트 카탈로그는 여기 없다. 스토리북으로 옮겼다 — `npm run storybook`.
  */
 
 export const router = createBrowserRouter([
@@ -28,16 +29,6 @@ export const router = createBrowserRouter([
       // TODO(F2): 홈. 지금은 기존 자리표시 문서를 그대로 둔다.
       { index: true, element: <DocumentSurface />, handle: { crumb: routeMessages.home } },
       { path: "p/:pageId", element: <PageRoute /> },
-      // 개발 모드에서만. 프로덕션에서는 이 경로도 404 로 떨어진다.
-      ...(import.meta.env.DEV
-        ? [
-            {
-              path: "dev/ui",
-              element: <UiCatalogRoute />,
-              handle: { crumb: routeMessages.uiCatalog },
-            },
-          ]
-        : []),
       { path: "*", element: <NotFound /> },
     ],
   },

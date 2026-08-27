@@ -1,7 +1,7 @@
 import IconMagnifyingglassLine from "@karrotmarket/react-monochrome-icon/IconMagnifyingglassLine";
 import { useNavigate } from "react-router";
-import { EmptyState } from "@/components/ui/EmptyState";
-import { emptyMessages } from "@/components/ui/messages";
+import { EmptyState } from "@/components/ui/EmptyState/EmptyState";
+import { emptyMessages } from "@/lib/messages";
 
 /**
  * 매칭되는 라우트가 없을 때 — DESIGN.md §9 "없는 페이지 (404)".
