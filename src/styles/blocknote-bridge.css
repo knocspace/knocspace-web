@@ -135,3 +135,74 @@
  *
  * 줄이려면 --level 만 바꾸면 되지만(BlockNote 가 이미 읽는 변수다), 그 전에
  * DESIGN.md §2 와 §7 을 먼저 고친다. */
+
+/* 표 머리글 칸 — DESIGN.md §7
+ *
+ * 위의 넷과 결이 다르다. 저 넷은 BlockNote 가 박아 둔 값을 SEED 로 되돌리는
+ * 일이지만, 이건 **없던 선언을 새로 얹는 일**이다. BlockNote 는 th 에
+ * font-weight: bold 와 text-align: left 만 걸고 배경은 안 칠한다. 그래서
+ * 헤더를 켜도 글자만 굵어지고, 표가 커지면 어디까지가 머리글인지 안 보인다.
+ * Notion 은 머리글에 옅은 회색을 깐다. 그 자리를 여기서 메운다.
+ *
+ * 행과 열을 안 가른다. 헤더 행도 헤더 열도 같은 th 라서 규칙 하나로 둘 다
+ * 덮이고, 둘을 다르게 칠할 이유도 없다.
+ *
+ * :not([data-background-color]) 이 이 규칙의 핵심이다. 사용자가 칸에 색을
+ * 직접 고르면 BlockNote 가 그 속성을 붙이는데(안 고르면 아예 안 붙는다),
+ * 그쪽은 (0,1,0) 이라 이 규칙 (0,3,1) 에 그냥 진다. 빼 두지 않으면 머리글
+ * 칸에서는 사용자가 고른 색이 안 먹는다.
+ *
+ * bg-neutral-weak 는 라이트에서 gray-200 · 다크에서 gray-300 이다. 문서
+ * 바탕(layer-default)이 각각 gray-00 · gray-100 이라, 한 벌로 양쪽 모두
+ * 바탕보다 팔레트 두 칸 진하다.
+ *
+ * 두 칸인 것이 이 토큰을 고른 이유다. bg-layer-fill 은 한 칸이라 라이트에서
+ * 대비 1.05 로 사실상 안 보이고, bg-layer-basement 는 다크에서 gray-00
+ * (=#000)이라 머리글이 바탕보다 **어두워져** 셀 아래로 가라앉는다.
+ * bg-neutral-weak-alpha 는 위에서 hovered-background 로 이미 쓰는 값이라,
+ * 같이 쓰면 머리글이 늘 hover 걸린 것처럼 보인다. */
+.bn-container [data-content-type="table"] th:not([data-background-color]) {
+  background-color: var(--seed-color-bg-neutral-weak);
+}
+
+/* 표 격자선 — DESIGN.md §7
+ *
+ * BlockNote 가 #ddd 를 박아 뒀다. core + mantine 전체에서 이 hex 는 여기
+ * 한 곳뿐이고 덮는 규칙이 없다.
+ *
+ *   .bn-editor [data-content-type="table"] :is(th, td) { border: 1px solid #ddd }
+ *
+ * 안 고치면 다크에서 거의 흰 선이 된다 — #ddd 대 문서 바탕 #16171b 이 13.2:1
+ * 이다. 라이트에서도 격자선(1.36)이 바로 위의 머리글 면(1.10)보다 진해서,
+ * 머리글을 갈라 보이게 하는 것이 우리 색이 아니라 이 선이 된다.
+ *
+ * stroke-neutral-**weak** 다. muted 가 아니다.
+ *
+ * 처음에 muted 로 썼다가 되돌렸다. --bn-colors-border 가 이미 muted 를 가리키니
+ * 표도 같은 것을 가리켜야 한다고 봤는데, 그건 토큰이 같은 것을 챙긴 것이지 이
+ * 선이 하는 일을 챙긴 것이 아니었다. muted 로 하면 바로 위 규칙이 깐 머리글
+ * 면과 선이 겹쳐 사라진다 — 합성하면 라이트 #efefef 대 #f3f4f5, 다크 #2b2c30
+ * 대 #2b2e35 로 둘 다 대비 1.03~1.04 다. 격자가 가장 필요한 자리에서 격자가
+ * 없어진다. 라이트는 #ddd 이던 시절(1.36)보다 되레 흐려지기도 했다(1.15).
+ *
+ * weak 는 라이트·다크 모두 gray-400 이다. 라이트 #dcdee3 은 바탕 대비 1.35 로
+ * BlockNote 가 주던 진하기를 그대로 지키고, 다크 #393d46 은 1.65 로 흰 선이
+ * 아니면서 보인다. 머리글 위에서도 1.22 · 1.25 로 살아남는다.
+ *
+ * SEED 가 쓰는 자리로 봐도 weak 가 맞다. weak 는 text-input · select-trigger ·
+ * checkmark 처럼 **내용이 들어가는 것의 테두리**고, muted 는 menu · dialog ·
+ * accordion 처럼 띄운 면의 가장자리와 구분선이다. 표 칸은 앞쪽이다.
+ *
+ * 솔리드라서 선이 겹쳐 진해질 걱정도 없다. 알파였다면 맞닿은 두 칸의 선이
+ * 겹치는 자리만 진해졌을 텐데, 그걸 막아 주는 border-collapse: collapse 는
+ * BlockNote 도 prosemirror-tables 도 안 걸고 Tailwind preflight 가 걸고 있다.
+ * 지금은 거기 안 기댄다.
+ *
+ * 색만 덮고 굵기는 남긴다. 인용의 border-left-color 와 같은 이유다.
+ *
+ * .bn-block-content 를 한 겹 더 붙여 (0,3,1) 로 올린다. .bn-container 한 겹만
+ * 쓰면 BlockNote 쪽과 (0,2,1) 동점인데, 에디터 CSS 가 지연 로드로 나중에
+ * 붙어서 동점이면 진다 — 코드 블록에서 이미 겪은 자리다. */
+.bn-container .bn-block-content[data-content-type="table"] :is(th, td) {
+  border-color: var(--seed-color-stroke-neutral-weak);
+}

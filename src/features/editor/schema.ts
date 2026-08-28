@@ -19,8 +19,8 @@ import { codeBlockOptions } from "@blocknote/code-block";
  * BlockNote 가 표를 별도 스펙으로 빼 뒀기 때문이고, 안 넣으면 문서에 표를 아예
  * 못 담는다.
  *
- * 표의 헤더 행 · 셀 병합 · 셀 색은 여기가 아니라 에디터 옵션(tables)에서 켠다.
- * 넷 다 기본이 꺼져 있고, 지금은 켜지 않았다 — useEditorDoc 참고.
+ * 표의 헤더 행 · 헤더 열 · 셀 병합 · 셀 색은 여기가 아니라 에디터 옵션(tables)
+ * 에서 켠다. 넷 다 BlockNote 기본은 꺼짐이고, 우리는 넷 다 켰다 — useEditorDoc.
  *
  * 넣지 않은 것:
  * - 수식 · 다이어그램 — @blocknote/math-block · @blocknote/diagram-block.

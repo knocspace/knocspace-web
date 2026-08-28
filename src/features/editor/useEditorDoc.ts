@@ -41,6 +41,21 @@ export function useEditorDoc({ pageId, content, collaboration }: UseEditorDocOpt
       schema: knocSchema,
       /* 한국어 UI — 슬래시 메뉴 · 툴바 · 툴팁 전부. 23개 로케일 중 ko 가 있다. */
       dictionary: ko,
+      /* 표에서 손으로 할 수 있는 것들. 넷 다 BlockNote 기본이 false 라, 안 켜면
+       * 문서에 담긴 헤더 · 병합 · 색은 그려지기만 하고 사용자가 만들지는 못한다.
+       *
+       * 넷을 갈라 켜지 않는다. 표 하나에서 헤더는 되는데 병합은 안 되는 식이면
+       * 되는 것과 안 되는 것의 경계를 사용자가 알 방법이 없다.
+       *
+       * headers 는 첫 행 · 첫 열 한 겹까지다. 손잡이 메뉴의 항목이 index === 0
+       * 에서만 뜨기 때문이고(BlockNote 쪽 제약), 두 겹짜리 헤더는 문서에 값으로
+       * 담아야 나온다. */
+      tables: {
+        headers: true,
+        splitCells: true,
+        cellBackgroundColor: true,
+        cellTextColor: true,
+      },
       initialContent: toInitialContent(content),
       /* dictionary 의 placeholders 위에 덮어씌운다(코어가 두 벌을 합친다).
        * 문구의 출처는 DESIGN.md §9 뿐이라 로케일 기본 문장을 그대로 두지 않는다.
