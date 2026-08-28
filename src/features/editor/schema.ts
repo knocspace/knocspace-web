@@ -1,6 +1,7 @@
 import {
   BlockNoteSchema,
   createCodeBlockSpec,
+  createTableBlockSpec,
   defaultBlockSpecs,
 } from "@blocknote/core";
 import { codeBlockOptions } from "@blocknote/code-block";
@@ -14,6 +15,13 @@ import { codeBlockOptions } from "@blocknote/code-block";
  * 무거워서 코어에서 빼 뒀기 때문이고, @blocknote/code-block 이 그 한 벌이다.
  * 여기서 언어 목록을, useEditorDoc 에서 하이라이터를 붙인다.
  *
+ * 표는 기본 블록이 아니라서 따로 넣는다. defaultBlockSpecs 에 table 이 없다 —
+ * BlockNote 가 표를 별도 스펙으로 빼 뒀기 때문이고, 안 넣으면 문서에 표를 아예
+ * 못 담는다.
+ *
+ * 표의 헤더 행 · 셀 병합 · 셀 색은 여기가 아니라 에디터 옵션(tables)에서 켠다.
+ * 넷 다 기본이 꺼져 있고, 지금은 켜지 않았다 — useEditorDoc 참고.
+ *
  * 넣지 않은 것:
  * - 수식 · 다이어그램 — @blocknote/math-block · @blocknote/diagram-block.
  *   KaTeX 와 mermaid 를 같이 들고 오므로 실제로 쓸 때 붙인다
@@ -24,6 +32,7 @@ export const knocSchema = BlockNoteSchema.create({
   blockSpecs: {
     ...defaultBlockSpecs,
     codeBlock: createCodeBlockSpec(codeBlockOptions),
+    table: createTableBlockSpec(),
   },
 });
 
