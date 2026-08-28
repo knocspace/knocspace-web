@@ -1,12 +1,16 @@
-import type { EditorDoc } from "./doc";
-import type { KnocPartialBlock } from "./schema";
+import type { EditorDoc } from "../doc";
+import type { KnocPartialBlock } from "../schema";
 
 /**
  * 스토리에서만 쓰는 도우미. **앱 코드에서 import 하지 않는다.**
  *
- * 여기 있는 이유는 sampleDoc 과 같다 — 문서를 만드는 코드가 features/editor
- * 밖으로 나가면 그게 두 번째 원본이 된다. 블록 스토리는 종류마다 파일이
- * 갈리는데, 문서를 담는 방법과 에디터를 다시 만드는 요령은 하나여야 한다.
+ * 이 폴더(features/editor/stories)에 스토리를 몰아 둔 이유는 단순하다 — 위층에
+ * 두면 에디터 소스 일곱 개와 스토리 열한 개가 한 자리에서 섞인다. 대신
+ * features/editor 밖으로는 안 나간다. 문서를 만드는 코드가 밖으로 나가면 그게
+ * 두 번째 원본이 되기 때문이고, 그건 sampleDoc 과 같은 이유다.
+ *
+ * 블록 스토리는 종류마다 파일이 갈리지만, 문서를 담는 방법과 에디터를 다시
+ * 만드는 요령은 하나여야 한다. 그 하나가 여기다.
  */
 
 /** 블록 몇 개를 문서 한 장으로 담는다. */

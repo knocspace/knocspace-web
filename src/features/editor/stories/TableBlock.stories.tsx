@@ -1,10 +1,10 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { fn } from "storybook/test";
 import { DocumentSurface } from "@/components/DocumentSurface/DocumentSurface";
-import { BlockEditor } from "./BlockEditor";
-import type { BlockEditorProps } from "./BlockEditor";
+import { BlockEditor } from "../BlockEditor";
+import type { BlockEditorProps } from "../BlockEditor";
 import type { TableCellProps } from "@blocknote/core";
-import type { KnocPartialBlock } from "./schema";
+import type { KnocPartialBlock } from "../schema";
 import { bodyBlock, storyDoc, storyPageId } from "./storyDoc";
 
 /**

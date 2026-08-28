@@ -1,9 +1,9 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { fn } from "storybook/test";
 import { DocumentSurface } from "@/components/DocumentSurface/DocumentSurface";
-import { BlockEditor } from "./BlockEditor";
-import type { BlockEditorProps } from "./BlockEditor";
-import type { KnocPartialBlock } from "./schema";
+import { BlockEditor } from "../BlockEditor";
+import type { BlockEditorProps } from "../BlockEditor";
+import type { KnocPartialBlock } from "../schema";
 import { storyDoc, storyPageId } from "./storyDoc";
 
 /**

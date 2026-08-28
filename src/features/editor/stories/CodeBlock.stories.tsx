@@ -1,8 +1,8 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { fn } from "storybook/test";
 import { DocumentSurface } from "@/components/DocumentSurface/DocumentSurface";
-import { BlockEditor } from "./BlockEditor";
-import type { BlockEditorProps } from "./BlockEditor";
+import { BlockEditor } from "../BlockEditor";
+import type { BlockEditorProps } from "../BlockEditor";
 import { bodyBlock, storyDoc, storyPageId } from "./storyDoc";
 
 /**
