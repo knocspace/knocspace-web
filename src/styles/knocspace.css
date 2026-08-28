@@ -75,6 +75,33 @@
  * SEED 에 대응이 없어서 새로 정하는 값만 여기 둔다.
  */
 :root {
+  /* 글꼴 — DESIGN.md §2.
+   *
+   * SEED 에는 글꼴 토큰이 없다. base.layered.css 는 font-size(t1~t14) 와
+   * font-weight 만 주고 font-family 는 한 줄도 선언하지 않는다. 안 정하면
+   * Tailwind preflight 의 --font-sans 기본값이 그대로 앱 글꼴이 된다 —
+   * 정한 적 없는 값이 정답 자리에 앉는다.
+   *
+   * 그래서 여기가 앱 글꼴의 유일한 출처다. 아래 @theme inline 에서 Tailwind
+   * 의 --font-sans / --font-mono 로 내보내고, preflight 가 그걸 읽어 html 과
+   * code·pre 에 건다. 에디터도 여기로 온다 — blocknote-bridge.css 가
+   * font-family: inherit 로 되돌려서 상속으로 내려받는다 (§7).
+   *
+   * 이름을 컴포넌트나 브리지에 적지 않는다. 적는 순간 앱 글꼴이 바뀔 때
+   * 그 자리만 남는다. */
+  --knoc-font-sans:
+    "Pretendard Variable", Pretendard, ui-sans-serif, system-ui, "Segoe UI",
+    "Apple SD Gothic Neo", "Malgun Gothic", sans-serif, "Apple Color Emoji",
+    "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+
+  /* 고정폭은 웹폰트를 안 받는다. 코드에 쓰는 글꼴은 OS 마다 이미 좋은 것이
+   * 깔려 있고, 본문용으로 Pretendard 를 받는 마당에 하나 더 받을 값이
+   * 크지 않다. 한글이 섞였을 때 대체 글꼴로 떨어져 폭이 어긋나는 것도
+   * 웹 고정폭 쪽이 더 심하다. */
+  --knoc-font-mono:
+    ui-monospace, "Cascadia Code", Consolas, "SFMono-Regular", Menlo,
+    "Liberation Mono", "D2Coding", monospace;
+
   /* 밀도 — DESIGN.md 3절 */
   --knoc-space-dense-1: 2px;
   --knoc-space-dense-2: 4px;
@@ -133,6 +160,33 @@
    * 가운데 정렬이 무의미해진다. */
   --knoc-empty-measure: 320px;
 
+  /* 선택 오버레이 — DESIGN.md §1 · §7.
+   *
+   * §2 는 "alpha 단계(--knoc-purple-alpha-*)는 만들지 않는다" 고 했다. 그건
+   * 팔레트와 나란한 **단계 한 벌**을 만들지 말라는 뜻이고, 여기 둘은 단계가
+   * 아니라 자리가 정해진 semantic 값 두 개다.
+   *
+   * bg-brand-weak 로는 못 한다. 이 색이 깔리는 자리가 :after { inset: 0 } 로
+   * 블록 **위에** 덮는 오버레이라, 불투명하면 글자가 가려진다. 반투명이어야만
+   * 하는 자리다.
+   *
+   * 8% · 30% 는 BlockNote 가 쓰던 #64a0ff14 · #64a0ff4d 의 알파를 그대로
+   * 가져온 것이다. 색만 바꾸고 세기는 남긴다 — 인용의 border-left-color 와
+   * 같은 원칙이다.
+   *
+   * bg-brand-solid 가 이미 모드별로 갈리므로(라이트 purple-700 · 다크
+   * purple-600) 한 벌로 라이트·다크 양쪽이 맞는다. */
+  --knoc-color-selection-surface: color-mix(
+    in srgb,
+    var(--seed-color-bg-brand-solid) 8%,
+    transparent
+  );
+  --knoc-color-selection-ring: color-mix(
+    in srgb,
+    var(--seed-color-bg-brand-solid) 30%,
+    transparent
+  );
+
   /* 포커스 링 — DESIGN.md §6.
    * halo 는 링과 그 아래 표면을 떼어놓는 1px 선이다. bg-layer-default 라서
    * 라이트에서 흰색, 다크에서 gray-100 으로 알아서 뒤집힌다. */
@@ -155,6 +209,18 @@
  * CSS 파일도 소스 탐지 대상이라 그 문자열로 유틸리티가 생성된다.)
  * toolbar·chip 높이는 Sprint 7 에서 실제로 쓸 때 추가한다. */
 @theme inline {
+  /* 글꼴 — Tailwind 의 이름으로 내보낸다.
+   *
+   * --knoc-font-* 를 직접 쓰지 않고 --font-sans / --font-mono 에 얹는 이유는
+   * preflight 때문이다. preflight 는 html 에 --theme(--default-font-family)
+   * 를, code·kbd·samp·pre 에 --theme(--default-mono-font-family) 를 거는데,
+   * 그 둘이 각각 --font-sans · --font-mono 를 가리킨다. 여기에 얹으면 앱
+   * 전체가 한 번에 따라오고, 같은 이름의 글꼴 유틸리티도 같이 생긴다.
+   * (이름을 여기 적지 않는다 — 이 파일 맨 아래 @theme inline 의 주석과 같은
+   * 이유다. 지금은 CSS 주석이 탐지되지 않지만 기대지 않는다.) */
+  --font-sans: var(--knoc-font-sans);
+  --font-mono: var(--knoc-font-mono);
+
   --spacing-dense-1: var(--knoc-space-dense-1);
   --spacing-dense-2: var(--knoc-space-dense-2);
   --spacing-dense-3: var(--knoc-space-dense-3);

@@ -1,5 +1,15 @@
 @layer theme, base, seed-base, components, seed-components, utilities;
 
+/* 앱 글꼴 — DESIGN.md §2. @font-face 선언뿐이라 layer 와 무관하다.
+ *
+ * dynamic-subset 를 쓴다. 통짜 variable 은 2.0MB 한 덩어리라 첫 화면에서
+ * 전부 받지만, subset 은 unicode-range 로 92 조각이라 화면에 실제로 쓰인
+ * 글자가 든 조각만 받는다 (조각당 30KB 안팎).
+ *
+ * 글꼴 이름은 여기 안 적는다. 스택은 knocspace.css 의 --knoc-font-sans
+ * 한 곳뿐이고, 이 줄은 그 이름이 가리킬 파일을 등록하는 일만 한다. */
+@import "pretendard/dist/web/variable/pretendardvariable-dynamic-subset.css";
+
 @import "@seed-design/css/base.layered.css";
 @import "tailwindcss";
 @import "@seed-design/tailwind4-theme";

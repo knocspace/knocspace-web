@@ -128,7 +128,9 @@ carrot 을 참조하던 semantic 토큰 8개를 purple 로 옮기되, **carrot �
 
 `weak` 3종(100 / 200 / 300)은 단계를 안 옮겼습니다. 그건 브랜드 색이 아니라 표면 틴트라서, 올리면 트리 선택 배경만 진해집니다.
 
-alpha 단계(`--knoc-purple-alpha-*`)는 만들지 않습니다. 선택·호버의 옅은 강조는 `bg-brand-weak` 가 맡고, 그 값이 이미 모드별로 갈라져 있습니다.
+alpha **단계**(`--knoc-purple-alpha-*`)는 만들지 않습니다. 선택·호버의 옅은 강조는 `bg-brand-weak` 가 맡고, 그 값이 이미 모드별로 갈라져 있습니다.
+
+**예외는 에디터의 선택 오버레이 둘뿐입니다** — `--knoc-color-selection-surface`(8%)와 `--knoc-color-selection-ring`(30%). 단계 한 벌이 아니라 자리가 정해진 semantic 값 둘이고, `bg-brand-weak` 로는 **물리적으로 못 하는** 자리입니다. 그 색이 깔리는 곳이 `:after { inset: 0 }` 으로 블록 위에 덮는 오버레이라, 불투명하면 글자가 가려집니다. 자세한 것은 §7.
 
 `::selection` 색은 **아직 정하지 않았습니다.** SEED 2.5 에 대응 토큰이 없어 새로 정해야 하고, 에디터 표면이 생기는 F3 에서 함께 결정합니다. 그때까지 브라우저 기본값을 둡니다.
 
@@ -156,8 +158,34 @@ Tailwind 색 유틸리티로 노출된 것은 `grid-line` 과 `grid-edge` 둘뿐
 | 그리드 헤더 | 12.5px | 700 | `fg-neutral-subtle` |
 | 문서 본문 | 16px / 1.5 | 400 | BlockNote 기본. `t5` 와 크기는 같고 줄간만 다릅니다 |
 | 문서 **안쪽** 제목1 / 2 / 3 | **BlockNote 기본** 48 / 32 / 20.8px | 700 | 자간 없음 |
-| 토큰명·코드 | 13px | 400 | Roboto Mono |
+| 토큰명·코드 | 13px | 400 | `--knoc-font-mono` (시스템 고정폭). Roboto Mono 아닙니다 |
 | 워드마크 | — | **600** | Pretendard SemiBold, −0.035em, 최소 13px |
+
+**글꼴은 `--knoc-font-sans` · `--knoc-font-mono` 두 개가 전부이고, 값의 출처는 `knocspace.css` 입니다.**
+
+`SEED 에는 글꼴 토큰이 없습니다.` `base.layered.css` 는 `--seed-font-size-t1`~`t14` 와
+`--seed-font-weight-*` 만 주고 `font-family` 는 한 줄도 선언하지 않습니다.
+`@seed-design/tailwind4-theme` 도 `--font-sans` 를 안 줍니다. 그래서 안 정하면 Tailwind
+preflight 의 기본 스택이 그대로 앱 글꼴이 됩니다 — **정한 적 없는 값이 정답 자리에 앉습니다.**
+F3 에서 실제로 그 상태였고(윈도우에서 Segoe UI · 맑은 고딕), 여기서 닫았습니다.
+
+| | 값 | 웹폰트 |
+|---|---|---|
+| 본문 (`--knoc-font-sans`) | **Pretendard Variable** → 시스템 산세리프 | 받습니다 |
+| 코드 (`--knoc-font-mono`) | 시스템 고정폭 (윈도우 Consolas) | 안 받습니다 |
+
+`knocspace.css` 의 `@theme inline` 이 이 둘을 Tailwind 의 `--font-sans` · `--font-mono` 로
+내보내고, preflight 가 그걸 읽어 `html` 과 `code`·`kbd`·`samp`·`pre` 에 겁니다. 앱 전체가
+한 번에 따라오고 `font-sans` · `font-mono` 유틸리티도 같이 생깁니다. 에디터도 같은 값으로
+옵니다 — §7 이 `font-family: inherit` 로 되돌려 상속으로 내려받습니다.
+
+**Pretendard 는 dynamic-subset 으로 받습니다.** 통짜 variable 은 2.0MB 한 덩어리라 첫 화면에서
+전부 받지만, subset 은 `unicode-range` 로 92 조각이라 화면에 실제로 쓰인 글자가 든 조각만
+받습니다(조각당 30KB 안팎). 등록은 `index.css` 한 줄, 이름은 `knocspace.css` 한 곳입니다.
+
+**고정폭은 웹폰트를 안 받습니다.** 코드용 글꼴은 OS 마다 이미 좋은 것이 깔려 있고, 본문용으로
+Pretendard 를 받는 마당에 하나 더 받을 값이 크지 않습니다. 한글이 섞였을 때 대체 글꼴로 떨어져
+폭이 어긋나는 것도 웹 고정폭 쪽이 더 심합니다.
 
 **문서 제목 34px 과 문서 안쪽 제목은 다른 것입니다.** 34px 은 페이지 한 장의 이름이고
 (`PageTitle` — F3 §3 에서 만듭니다), 제목1·2·3 은 본문에 넣는 블록입니다. BlockNote 에는 페이지 제목이 없어서 —
@@ -169,7 +197,7 @@ Tailwind 색 유틸리티로 노출된 것은 `grid-line` 과 `grid-edge` 둘뿐
 
 SEED 의 `t` 스케일은 11 · 12 · 13 · 14 · 16 · 18 · 20 · 22 · 24px 입니다(`t1`~`t9`). 문서 제목 34px 은 이 스케일 밖이라 `--knoc-` 로 따로 정해야 합니다 — **아직 만들지 않았습니다.** `PageTitle` 이 생기는 F3 §3 에서 추가합니다. 에디터 밖이라 `blocknote-bridge.css` 를 안 거칩니다.
 
-SEED 토큰 레이어에는 400과 700만 있습니다. **600은 워드마크 전용 예외**이고 본문에는 쓰지 않습니다. 한글은 `word-break: keep-all`.
+우리가 쓰는 굵기는 400과 700 둘입니다. **600은 워드마크 전용 예외**이고 본문에는 쓰지 않습니다. (SEED 토큰 레이어 자체에는 `--seed-font-weight-medium` 도 있습니다 — 안 쓸 뿐입니다. BlockNote 의 메뉴 크롬은 500·600을 쓰는데, 본문이 아니라 그대로 둡니다.) 한글은 `word-break: keep-all`.
 
 ---
 
@@ -231,6 +259,9 @@ export default defineConfig({
 ```css
 @layer theme, base, seed-base, components, seed-components, utilities;
 
+/* 앱 글꼴 — §2. @font-face 선언뿐이라 layer 와 무관하다 */
+@import "pretendard/dist/web/variable/pretendardvariable-dynamic-subset.css";
+
 @import "@seed-design/css/base.layered.css";
 @import "tailwindcss";
 @import "@seed-design/tailwind4-theme";
@@ -242,6 +273,8 @@ export default defineConfig({
 @source not "../**/*.md";
 ```
 
+Pretendard 는 `-dynamic-subset` 쪽입니다. 통짜 `pretendardvariable.css` 를 넣으면 2.0MB 를 한 번에 받습니다 — §2.
+
 `blocknote-bridge.css` 는 §7 입니다. 라이브러리 CSS 자체(`@blocknote/mantine/style.css`)는
 여기가 아니라 에디터 컴포넌트가 부릅니다 — 지연 로드라 청크가 자기 CSS 를 들고 갑니다.
 
@@ -250,8 +283,8 @@ export default defineConfig({
 **값은 파일이 정답입니다.** 여기 옮겨 적지 않습니다 — 두 벌이 되면 반드시 어긋납니다. 파일은 세 부분입니다.
 
 1. **brand 8개 재매핑** — carrot → purple. §1 의 허용 목록이 곧 이 블록입니다. 라이트·다크 두 벌.
-2. **`--knoc-` 변수** — 밀도(dense/comfy 각 7단계), 레이아웃 치수, 격자선.
-3. **`@theme inline`** — 위 변수를 Tailwind 유틸리티로 노출.
+2. **`--knoc-` 변수** — 글꼴(sans/mono), 밀도(dense/comfy 각 7단계), 레이아웃 치수, 격자선.
+3. **`@theme inline`** — 위 변수를 Tailwind 유틸리티로 노출. 글꼴만 성격이 다릅니다 — 유틸리티가 아니라 `--font-sans` · `--font-mono` 에 얹어서 preflight 가 앱 전체에 걸게 합니다(§2).
 
 파일 전체를 `@layer` **밖에** 둡니다. SEED 의 토큰은 `@layer seed-base` 안에 있고, layer 없는 선언은 어떤 layer 보다도 우선하므로 명시도와 무관하게 이깁니다.
 
@@ -425,20 +458,21 @@ SEED `ActionButton` 은 `xsmall` 이 32px 이라 28px 트리 행에도 32px 그�
 
 BlockNote CSS를 끄거나 덮지 않습니다. 변수만 SEED로 되돌려 가리킵니다.
 
-**그런데 변수가 안 달린 곳이 있습니다.** F3 §0 에서 전수 조사했습니다. 아래 「예외 여섯 줄」과
+**그런데 변수가 안 달린 곳이 있습니다.** F3 §0 에서 전수 조사했습니다. 아래 「예외 열두 줄」과
 「브라우저가 그리는 것」 두 절이 그 전부입니다. **목록에 없는 것은 덮지 마세요.**
 근거는 [F3 §0 확인 결과](docs/decisions/f3-blocknote-surface.md) 에 있습니다.
 
 ### `src/styles/blocknote-bridge.css`
 
 ```css
-.bn-container.bn-root[data-color-scheme] {
+.bn-mantine.bn-root[data-color-scheme] {
   --bn-colors-editor-text:         var(--seed-color-fg-neutral);
   --bn-colors-editor-background:   var(--seed-color-bg-layer-default);
   --bn-colors-menu-text:           var(--seed-color-fg-neutral);
   --bn-colors-menu-background:     var(--seed-color-bg-layer-floating);
-  --bn-colors-tooltip-text:        var(--seed-color-fg-neutral-inverted);
-  --bn-colors-tooltip-background:  var(--seed-color-bg-neutral-inverted);
+  --bn-colors-tooltip-text:        var(--seed-color-fg-neutral);
+  --bn-colors-tooltip-background:  var(--seed-color-bg-neutral-weak);
+  --bn-colors-hovered-text:        var(--seed-color-fg-neutral);
   --bn-colors-hovered-background:  var(--seed-color-bg-neutral-weak-alpha);
   --bn-colors-selected-text:       var(--seed-color-palette-static-white);
   --bn-colors-selected-background: var(--seed-color-bg-brand-solid);
@@ -447,6 +481,10 @@ BlockNote CSS를 끄거나 덮지 않습니다. 변수만 SEED로 되돌려 가�
   --bn-colors-side-menu:           var(--seed-color-fg-neutral-subtle);
   --bn-font-family:                inherit;
   --bn-border-radius:              var(--seed-radius-r1_5);
+
+  /* --bn- 가 아닙니다 — 아래 「mantine 변수 둘」 */
+  --mantine-color-text:            var(--seed-color-fg-neutral);
+  --mantine-color-dimmed:          var(--seed-color-fg-neutral-subtle);
 
   /* 하이라이트 — 글자 500 · 배경 200. 라이트/다크를 여기서 가르지 않습니다.
      SEED 팔레트가 모드에 따라 스스로 뒤집혀서 한 벌로 양쪽이 맞습니다.
@@ -471,14 +509,87 @@ BlockNote CSS를 끄거나 덮지 않습니다. 변수만 SEED로 되돌려 가�
 }
 ```
 
-**선택자가 한 겹이 아닌 이유 — F3 에서 확인했습니다.** `bn-root` 와 `bn-container` 는
-같은 엘리먼트에 함께 붙습니다. BlockNote 기본값은 `.bn-root`(0,1,0)와
+**선택자가 한 겹이 아닌 이유.** BlockNote 기본값은 `.bn-root`(0,1,0)와
 `.bn-root[data-color-scheme="dark"]`(0,2,0) 두 벌로 오고 다크 쪽이 더 셉니다.
-`.bn-container` 한 겹으로는 다크에서 집니다. 같은 엘리먼트를 세 겹으로 짚어
-(0,3,0)으로 올립니다 — 여전히 변수 선언뿐이라 아래의 금지에 걸리지 않고,
-에디터 CSS 가 지연 로드로 나중에 붙는 순서에도 흔들리지 않습니다.
-`data-color-scheme` 은 값을 보지 않습니다. 라이트/다크는 오른쪽 SEED 토큰이
-이미 스스로 뒤집습니다.
+한 겹(0,1,0)으로는 다크에서 집니다. 세 겹으로 짚어 (0,3,0)으로 올립니다 —
+여전히 변수 선언뿐이라 아래의 금지에 걸리지 않고, 에디터 CSS 가 지연 로드로
+나중에 붙는 순서에도 흔들리지 않습니다. `data-color-scheme` 은 값을 보지
+않습니다. 라이트/다크는 오른쪽 SEED 토큰이 이미 스스로 뒤집습니다.
+
+**세 겹 중 하나가 `.bn-container` 이면 안 됩니다.** F3 에서 `bn-root` 와 `bn-container` 가
+같은 엘리먼트에 붙는 것만 보고 `.bn-container` 로 짚었는데, `bn-root` 를 단 엘리먼트가
+**하나가 아니라 둘**이었습니다.
+
+```
+bn-root bn-container light bn-mantine   ← 에디터 컨테이너
+bn-root             light bn-mantine   ← 포털 (컨테이너 안에 있습니다)
+```
+
+포털은 코어가 `document.createElement` 로 만들어 컨테이너 안에 붙이는 div 이고
+(`BlockNoteEditor.mount` → `portalTarget ?? e.parentElement`), **슬래시 메뉴 · 포맷 툴바 ·
+링크 툴바 · 사이드 메뉴 · 테이블 손잡이가 전부 거기 그려집니다.**
+
+안에 있으니 상속으로 닿을 것 같지만 안 닿습니다. 코어가 그 div 에도 `bn-root` 클래스와
+`data-color-scheme` 을 **다시 달아서**, BlockNote 기본값이 그 몸에 직접 걸립니다. 직접 선언은
+상속을 언제나 이깁니다. `.bn-container` 로 짚으면 포털은 안 잡히고, 메뉴와 툴바는 계속
+BlockNote 기본색으로 남습니다 — `hovered-text` 를 아무리 잘 매핑해도 그렇습니다.
+
+`.bn-mantine` 은 둘 다에 붙습니다. mantine 래퍼가 `className` 으로 내려보내고 코어가 포털
+div 의 `className` 에 그대로 복사합니다. 그래서 이걸로 짚습니다. mantine 이 `--mantine-*` 를
+거는 곳도 `.bn-mantine[data-mantine-color-scheme]`(0,2,0) 이라 위의 두 줄까지 한 선택자로
+같이 이깁니다.
+
+아래 자손 선택자들은 `.bn-container` 그대로 둡니다. 포털에는 본문 블록이 없고, 포털 자체가
+컨테이너 **안**이라 필요하면 어차피 닿습니다.
+
+**`tooltip` 은 이름이 잘못된 변수입니다 — 반전시키지 마세요.** 툴팁만 쓰는 게 아니라 셋이 씁니다.
+
+```
+.bn-tooltip                                ← 진짜 툴팁
+.mantine-Badge-root                        ← 슬래시 메뉴 단축키 배지
+.bn-mt-suggestion-menu-item-section[left]  ← 슬래시 메뉴 아이콘 칩
+```
+
+BlockNote 기본값이 `#efefef` / `#3f3f3f` 인 것을 보면 이건 반전된 말풍선이 아니라 **옅은 중립
+칩**입니다. 처음에 이름만 보고 `bg`/`fg-neutral-inverted` 로 뒀다가 되돌렸습니다 — 라이트에서
+흰 메뉴 안에 **검은 칩과 검은 배지**가 박힙니다. 포털이 브리지에 안 닿던 동안에는 안 보이다가,
+위의 선택자를 고치면서 드러났습니다.
+
+`bg-neutral-weak` 는 아래 표 머리글과 같은 값이고 고른 이유도 같습니다 — SEED 자신이 중립 버튼 ·
+칩 · 배지 · 콜아웃의 면으로 씁니다. 진짜 툴팁도 이걸로 갑니다. BlockNote 의 기본 툴팁이 원래
+옅은 회색이고, 이 문서에 툴팁 규격을 정해 둔 적이 없습니다(§10).
+
+**`hovered-text` 를 빠뜨리지 마세요.** F3 에서 빠져 있던 것을 나중에 찾았습니다. `menu-text` 만
+옮기고 이걸 두면 BlockNote 기본값이 남아서 — 라이트 `#3f3f3f` · 다크 `#cfcfcf` — 메뉴 항목에
+마우스를 올릴 때 글자가 **되레 흐려집니다.** 호버는 강조인데 대비가 떨어지는 방향입니다.
+mantine 쪽 다섯 자리가 이 변수를 읽습니다(메뉴 항목 호버·선택, 탭 호버, 툴바 버튼·아이콘 호버).
+값은 `menu-text` 와 같은 `fg-neutral` 입니다 — 호버에서 바뀌는 것은 면이지 글자가 아닙니다.
+
+**mantine 변수 둘 — `--bn-` 로 안 빠진 색입니다.** 슬래시 메뉴 표면은 BlockNote 가 mantine 의
+Menu 를 베껴 온 자리라, 두 군데가 mantine 팔레트를 그대로 읽습니다.
+
+```css
+.bn-suggestion-menu-item                { color: var(--menu-item-color, var(--mantine-color-text)) }
+.bn-suggestion-menu-item[data-disabled] { color: var(--mantine-color-dimmed) }
+```
+
+안 걸면 항목 글자가 라이트에서 순검정 `#000` 으로, disabled 항목이 mantine `gray-6`(라이트) ·
+`dark-2`(다크) 로 나옵니다. **우리 검정도 우리 회색도 아닙니다.**
+
+**그룹 라벨은 여기 안 듭니다.** `.bn-suggestion-menu-label` 도 `dimmed` 로 한 번 칠해지지만,
+같은 파일 뒤쪽에서 **같은 선택자**가 `--bn-colors-hovered-text` 로 다시 칠합니다. 명시도가 같아
+뒤엣것이 이기므로 라벨의 색은 `hovered-text` 입니다 — 지금은 `fg-neutral` 이라 항목 제목과 같은
+세기입니다. 라벨을 낮추려면 변수로는 안 되고 자손 선택자가 하나 더 필요합니다. **아직 안 열었습니다.**
+
+자손 선택자가 아니라 위 뭉치에서 변수로 잡는 것이 맞습니다. mantine 이 이 둘을 거는 곳이
+`.bn-mantine[data-mantine-color-scheme="light"|"dark"]`(0,2,0) 인데, `.bn-mantine` 은
+`.bn-mantine.bn-root[data-color-scheme]` 과 **같은 엘리먼트**에 걸려서 (0,3,0) 이 그냥 이깁니다. 컨테이너와 포털 양쪽 모두에서 그렇습니다.
+
+`dimmed` 가 실제로 닿는 곳은 disabled 항목 하나입니다. `fg-neutral-subtle` 로 두고, 그 위에
+`opacity: 0.6` 이 더 얹혀서 충분히 갈라 보입니다.
+
+메뉴 테두리의 `--mantine-color-gray-2`(`.bn-suggestion-menu`)는 **그대로 둡니다.** 그건 semantic
+토큰이 아니라 팔레트 눈금이라, 재정의하면 그 눈금을 읽는 다른 자리까지 같이 끌려갑니다.
 
 **문서 거터는 BlockNote 가 그립니다.** `.bn-editor` 는 좌우 54px 을 자기 몫으로
 잡습니다. `DocumentSurface` 의 56px 과 겹치면 본문 폭이 608px 이 아니라 500px 이
@@ -486,11 +597,23 @@ BlockNote CSS를 끄거나 덮지 않습니다. 변수만 SEED로 되돌려 가�
 쪽이 BlockNote 인 이유는 그 자리가 드래그 핸들의 히트 영역이기 때문입니다 —
 아래 표의 오른쪽 열입니다. 결과 거터는 54px 로, 정한 값보다 2px 좁습니다.
 
-### 예외 여섯 줄 — 변수가 안 달린 곳
+### 예외 열두 줄 — 변수가 안 달린 곳
 
-BlockNote 가 색과 글꼴을 전부 변수로 뺀 것은 아닙니다. 변수로 안 닿는 것이 **색 넷 · 글꼴 하나**
-입니다. 여기에 **배경 하나**를 나중에 더했습니다 — 이것만 성격이 다르니 마지막 절을
-따로 읽으세요. 아래 여섯 규칙만 자손 선택자를 씁니다.
+BlockNote 가 색과 글꼴을 전부 변수로 뺀 것은 아닙니다. 아래 **열두 규칙만** 자손 선택자를 씁니다.
+
+아래 표의 순서가 곧 이어지는 절의 순서입니다.
+
+| 묶음 | 개수 | 성격 |
+|---|---|---|
+| 색 — 인용 · 구분선 · 코드 블록 · 표 격자선 | 4 | 박힌 값을 SEED 로 되돌리기 |
+| 글꼴 — 본문 · 인라인 코드 | 2 | 박힌 값을 되돌리기 |
+| 배경 — 표 머리글 칸 | 1 | **없던 선언을 새로 얹기** |
+| **선택 — 노드 링 · 셀 선택 · 열 손잡이 · 드롭 커서** | 4 | 박힌 값을 되돌리기 (§1) |
+| **글자색 — 슬래시 메뉴 그룹 라벨** | 1 | 뒤 규칙에 눌린 앞 규칙의 의도 되살리기 |
+
+「배경」과 「글자색」만 성격이 다르니 해당 절을 따로 읽으세요.
+
+(위의 `--mantine-` 둘은 여기 안 셉니다. 그건 변수 선언이라 자손 선택자를 안 씁니다.)
 
 #### 색 넷 — 인용 · 구분선 · 코드 블록 · 표 격자선
 
@@ -575,7 +698,7 @@ action-sheet · accordion 처럼 **띄운 면의 가장자리와 구분선**입�
 진해졌을 텐데, 그걸 막는 `border-collapse: collapse` 를 BlockNote 도 prosemirror-tables 도
 안 걸고 **Tailwind preflight** 가 걸고 있습니다. 지금 값은 거기 안 기댑니다.
 
-#### 글꼴 하나 — 본문 서체
+#### 글꼴 둘 — 본문 서체와 인라인 코드
 
 **`--bn-font-family` 는 본문에 닿지 않습니다.** 그 변수를 읽는 규칙은 `.bn-root` 하나인데,
 `.bn-default-styles` 가 그 안쪽 `.bn-editor` 에 같이 붙어서 자기 선언으로 상속을 끊습니다.
@@ -604,9 +727,31 @@ action-sheet · accordion 처럼 **띄운 면의 가장자리와 구분선**입�
 앞엣것은 블록의 **조상**이라 BlockNote 가 그 아래에 다시 선언한 1.5 에 상속이 끊깁니다.
 그때 이 절과 §2 의 표를 함께 고칩니다.
 
+**인라인 코드는 생짜 `monospace` 입니다.** F3 §0 조사에서 빠져 있던 두 번째 글꼴입니다.
+
+```css
+.bn-inline-content code { font-family: monospace }
+```
+
+변수가 아니라 위 뭉치로는 안 닿고, 이 선언이 layer 밖이라 Tailwind preflight 가
+`code`·`kbd`·`samp`·`pre` 에 거는 `--default-mono-font-family` 를 **명시도와 무관하게**
+눌러 버립니다 — preflight 는 `@layer base` 안입니다. 그래서 여기서 되돌립니다.
+
+```css
+.bn-container .bn-inline-content code {
+  font-family: var(--knoc-font-mono);   /* 여기서도 글꼴 이름은 안 적습니다 */
+}
+```
+
+(0,2,1) 대 (0,1,1) 로 이깁니다. 본문과 달리 `inherit` 이 아닌 것은 고정폭이어야 하기
+때문이고, 그래도 이름이 아니라 §2 의 토큰을 가리킵니다.
+
+**코드 블록(`codeBlock`)은 여기 없습니다.** 그쪽 `<pre>` 에는 BlockNote 가 글꼴을 안 걸어서
+preflight 가 그대로 닿고, 그게 이미 같은 토큰입니다.
+
 #### 배경 하나 — 표 머리글 칸
 
-**앞의 다섯과 성격이 다릅니다.** 저것들은 BlockNote 가 박아 둔 값을 SEED 로 되돌리는
+**앞의 여섯과 성격이 다릅니다.** 저것들은 BlockNote 가 박아 둔 값을 SEED 로 되돌리는
 일이지만, 이것은 **없던 선언을 새로 얹는 일**입니다. 그래서 「덮지 않는다」 원칙에 걸리지
 않습니다 — 덮을 것이 애초에 없습니다. `accent-color` 와 같은 종류이고, 다만 배경은
 상속이 안 돼서 컨테이너 한 겹으로는 못 하고 자손 선택자가 필요합니다.
@@ -656,6 +801,69 @@ gray-300 인데, 문서 바탕(`bg-layer-default`)이 각각 gray-00 · gray-100
 **표 안쪽 구조는 여전히 BlockNote 것입니다.** 여기서 가져오는 것은 색 하나뿐이고, 격자선
 굵기·칸 여백·열 너비 손잡이는 안 건드립니다 — 아래 표의 오른쪽 열입니다.
 
+#### 선택 넷 — 노드 링 · 셀 선택 · 열 손잡이 · 드롭 커서
+
+F3 §0 조사에서 빠져 있던 것들입니다. 넷 다 **파란색**이 hex 로 박혀 있었는데, §1 은
+「강조색은 purple 계열 하나만. 선택 상태, 주 액션, **커서, 삽입선**」이라고 못 박아 두었습니다.
+정확히 그 자리라 우리 색이어야 합니다.
+
+**§1 이 가른 대로 둘로 나뉩니다.**
+
+| | 자리 | 값 |
+|---|---|---|
+| 선택 = **면** | 노드 선택 링 · 표 셀 선택 | `--knoc-color-selection-surface` · `-ring` |
+| 커서·삽입선 = **선** | 열 리사이즈 손잡이 · 드롭 커서 | `bg-brand-solid` (솔리드) |
+
+```css
+.bn-container .bn-block-content.ProseMirror-selectednode > *::after,
+.bn-container .ProseMirror-selectednode > .bn-block-content > *::after,
+.bn-container .bn-block-content .ProseMirror-selectednode::after,
+.bn-container .bn-inline-content .ProseMirror-selectednode::after {
+  background-color: var(--knoc-color-selection-surface);
+  box-shadow: inset 0 0 0 4px var(--knoc-color-selection-ring);
+}
+
+.bn-container .ProseMirror .selectedCell::after { background: var(--knoc-color-selection-surface) }
+.bn-container .ProseMirror .column-resize-handle { background-color: var(--seed-color-bg-brand-solid) }
+.bn-container .bn-table-drop-cursor      { background-color: var(--seed-color-bg-brand-solid) }
+```
+
+**앞의 둘이 반투명인 것은 취향이 아니라 구조입니다.** 그 색이 깔리는 곳이 `:after { inset: 0 }`
+으로 블록 **위에** 덮는 오버레이라, 불투명하면 글자가 가려집니다. `bg-brand-weak` 는 솔리드라
+여기 못 씁니다 — §2 의 alpha 예외가 이것입니다.
+
+**8% · 30% 는 BlockNote 값을 그대로 옮긴 것입니다.** `#64a0ff14`(8%) · `#64a0ff4d`(30%). 색만
+바꾸고 세기는 남깁니다 — 인용의 `border-left-color` 와 같은 원칙입니다. `box-shadow` 는 색만
+못 덮어서 통째로 다시 쓰지만 4px 은 BlockNote 값 그대로입니다.
+
+**뒤의 둘은 솔리드입니다.** 4px 막대가 어디에 놓이는지가 정보의 전부라, 옅으면 그 일을 못 합니다.
+
+**선택자가 오히려 안정적입니다.** `.ProseMirror-selectednode` 는 ProseMirror 코어,
+`.selectedCell` · `.column-resize-handle` 은 prosemirror-tables 기본 클래스입니다. BlockNote 것이
+아니라 그 아래 계층이고, 수년째 안 바뀐 이름입니다. 실패해도 색이 파랑으로 되돌아갈 뿐
+레이아웃이 깨지지 않습니다.
+
+#### 글자색 하나 — 슬래시 메뉴 그룹 라벨
+
+「제목」·「기본 블록」처럼 항목을 묶는 작은 글자입니다. BlockNote 가 이걸 **두 번** 칠합니다.
+
+```css
+.bn-mantine .bn-suggestion-menu-label { color: var(--mantine-color-dimmed); … }  /* 먼저 */
+.bn-mantine .bn-suggestion-menu-label { color: var(--bn-colors-hovered-text) }    /* 나중 — 이김 */
+```
+
+명시도가 같아 뒤엣것이 이기고, 그래서 라벨이 항목 제목과 같은 세기가 됩니다. 앞 규칙(`dimmed`)이
+원래 의도로 보입니다 — 묶음 이름이 항목보다 크게 읽힐 이유가 없습니다.
+
+`hovered-text` 를 낮춰서 풀 수는 없습니다. 그건 메뉴 항목 호버 글자색이라 `fg-neutral` 이어야
+합니다. 한 변수가 두 일을 겸해서 자손 선택자가 필요합니다.
+
+```css
+.bn-mantine.bn-root .bn-suggestion-menu-label { color: var(--seed-color-fg-neutral-subtle) }
+```
+
+`.bn-container` 가 아니라 `.bn-mantine.bn-root` 인 것에 주의 — 이 라벨은 포털 안에 있습니다.
+
 ### 브라우저가 그리는 것 — 네 군데
 
 React 가 아니라 코어가 `document.createElement` 로 직접 그리는 DOM 입니다. 슬래시 메뉴처럼
@@ -677,12 +885,13 @@ React 가 아니라 코어가 `document.createElement` 로 직접 그리는 DOM 
 
 | SEED가 가져가는 것 | BlockNote에 남기는 것 |
 |---|---|
-| 모든 색 — 예외 여섯 줄 포함 | 블록 상하 간격과 들여쓰기 계단 |
-| 서체 | 제목 크기 · 줄간 · 드래그 핸들 위치와 히트 영역 |
+| 모든 색 — 예외 열두 줄과 `--mantine-` 둘 포함 | 블록 상하 간격과 들여쓰기 계단 |
+| 서체 — 본문과 인라인 코드 둘 다 (§2) | 제목 크기 · 줄간 · 드래그 핸들 위치와 히트 영역 |
 | 반경 — 코드 블록 포함 | 커서·선택 동작 |
 | 슬래시 메뉴·포맷 툴바 표면 | 테이블 블록 내부 구조 |
 | 하이라이트 팔레트 (글자 500 · 배경 200) | brown · pink — SEED 팔레트에 없어서 기본값 그대로 |
 | 체크박스 강조색 (`accent-color`) | 코드 블록 다크 표면과 Shiki 문법색 |
+| 선택·커서·삽입선 (§1 · 예외 넷) | 선택의 **동작** — 무엇이 선택되는지 |
 | | 코드 블록 언어 선택기 — native `<select>` |
 | | 파일·이미지 블록 계열 색 (F3 밖) |
 

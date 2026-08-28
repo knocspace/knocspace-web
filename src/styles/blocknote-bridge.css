@@ -7,27 +7,71 @@
  * 에디터 청크가 자기 것으로 들고 온다 — features/editor/BlockEditor.tsx.
  * 이 파일은 변수 한 뭉치뿐이라 첫 화면에 얹혀도 무게가 없다.
  *
- * ── 선택자가 DESIGN.md §7 의 .bn-container 한 겹이 아닌 이유
+ * ── 선택자가 세 겹인 이유, 그리고 .bn-container 가 아닌 이유
  *
- * bn-root 와 bn-container 는 같은 엘리먼트에 함께 붙는다. BlockNote 기본값은
- * `.bn-root`(0,1,0) 와 `.bn-root[data-color-scheme="dark"]`(0,2,0) 두 벌로
- * 오고, 다크 쪽이 더 세다. .bn-container 한 겹(0,1,0)으로는 다크에서 진다.
- *
+ * BlockNote 기본값은 `.bn-root`(0,1,0) 와 `.bn-root[data-color-scheme="dark"]`
+ * (0,2,0) 두 벌로 오고 다크 쪽이 더 세다. 한 겹(0,1,0)으로는 다크에서 진다.
  * 그래서 같은 엘리먼트를 세 겹으로 짚어 (0,3,0) 으로 올린다. 자손 선택자도
- * !important 도 아니고 여전히 변수 선언뿐이라 §7 의 금지에는 걸리지 않는다.
- * 덤으로 로딩 순서에서도 자유롭다 — 에디터 CSS 는 지연 로드라 이 파일보다
- * 늦게 붙는데, 같은 명시도였다면 나중 것이 이겼을 자리다.
+ * !important 도 아니고 여전히 변수 선언뿐이다. 덤으로 로딩 순서에서도 자유롭다
+ * — 에디터 CSS 는 지연 로드라 이 파일보다 늦게 붙는데, 같은 명시도였다면
+ * 나중 것이 이겼을 자리다.
+ *
+ * **세 겹 중 하나가 .bn-container 이면 안 된다.** bn-root 를 단 엘리먼트가
+ * 하나가 아니라 둘이기 때문이다.
+ *
+ *   bn-root bn-container light bn-mantine   ← 에디터 컨테이너
+ *   bn-root             light bn-mantine   ← 포털 (컨테이너 안에 있다)
+ *
+ * 포털은 코어가 document.createElement 로 만들어 컨테이너 안에 붙이는 div 고
+ * (BlockNoteEditor.mount → portalTarget ?? e.parentElement), 슬래시 메뉴 ·
+ * 포맷 툴바 · 링크 툴바 · 사이드 메뉴 · 테이블 손잡이가 전부 거기 그려진다.
+ *
+ * 안에 있으니 상속으로 닿을 것 같지만 안 닿는다. 코어가 그 div 에도 bn-root
+ * 클래스와 data-color-scheme 을 다시 달아서, BlockNote 기본값이 **그 몸에
+ * 직접** 걸린다. 직접 선언은 상속을 언제나 이긴다. .bn-container 로 짚으면
+ * 포털은 안 잡히고, 메뉴와 툴바는 계속 BlockNote 기본색으로 남는다.
+ *
+ * .bn-mantine 은 둘 다에 붙는다 — mantine 래퍼가 className 으로 내려보내고
+ * 코어가 포털 div 의 className 에 그대로 복사한다. 그래서 이걸로 짚는다.
+ * mantine 이 --mantine-* 를 거는 곳도 .bn-mantine[data-mantine-color-scheme]
+ * (0,2,0) 이라 아래 두 줄까지 한 선택자로 같이 이긴다.
  *
  * data-color-scheme 은 값을 보지 않는다. 라이트/다크를 여기서 가르지 않기
  * 때문이다 — 오른쪽의 SEED 토큰이 이미 모드에 따라 스스로 뒤집힌다.
  */
-.bn-container.bn-root[data-color-scheme] {
+.bn-mantine.bn-root[data-color-scheme] {
   --bn-colors-editor-text: var(--seed-color-fg-neutral);
   --bn-colors-editor-background: var(--seed-color-bg-layer-default);
   --bn-colors-menu-text: var(--seed-color-fg-neutral);
   --bn-colors-menu-background: var(--seed-color-bg-layer-floating);
-  --bn-colors-tooltip-text: var(--seed-color-fg-neutral-inverted);
-  --bn-colors-tooltip-background: var(--seed-color-bg-neutral-inverted);
+  /* tooltip 은 이름이 잘못된 변수다. 툴팁만 쓰는 게 아니라 세 곳이 쓴다.
+   *
+   *   .bn-tooltip                                ← 진짜 툴팁
+   *   .mantine-Badge-root                        ← 슬래시 메뉴 단축키 배지
+   *   .bn-mt-suggestion-menu-item-section[left]  ← 슬래시 메뉴 아이콘 칩
+   *
+   * BlockNote 기본값이 #efefef / #3f3f3f 인 것을 보면 이건 반전된 말풍선이
+   * 아니라 **옅은 중립 칩**이다. 셋 다 그 쓰임이다.
+   *
+   * 그래서 inverted 가 아니라 bg-neutral-weak 다. 처음에 이름만 보고
+   * bg/fg-neutral-inverted 로 뒀다가 되돌렸다 — 라이트에서 흰 메뉴 안에
+   * 검은 칩과 검은 배지가 박힌다. 포털이 브리지에 안 닿던 동안에는 안
+   * 보이다가, 선택자를 고치면서 드러났다.
+   *
+   * bg-neutral-weak 는 위의 표 머리글과 같은 값이고, 고른 이유도 같다 —
+   * SEED 자신이 중립 버튼 · 칩 · 배지 · 콜아웃의 면으로 쓴다. 한 벌로
+   * 라이트(gray-200)·다크(gray-300) 양쪽이 맞는다.
+   *
+   * 진짜 툴팁도 이걸로 간다. BlockNote 의 기본 툴팁이 원래 옅은 회색이고,
+   * DESIGN.md 에 툴팁 규격을 정해 둔 적이 없다. */
+  --bn-colors-tooltip-text: var(--seed-color-fg-neutral);
+  --bn-colors-tooltip-background: var(--seed-color-bg-neutral-weak);
+  /* hovered-text 는 menu-text 와 같은 값이다. 안 걸면 BlockNote 기본값이
+   * 남아서 — 라이트 #3f3f3f · 다크 #cfcfcf — 메뉴 항목에 마우스를 올릴 때
+   * 글자가 되레 흐려진다. 호버는 강조인데 대비가 떨어지는 방향이다.
+   * mantine 쪽 다섯 자리가 이 변수를 읽는다 (메뉴 항목 호버·선택, 탭 호버,
+   * 툴바 버튼·아이콘 호버). */
+  --bn-colors-hovered-text: var(--seed-color-fg-neutral);
   --bn-colors-hovered-background: var(--seed-color-bg-neutral-weak-alpha);
   --bn-colors-selected-text: var(--seed-color-palette-static-white);
   --bn-colors-selected-background: var(--seed-color-bg-brand-solid);
@@ -36,6 +80,33 @@
   --bn-colors-side-menu: var(--seed-color-fg-neutral-subtle);
   --bn-font-family: inherit;
   --bn-border-radius: var(--seed-radius-r1_5);
+
+  /* ── mantine 변수 둘 — DESIGN.md §7
+   *
+   * BlockNote 가 색을 전부 --bn- 로 뺀 것은 아니다. 슬래시 메뉴 표면은
+   * mantine 의 Menu 를 베껴 온 자리라 두 군데가 mantine 팔레트를 그대로
+   * 읽는다. --bn- 변수가 아니라서 위의 뭉치로는 안 닿는다.
+   *
+   *   .bn-suggestion-menu-item                { color: var(--menu-item-color, var(--mantine-color-text)) }
+   *   .bn-suggestion-menu-item[data-disabled] { color: var(--mantine-color-dimmed) }
+   *
+   * 안 걸면 항목 글자가 라이트에서 순검정 #000 으로, disabled 항목이 mantine
+   * gray-6(라이트) · dark-2(다크) 로 나온다. 우리 검정도 우리 회색도 아니다.
+   *
+   * 그룹 라벨은 여기 안 든다. .bn-suggestion-menu-label 도 dimmed 로 한 번
+   * 칠해지지만, 같은 파일 뒤쪽에서 같은 선택자가 --bn-colors-hovered-text 로
+   * 다시 칠한다. 명시도가 같아 뒤엣것이 이기므로 라벨의 색은 hovered-text 다.
+   *
+   * 자손 선택자가 아니라 여기서 변수로 잡는 것이 맞다. mantine 이 이 둘을
+   * 거는 곳이 .bn-mantine[data-mantine-color-scheme="light"|"dark"] 인데
+   * (0,2,0), .bn-mantine 은 .bn-container.bn-root 와 같은 엘리먼트에 붙어서
+   * 이 규칙 (0,3,0) 이 그냥 이긴다.
+   *
+   * dimmed 하나가 라벨과 disabled 두 자리를 겸한다. 라벨 쪽에 맞춰
+   * fg-neutral-subtle 로 둔다 — side-menu 와 같은, 조용한 크롬 글자 자리다.
+   * disabled 는 이 규칙 위에 opacity: 0.6 이 더 얹혀서 그래도 갈라 보인다. */
+  --mantine-color-text: var(--seed-color-fg-neutral);
+  --mantine-color-dimmed: var(--seed-color-fg-neutral-subtle);
 
   /* 하이라이트 팔레트 — DESIGN.md §7.
    *
@@ -71,14 +142,15 @@
  * 안 걸면 체크 표시가 SEED 보라가 아니라 OS 기본 파랑이다. 라이트/다크는
  * mantine 이 .bn-mantine 에 color-scheme 을 걸어 둬서 알아서 따라간다 —
  * 어긋나는 건 강조색이지 명암이 아니다. */
-.bn-container.bn-root[data-color-scheme] {
+.bn-mantine.bn-root[data-color-scheme] {
   accent-color: var(--seed-color-bg-brand-solid);
 }
 
 /* ── 여기서부터 자손 선택자 — DESIGN.md §7 이 연 것만 있다
  *
  * BlockNote 가 색과 글꼴을 전부 변수로 뺀 것은 아니다. 아래 것들은 값이 CSS 에
- * 박혀 있어서 변수로는 닿지 않는다. **여기 없는 자손 선택자는 새로 쓰지 않는다.**
+ * 박혀 있어서 변수로는 닿지 않는다 — 색 넷, 글꼴 둘(본문·인라인 코드), 배경 하나.
+ * **여기 없는 자손 선택자는 새로 쓰지 않는다.**
  * 늘려야 하면 DESIGN.md §7 을 먼저 고친다.
  *
  * !important 는 안 쓴다. 전부 명시도로 이긴다.
@@ -122,6 +194,24 @@
  * 않는 것이 중요하다 — 적는 순간 앱 글꼴이 바뀔 때 여기만 남는다. */
 .bn-container .bn-default-styles {
   font-family: inherit;
+}
+
+/* 인라인 코드 글꼴 — DESIGN.md §7
+ *
+ * BlockNote 가 .bn-inline-content code 에 생짜 monospace 를 박아 뒀다.
+ * 변수가 아니라서 위의 뭉치로는 안 닿고, 이 선언이 layer 밖이라 Tailwind
+ * preflight 가 code·kbd·samp·pre 에 거는 --default-mono-font-family 를
+ * 명시도와 무관하게 눌러 버린다 — preflight 는 @layer base 안이다.
+ *
+ * 그래서 여기서 앱의 고정폭으로 되돌린다. (0,2,1) 대 (0,1,1) 로 이긴다.
+ *
+ * 코드 블록(codeBlock)은 여기 없다. 그쪽 <pre> 에는 BlockNote 가 글꼴을
+ * 안 걸어서 preflight 가 그대로 닿고, 그게 이미 같은 토큰이다.
+ *
+ * 본문과 달리 inherit 이 아닌 이유는 고정폭이어야 하기 때문이고, 그래도
+ * 글꼴 이름은 안 적는다 — 스택은 knocspace.css 한 곳뿐이다. */
+.bn-container .bn-inline-content code {
+  font-family: var(--knoc-font-mono);
 }
 
 /* 제목 크기·줄간은 여기 없다. 일부러 없다.
@@ -205,4 +295,81 @@
  * 붙어서 동점이면 진다 — 코드 블록에서 이미 겪은 자리다. */
 .bn-container .bn-block-content[data-content-type="table"] :is(th, td) {
   border-color: var(--seed-color-stroke-neutral-weak);
+}
+
+/* ── 선택 계열 넷 — DESIGN.md §1 · §7
+ *
+ * F3 §0 조사에서 빠졌던 것들이다. 넷 다 파란색이 hex 로 박혀 있는데, §1 은
+ * "강조색은 purple 계열 하나만. 선택 상태, 주 액션, 커서, 삽입선" 이라고
+ * 못 박아 두었다. 정확히 그 자리라 우리 색이어야 한다.
+ *
+ * §1 이 가른 대로 둘로 나뉜다.
+ *
+ *   선택 = **면**  → 반투명 보라 오버레이 (--knoc-color-selection-*)
+ *   커서·삽입선 = **선** → 솔리드 보라 (bg-brand-solid)
+ *
+ * 앞의 둘이 반투명인 것은 취향이 아니라 구조다. :after { inset: 0 } 으로
+ * 내용 위에 덮이므로 불투명하면 글자가 가려진다 — knocspace.css 참고.
+ *
+ * 선택자가 ProseMirror / prosemirror-tables 것이라 오히려 안정적이다.
+ * BlockNote 클래스가 아니라 그 아래 계층이고, 수년째 안 바뀐 이름이다.
+ */
+
+/* 노드 선택 링 — 구분선 · 이미지 · 표 · 코드 블록을 통째로 고를 때.
+ *
+ * BlockNote 가 #64a0ff14 면 + #64a0ff4d 4px 링으로 그린다. 본문 영역이라
+ * F3 §2 의 슬래시 메뉴 교체로는 안 없어지는 자리다.
+ *
+ * box-shadow 는 색만 못 덮는다 — 한 속성이라 통째로 다시 쓴다. 4px 은
+ * BlockNote 값 그대로다.
+ *
+ * 네 선택자는 BlockNote 것을 그대로 옮기고 .bn-container 를 앞에 붙였다.
+ * (0,3,1) 대 (0,2,1) 로 이긴다. */
+.bn-container .bn-block-content.ProseMirror-selectednode > *::after,
+.bn-container .ProseMirror-selectednode > .bn-block-content > *::after,
+.bn-container .bn-block-content .ProseMirror-selectednode::after,
+.bn-container .bn-inline-content .ProseMirror-selectednode::after {
+  background-color: var(--knoc-color-selection-surface);
+  box-shadow: inset 0 0 0 4px var(--knoc-color-selection-ring);
+}
+
+/* 표 셀 선택 — prosemirror-tables 가 #c8c8ff66 을 박아 뒀다.
+ * 셀 두 개 이상 드래그하면 항상 보이는, 넷 중 가장 자주 닿는 자리다.
+ * (0,3,1) 대 (0,2,1). */
+.bn-container .ProseMirror .selectedCell::after {
+  background: var(--knoc-color-selection-surface);
+}
+
+/* 표 열 리사이즈 손잡이 · 드롭 커서 — 둘 다 #adf 하늘색이다.
+ *
+ * 이건 면이 아니라 삽입선이라 반투명이 아니라 솔리드다. 4px 막대가 어디에
+ * 놓이는지가 정보의 전부라, 옅으면 그 일을 못 한다.
+ *
+ * 굵기와 위치는 안 건드린다 — 색만 가져온다. */
+.bn-container .ProseMirror .column-resize-handle {
+  background-color: var(--seed-color-bg-brand-solid);
+}
+
+.bn-container .bn-table-drop-cursor {
+  background-color: var(--seed-color-bg-brand-solid);
+}
+
+/* ── 슬래시 메뉴 그룹 라벨 — DESIGN.md §7
+ *
+ * "제목" · "기본 블록" 처럼 항목을 묶는 작은 글자다.
+ *
+ * BlockNote 가 이걸 두 번 칠한다. 앞에서 --mantine-color-dimmed 로 한 번,
+ * 같은 파일 뒤쪽에서 같은 선택자가 --bn-colors-hovered-text 로 다시.
+ * 명시도가 같아 뒤엣것이 이기고, 그래서 라벨이 항목 제목과 같은 세기가 된다.
+ *
+ * 앞 규칙(dimmed)이 원래 의도로 보인다 — 묶음 이름이 항목보다 크게 읽힐
+ * 이유가 없다. 그 의도를 되살린다.
+ *
+ * hovered-text 를 낮춰서 풀 수는 없다. 그건 메뉴 항목 호버 글자색이라
+ * fg-neutral 이어야 한다. 한 변수가 두 일을 겸해서 자손 선택자가 필요하다.
+ *
+ * .bn-mantine.bn-root 두 겹으로 (0,3,0) — 저쪽 (0,2,0) 을 이긴다.
+ * .bn-container 를 안 쓰는 것은 이 라벨이 포털 안에 있기 때문이다. */
+.bn-mantine.bn-root .bn-suggestion-menu-label {
+  color: var(--seed-color-fg-neutral-subtle);
 }
