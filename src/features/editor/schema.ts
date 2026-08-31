@@ -1,10 +1,9 @@
 import {
   BlockNoteSchema,
-  createCodeBlockSpec,
   createTableBlockSpec,
   defaultBlockSpecs,
 } from "@blocknote/core";
-import { codeBlockOptions } from "@blocknote/code-block";
+import { knocCodeBlock } from "./codeBlock";
 
 /**
  * 문서에 들어갈 수 있는 것들의 목록. 스키마가 곧 계약이라, 여기 없는 블록은
@@ -13,7 +12,12 @@ import { codeBlockOptions } from "@blocknote/code-block";
  * BlockNote 기본 블록을 그대로 쓰고 코드 블록만 갈아 끼운다. 기본 코드 블록은
  * 하이라이트가 꺼져 있고 언어 목록이 비어 있다 — 그건 하이라이터(Shiki)가
  * 무거워서 코어에서 빼 뒀기 때문이고, @blocknote/code-block 이 그 한 벌이다.
- * 여기서 언어 목록을, useEditorDoc 에서 하이라이터를 붙인다.
+ * 언어 목록은 codeBlock.ts 가, 하이라이터는 useEditorDoc 이 붙인다.
+ *
+ * codeBlock 이 코어의 createCodeBlockSpec 이 아닌 이유는 하나다 — 언어 선택기가
+ * native <select> 라서 펼친 목록을 OS 가 그린다. 스펙에서 render 하나만 바꿔
+ * 슬래시 메뉴와 같은 표면으로 돌린 것이 codeBlock.ts 다. type 과 propSchema 는
+ * 코어 것 그대로라 저장된 문서는 안 바뀐다.
  *
  * 표는 기본 블록이 아니라서 따로 넣는다. defaultBlockSpecs 에 table 이 없다 —
  * BlockNote 가 표를 별도 스펙으로 빼 뒀기 때문이고, 안 넣으면 문서에 표를 아예
@@ -31,7 +35,7 @@ import { codeBlockOptions } from "@blocknote/code-block";
 export const knocSchema = BlockNoteSchema.create({
   blockSpecs: {
     ...defaultBlockSpecs,
-    codeBlock: createCodeBlockSpec(codeBlockOptions),
+    codeBlock: knocCodeBlock,
     table: createTableBlockSpec(),
   },
 });
