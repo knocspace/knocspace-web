@@ -16,6 +16,7 @@
     "@blocknote/core": "^0.54.0",
     "@blocknote/mantine": "^0.54.0",
     "@blocknote/react": "^0.54.0",
+    "@emoji-mart/data": "^1.2.1",
     "@karrotmarket/react-monochrome-icon": "^1.26.0",
     "@seed-design/css": "^2.5.0",
     "@seed-design/react": "^2.3.0",

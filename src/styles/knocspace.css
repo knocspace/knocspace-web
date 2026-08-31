@@ -126,6 +126,16 @@
   --knoc-text-heading-3: 20px;
   --knoc-leading-heading: 1.3;
 
+  /* 문서 아이콘(이모지) — DESIGN.md §2 · §10.
+   *
+   * 52px 은 SEED t 스케일 밖이라 값으로 적는다. 피커 격자의 24px 은 t9 와 같아서
+   * SEED 것을 가리킨다 — 그래야 사용자가 OS 글자 크기를 키웠을 때 같이 커진다
+   * (SEED 의 font-size 는 clamp 로 배율을 받는다).
+   *
+   * 이건 글자 크기지 상자 크기가 아니다. 상자는 각각 p-dense-2 와 size-x10 이 잡는다. */
+  --knoc-text-doc-icon: 52px;
+  --knoc-text-doc-icon-choice: var(--seed-font-size-t9);
+
   /* 밀도 — DESIGN.md 3절 */
   --knoc-space-dense-1: 2px;
   --knoc-space-dense-2: 4px;
@@ -152,6 +162,15 @@
   --knoc-topbar-height: 44px;
   --knoc-doc-measure: 720px;
   --knoc-doc-gutter: 54px;
+  /* 이모지 피커 — DESIGN.md §10 PageIcon.
+   *
+   * 폭은 격자에서 나온 값이다: 8열 × 40px + 좌우 8px = 336px. 격자가 폭을
+   * 정하게 두면(width: fit-content) 1fr 열이 무너져 칸이 서로 겹친다 — fr 은
+   * 남는 자리를 나누는 단위인데 fit-content 에는 남는 자리가 없다.
+   *
+   * 목록 높이는 이모지가 1,870개라서 필요하다. 안 자르면 판이 화면을 넘긴다. */
+  --knoc-icon-picker-width: 336px;
+  --knoc-icon-picker-list-height: 240px;
   --knoc-db-gutter: 16px;
   --knoc-grid-row-height: 32px;
   --knoc-grid-header-height: 34px;
@@ -216,6 +235,23 @@
    * 라이트에서 흰색, 다크에서 gray-100 으로 알아서 뒤집힌다. */
   --knoc-focus-ring-width: 2px;
   --knoc-focus-ring-halo-width: 1px;
+  /* 글자를 치는 캐럿 — DESIGN.md §1.
+   *
+   * §1 이 "강조색은 purple 계열 하나만. 선택 상태, 주 액션, 커서, 삽입선" 이라고
+   * 못 박아 뒀는데, 실제로 우리 색으로 온 것은 선택 면·링과 드롭 커서 넷뿐이었다
+   * (blocknote-bridge.css §7). 글자 캐럿은 빠져 있어서 문서 제목도 이모지
+   * 검색창도 브라우저 기본 파랑이었다.
+   *
+   * **강조색이 아니라 중립색이다.** §1 이 커서를 강조색 목록에 넣어 뒀지만,
+   * 그건 삽입선 — 블록을 끌어다 놓을 자리를 가리키는 선 — 을 말한 것으로 읽는다.
+   * 글자를 치는 캐럿까지 보라로 칠하면 보라가 "선택된 상태" 를 뜻하는지 "여기에
+   * 글자가 들어간다" 를 뜻하는지 구별이 안 된다. 보라는 선택·주 액션·포커스링에만
+   * 남긴다. 삽입선(드롭 커서)은 브리지에서 여전히 보라다 (§7).
+   *
+   * 거는 곳은 index.css 의 base 레이어 한 곳뿐이다 — 컴포넌트마다 걸면 새 입력이
+   * 생길 때마다 빠뜨린다. */
+  --knoc-color-caret: var(--seed-color-fg-neutral);
+
   --knoc-color-focus-ring-halo: var(--seed-color-bg-layer-default);
 
   /* 격자선 — DESIGN.md 5절.
@@ -251,6 +287,8 @@
   --text-doc-title: var(--knoc-text-doc-title);
   --leading-doc-title: var(--knoc-leading-doc-title);
   --tracking-doc-title: var(--knoc-tracking-doc-title);
+  --text-doc-icon: var(--knoc-text-doc-icon);
+  --text-doc-icon-choice: var(--knoc-text-doc-icon-choice);
 
   --spacing-dense-1: var(--knoc-space-dense-1);
   --spacing-dense-2: var(--knoc-space-dense-2);
@@ -278,6 +316,8 @@
 
   --width-sidebar:     var(--knoc-sidebar-default);
   --max-width-measure: var(--knoc-doc-measure);
+  --width-icon-picker:      var(--knoc-icon-picker-width);
+  --max-height-icon-picker: var(--knoc-icon-picker-list-height);
   --max-width-empty:   var(--knoc-empty-measure);
 
   --blur-toast: var(--knoc-toast-blur);

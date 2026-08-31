@@ -89,6 +89,49 @@ export const editorPlaceholders = {
   firstLine: "바로 쓰거나, / 를 눌러 블록을 넣으세요",
 } as const;
 
+/**
+ * 문서 아이콘 — DESIGN.md §10 PageIcon.
+ *
+ * add 는 명령이 아니라 자리 이름이다. "아이콘을 추가하세요" 로 늘리지 않는다 —
+ * 24px 줄에 문장을 넣으면 그 줄이 본문처럼 읽힌다 (§8).
+ *
+ * change 는 화면에 안 보이고 스크린리더만 읽는다. 눈으로는 이모지 자체가
+ * 버튼이라 이름이 필요 없지만, 읽어 주는 쪽에는 이모지 하나가 전부다.
+ *
+ * search 는 Notion 과 같은 말을 쓴다. 이 자리에서 사용자가 하는 일이 "찾기" 가
+ * 아니라 "좁히기" 라서다 — 목록이 이미 눈앞에 다 있고, 치는 만큼 줄어든다.
+ *
+ * **다만 한글로는 하나도 안 걸린다.** 이모지 데이터의 키워드가 영어뿐이다
+ * (emojiSearch.ts). 자리 문구로는 그 사실을 알릴 방법이 없어서, 한글을 치면
+ * 아무것도 없다고 나온다 — 빈 결과 문구 쪽에서 알린다.
+ */
+export const pageIconLabels = {
+  add: "아이콘 추가",
+  change: "문서 아이콘 바꾸기",
+  search: "필터…",
+  random: "랜덤",
+  remove: "제거",
+  empty: "없어요 — 이모지는 영어로만 찾을 수 있어요",
+} as const;
+
+/**
+ * 이모지 구획 이름 — 키는 emoji-mart 의 카테고리 id 다.
+ *
+ * 데이터가 주는 이름은 영어(Smileys & People …)라 여기서 갈아 끼운다. 데이터가
+ * 카테고리를 늘리면 여기 없는 id 가 오는데, 그때는 구획 이름 없이 그린다 —
+ * 이모지가 안 보이는 것보다 이름이 없는 편이 낫다 (PageIcon).
+ */
+export const emojiCategoryLabels: Record<string, string> = {
+  people: "표정과 사람",
+  nature: "자연",
+  foods: "음식",
+  activity: "활동",
+  places: "여행과 장소",
+  objects: "사물",
+  symbols: "기호",
+  flags: "깃발",
+};
+
 /* ── 에러 화면 ───────────────────────────────────────────────── */
 
 /**

@@ -76,6 +76,10 @@ UI 코드를 쓰기 전에 이 파일을 읽습니다. 여기 적힌 값은 D0�
 ### 색 사용
 
 - 강조색은 purple 계열 **하나만**. 선택 상태, 주 액션, 커서, 삽입선.
+  - **글자를 치는 캐럿은 예외입니다 — 중립색(`fg-neutral`)입니다.** 여기서 말하는 커서는
+    삽입선(블록을 끌어다 놓을 자리를 가리키는 선)이고, 캐럿까지 보라로 칠하면 보라가
+    "선택된 상태" 인지 "여기에 글자가 들어간다" 인지 구별이 안 됩니다. 값은
+    `--knoc-color-caret`, 거는 곳은 `index.css` 의 base 레이어 한 곳입니다.
 - 상태색은 SEED 그대로: `positive` 성공, `critical` 위험, `warning` 경고, `informative` 링크, `stroke-focus-ring` 포커스.
 - 배경은 항상 `bg-layer-*` 토큰. 팔레트 gray 를 배경에 직접 쓰지 않습니다.
 - brand-solid 위 텍스트는 라이트·다크 모두 `--seed-color-palette-static-white`.

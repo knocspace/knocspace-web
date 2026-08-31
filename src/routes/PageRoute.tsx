@@ -1,7 +1,9 @@
 import { useState } from "react";
 import { useParams } from "react-router";
 import { DocumentSurface } from "@/components/DocumentSurface/DocumentSurface";
+import { PageIcon } from "@/components/PageIcon/PageIcon";
 import { PageTitle } from "@/components/PageTitle/PageTitle";
+import { listEmojiCategories, searchEmoji } from "@/features/editor/emojiSearch";
 import { LazyBlockEditor } from "@/features/editor/LazyBlockEditor";
 import { sampleDoc } from "@/features/editor/sampleDoc";
 
@@ -20,6 +22,7 @@ export function PageRoute() {
 
   /* 서버가 없어서 라우트가 잠깐 들고 있는다. F2 에서 usePage 로 바뀐다. */
   const [title, setTitle] = useState("");
+  const [icon, setIcon] = useState<string | undefined>(undefined);
 
   /* 라우트가 :pageId 를 보장하지만 useParams 의 타입은 그걸 모른다.
    * 없을 수 있는 값으로 다뤄서 에디터에 undefined 가 흘러가지 않게 한다. */
@@ -27,13 +30,28 @@ export function PageRoute() {
 
   return (
     <DocumentSurface>
-      {/* 제목과 본문 사이 16px. 여백을 PageTitle 이 안 갖는 것은 그게 이 컴포넌트의
-        * 값이 아니라 **둘 사이의** 값이기 때문이다 — 제목 혼자 서는 자리(스토리북)
-        * 에서는 아래가 비어 있으면 안 된다.
+      {/* 아이콘과 제목이 한 묶음이다. 아이콘이 없을 때 「아이콘 추가」 는
+        * 평상시 안 보이고 이 묶음 어디에 마우스를 올려도 나타난다 — 제목 위에
+        * 올렸을 때도 나와야 하므로 감추고 드러내는 것은 여기가 한다.
         *
-        * 실제로 보이는 간격은 이보다 넓다. 첫 블록이 자기 위 여백을 갖고 있어서다
-        * (제목 블록 18px · 문단 3px). 그건 BlockNote 에 남기기로 한 값이다 (§7). */}
-      <div className="mb-x4">
+        * 자리는 늘 잡는다(invisible). 호버할 때만 자리가 생기면 마우스를 올릴
+        * 때마다 제목이 아래로 밀린다.
+        *
+        * :focus-within 도 같이 여는 것이 중요하다. 호버로만 열면 키보드로는 이
+        * 버튼에 닿을 방법이 없다 — 감춰진 동안에도 탭 순서에는 남아 있다. */}
+      <div className="group mb-x4">
+        {/* 아이콘과 제목 사이 10px — DESIGN.md §2. PageIcon 이 자기 여백을
+          * 상쇄해 두어서 여기 값이 그대로 눈에 보이는 간격이다. */}
+        <div
+          className={`mb-dense-5 ${icon ? "" : "invisible group-hover:visible group-focus-within:visible"}`}
+        >
+          <PageIcon
+            value={icon}
+            onChange={setIcon}
+            listCategories={listEmojiCategories}
+            searchEmoji={searchEmoji}
+          />
+        </div>
         <PageTitle value={title} onChange={setTitle} />
       </div>
       <LazyBlockEditor pageId={pageId} content={sampleDoc()} />

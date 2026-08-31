@@ -36,4 +36,21 @@
   body {
     word-break: keep-all;
   }
+
+  /* 캐럿 — DESIGN.md §1 · §7.
+   *
+   * 앱 전체에 한 번에 건다. 컴포넌트마다 걸면 새 입력이 생길 때마다 빠뜨리고,
+   * 실제로 그래서 문서 제목과 이모지 검색창이 브라우저 기본 파랑이었다.
+   *
+   * [contenteditable] 이 에디터 본문까지 덮는다. BlockNote 도 SEED 도
+   * caret-color 를 한 줄도 선언하지 않아서(확인함), 이건 덮는 일이 아니라
+   * 없던 것을 채우는 일이다 — §7 의 "BlockNote CSS 를 끄거나 덮지 않는다" 에
+   * 걸리지 않는다.
+   *
+   * 값의 출처는 knocspace.css 의 --knoc-color-caret 하나다. */
+  input,
+  textarea,
+  [contenteditable] {
+    caret-color: var(--knoc-color-caret);
+  }
 }
