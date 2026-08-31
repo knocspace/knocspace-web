@@ -14,19 +14,19 @@ import type { InlineInputProps } from "./InlineInput";
  * | `Esc` | 취소 |
  *
  * - 편집 상태는 밖에서 갖습니다. 켜는 건 행 메뉴나 `F2` 라 바깥 일입니다
- * - `boxed` 는 트리 행, `bare` 는 문서 제목(테두리도 배경도 없이 캐럿만)
+ * - `boxed` 는 트리 행, `bare` 는 큰 글자 자리(테두리도 배경도 없이 캐럿만)
  * - **읽기 ↔ 편집에 글자가 1px 도 안 움직여야 합니다**
  */
 
-/* 글자 스타일은 맥락이 정한다 — 트리 행은 13px(t3), 문서 제목은 32px(t12).
+/* 글자 스타일은 맥락이 정한다 — 트리 행은 13px(t3), 큰 글자는 32px(t12).
  *
- * 문서 제목의 진짜 크기는 34px 인데 그 토큰이 아직 없다. SEED t 스케일 밖이라
- * F3 에서 --knoc- 로 만든다. 여기서는 제일 가까운 t12 로 보인다 — 임의값
- * 표기를 쓰지 않기 위해서다 (DESIGN.md §4). */
+ * t12 는 큰 글자에서 이 컴포넌트가 어떻게 보이는지 확인하는 용도일 뿐이다.
+ * **문서 제목(40px)은 이제 이 컴포넌트가 아니다** — 접지 않고 줄바꿈해야 해서
+ * PageTitle 을 따로 만들었다 (components/PageTitle). */
 const TEXT_STYLES = ["t3-regular", "t4-regular", "t12-bold"];
 
 type InlineInputStoryArgs = InlineInputProps & {
-  frame: "트리 행(사이드바)" | "문서 제목";
+  frame: "트리 행(사이드바)" | "큰 글자 자리";
 };
 
 const meta: Meta<InlineInputStoryArgs> = {
@@ -56,7 +56,7 @@ const meta: Meta<InlineInputStoryArgs> = {
     selectOnEdit: { description: "편집 시작할 때 전체 선택할지. 제목은 끕니다" },
     requiredMessage: { description: "빈 값이면 확정을 막고 띄울 문구", control: "text" },
     variant: {
-      description: "boxed = 트리 행 · bare = 문서 제목",
+      description: "boxed = 트리 행 · bare = 큰 글자 자리",
       control: "inline-radio",
       options: ["boxed", "bare"],
     },
@@ -67,9 +67,9 @@ const meta: Meta<InlineInputStoryArgs> = {
     },
     frame: {
       name: "놓이는 자리",
-      description: "감쌀 자리 — 트리 행 28px / 문서 제목",
+      description: "감쌀 자리 — 트리 행 28px / 큰 글자",
       control: "inline-radio",
-      options: ["트리 행(사이드바)", "문서 제목"],
+      options: ["트리 행(사이드바)", "큰 글자 자리"],
       table: { category: "스토리 전용" },
     },
   },
@@ -82,7 +82,7 @@ type Story = StoryObj<InlineInputStoryArgs>;
  * ### 해 볼 것
  * - **더블클릭** → 이름 바꾸고 `Enter`. 다시 열어 `Esc`. 그 사이 글자가 안 움직여야 합니다
  * - 다 지우고 `Enter` — `requiredMessage` 가 막습니다. 비우면 빈 이름도 확정됩니다
- * - `variant` 를 bare + **놓이는 자리** 를 문서 제목으로
+ * - `variant` 를 bare + **놓이는 자리** 를 큰 글자 자리로
  */
 export const Playground: Story = {
   render: function PlaygroundStory({ frame, ...args }) {
@@ -102,7 +102,7 @@ export const Playground: Story = {
       />
     );
 
-    if (frame === "문서 제목") {
+    if (frame === "큰 글자 자리") {
       return (
         <div className="flex max-w-measure flex-col gap-x4 rounded-r1 bg-bg-layer-default p-x4">
           {field}

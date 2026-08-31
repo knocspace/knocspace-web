@@ -90,7 +90,7 @@ BlockNote 기본 아이콘은 seed-icon 이 아니라 §8 위반이고, seed-ico
 - [x] `index.css`에 import
 - [x] 하이라이트 8색을 SEED 스케일로 — 글자 500 · 배경 200
 - [x] 체크박스 `accent-color` — 안 걸면 체크 표시가 SEED 보라가 아니라 OS 기본 파랑입니다
-- [ ] `knocspace.css` 에 문서 제목 토큰 — `--knoc-text-doc-title` · `--knoc-tracking-doc-title`. 에디터 밖이라 브리지를 안 거칩니다. `PageTitle` 을 만드는 §3 에서 같이 넣습니다 (DESIGN.md §2)
+- [x] `knocspace.css` 에 문서 제목 토큰 — `--knoc-text-doc-title`(40px) · `--knoc-leading-doc-title` · `--knoc-tracking-doc-title`. 에디터 밖이라 브리지를 안 거칩니다 (DESIGN.md §2)
 - [x] **예외 네 줄** — 색 셋(인용 · 구분선 · 코드 블록 반경) + 글꼴 하나(본문 서체). 변수가 안 달려 있어서 자손 선택자로만 닿습니다 (DESIGN.md §7)
 
 **BlockNote CSS를 끄거나, `!important`로 덮지 않습니다.** 변수만 SEED 쪽을 가리키게 바꿉니다. 이걸 어기면 BlockNote를 올릴 때마다 깨집니다.
@@ -99,7 +99,7 @@ BlockNote 기본 아이콘은 seed-icon 이 아니라 §8 위반이고, seed-ico
 
 **`--bn-font-family` 는 본문에 안 닿습니다.** 그 변수를 읽는 규칙은 `.bn-root` 하나인데, `.bn-default-styles` 가 안쪽 `.bn-editor` 에 같이 붙어서 Inter 스택을 직접 선언하고 상속을 끊습니다. 변수만 걸어 두면 **사이드바는 시스템 글꼴인데 본문만 Inter · Open Sans** 로 나옵니다. 스택이 달라서 한글 대체 글꼴도 같이 갈립니다 — 문서만 따로 노는 이유입니다.
 
-**문서 안쪽 제목 크기는 우리 값입니다 — 30 · 24 · 20px, 줄간 1.3** (Notion 값. DESIGN.md §2). `--knoc-text-heading-*` 에서 오고 `blocknote-bridge.css` 가 `--level` 로 넘깁니다. 한 번 26 · 20 · 17px 까지 줄여 봤다가 되돌린 자리입니다. 34px 짜리 문서 제목은 이것과 다른 것이고 `PageTitle` 이 §3 에서 맡습니다.
+**문서 안쪽 제목 크기는 우리 값입니다 — 30 · 24 · 20px, 줄간 1.3** (Notion 값. DESIGN.md §2). `--knoc-text-heading-*` 에서 오고 `blocknote-bridge.css` 가 `--level` 로 넘깁니다. 한 번 26 · 20 · 17px 까지 줄여 봤다가 되돌린 자리입니다. 40px 짜리 문서 제목은 이것과 다른 것이고 `PageTitle` 이 맡습니다.
 
 **사이드 메뉴(＋ · ⠿) 자리는 크기를 바꾸면 같이 틀어집니다.** BlockNote 가 제목 레벨별로 39 · 27 · 18.5px 를 박아 뒀는데(`SideMenuController` 의 `getBlockOffset`), 자기 기본 크기 48 · 32 · 20.8px 에 맞춰 손으로 계산한 값입니다. `features/editor/sideMenuOffset.ts` 가 첫 줄을 재서 대신 맞춥니다 — 기본 사이드 메뉴를 끄고(`sideMenu={false}`) 같은 것을 다시 넣되 자리 계산만 바꿉니다.
 
@@ -159,7 +159,7 @@ export function SlashMenu({ editor }: { editor: KnocEditor }) {
 
 ### 3. 조립 (2시간)
 
-- [ ] `components/PageTitle/PageTitle.tsx` — `InlineInput` 을 `variant="bare"` 로 감쌉니다
+- [x] `components/PageTitle/PageTitle.tsx` — `InlineInput` 을 **안 씁니다**. 아래 세 가지가 걸려서 `textarea` 한 겹으로 따로 만들었습니다
 - [ ] `PageRoute`에서 `DocumentSurface` 안에 `PageTitle` + `BlockEditor` 배치
 - [ ] 제목에서 Enter/↓ → 첫 블록으로 포커스
 - [ ] 빈 문서 문구 (DESIGN.md §9)

@@ -184,7 +184,7 @@ export class ApiError extends Error {
 - [ ] 행 우클릭 메뉴 — 하위 페이지 추가 / 이름 바꾸기 / 삭제 (F1의 `Menu`)
 - [ ] `TopBar`에 `Breadcrumb` 연결
 - [ ] `PageRoute` — 로딩(Skeleton) / 404 / 에러 / 성공 갈래 처리
-- [ ] `features/editor/PageTitle.tsx` — 한 줄 편집. 34px / 700 / −0.035em, 비어 있으면 `제목 없음`
+- [ ] `components/PageTitle/PageTitle.tsx` — 40px / 700 / −0.035em, 비어 있으면 `제목 없음` (F3 §3 으로 넘어갔습니다)
   - Enter나 ↓를 누르면 본문으로 포커스가 넘어갑니다 (본문은 F3에서 연결)
 - [ ] 첫 실행 빈 화면 (F1의 `EmptyState`)
 

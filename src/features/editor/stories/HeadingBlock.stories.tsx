@@ -26,7 +26,7 @@ import { bodyBlock, storyDoc, storyPageId } from "./storyDoc";
  * - **크기는 우리 값입니다** — 30 · 24 · 20px, 줄간 1.3 (Notion 값. DESIGN.md §2).
  *   BlockNote 기본 48 · 32 · 20.8px 은 본문 16px 의 3 · 2 · 1.3 배라 제목1 이 너무
  *   크게 섭니다. `--knoc-text-heading-*` 에서 오고 브리지가 `--level` 로 넘깁니다
- * - **페이지 제목 34px 과는 다른 것입니다.** 그건 `PageTitle`(F3 §3) 자리고,
+ * - **페이지 제목 40px 과는 다른 것입니다.** 그건 `PageTitle` 자리고,
  *   문서가 블록 배열 하나뿐인 BlockNote 에는 아예 없는 개념입니다
  * - 토글 제목(`isToggleable`)은 같은 블록의 속성이고 세 단계 다 받습니다
  */

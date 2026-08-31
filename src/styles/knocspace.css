@@ -102,16 +102,25 @@
     ui-monospace, "Cascadia Code", Consolas, "SFMono-Regular", Menlo,
     "Liberation Mono", "D2Coding", monospace;
 
-  /* 문서 안쪽 제목 — DESIGN.md §2.
+  /* 타이포 — DESIGN.md §2.
+   *
+   * SEED 의 t 스케일(11 · 12 · 13 · 14 · 16 · 18 · 20 · 22 · 24px) 밖에 있는
+   * 값만 여기 둘 이유는 없다. 제목3 의 20px 은 t7 과 같지만 같이 둔다 — 셋이
+   * 한 스케일이고, 하나만 다른 파일에서 오면 고칠 때 하나를 빠뜨린다.
    *
    * 값의 출처는 Notion 이다. BlockNote 기본(48 · 32 · 20.8px)은 본문 16px 의
    * 3 · 2 · 1.3 배라 문서 한 장에서 제목1 이 너무 크게 선다.
    *
-   * 제목3 의 20px 은 SEED t7 과 같지만 셋을 같이 둔다 — 한 스케일이고, 하나만
-   * 다른 파일에서 오면 고칠 때 하나를 빠뜨린다.
+   * 문서 제목과 문서 안쪽 제목은 다른 것이다. 문서 제목은 페이지 한 장의
+   * 이름이고(PageTitle), 제목1·2·3 은 본문에 넣는 블록이다. 그래서 줄간도
+   * 따로다 — 제목은 한 줄로 끝나는 일이 많아 1.2, 블록 제목은 1.3.
    *
    * 굵기는 여기 없다. 400 과 700 둘뿐이라 SEED 토큰으로 충분하다. Notion 은
    * 제목에 600 을 쓰지만 §2 가 600 을 워드마크 전용으로 묶어 뒀다. */
+  --knoc-text-doc-title: 40px;
+  --knoc-leading-doc-title: 1.2;
+  --knoc-tracking-doc-title: -0.035em;
+
   --knoc-text-heading-1: 30px;
   --knoc-text-heading-2: 24px;
   --knoc-text-heading-3: 20px;
@@ -142,7 +151,7 @@
   --knoc-sidebar-rail: 40px;
   --knoc-topbar-height: 44px;
   --knoc-doc-measure: 720px;
-  --knoc-doc-gutter: 56px;
+  --knoc-doc-gutter: 54px;
   --knoc-db-gutter: 16px;
   --knoc-grid-row-height: 32px;
   --knoc-grid-header-height: 34px;
@@ -235,6 +244,13 @@
    * 이유다. 지금은 CSS 주석이 탐지되지 않지만 기대지 않는다.) */
   --font-sans: var(--knoc-font-sans);
   --font-mono: var(--knoc-font-mono);
+
+  /* 문서 제목만 내보낸다. PageTitle 이 유틸리티로 쓰는 값이라서다.
+   * 제목1·2·3 은 컴포넌트가 아니라 blocknote-bridge.css 가 --level 로 읽으므로
+   * Tailwind 이름이 필요 없다. */
+  --text-doc-title: var(--knoc-text-doc-title);
+  --leading-doc-title: var(--knoc-leading-doc-title);
+  --tracking-doc-title: var(--knoc-tracking-doc-title);
 
   --spacing-dense-1: var(--knoc-space-dense-1);
   --spacing-dense-2: var(--knoc-space-dense-2);
