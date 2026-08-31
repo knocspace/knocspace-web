@@ -84,7 +84,7 @@ export function RootLayout() {
      * 가면서 이 갈래가 사라진다. */
     crumbs =
       path.length > 0
-        ? path.map(({ id, title }) => ({ id, title }))
+        ? path.map(({ id, title, icon }) => ({ id, title, icon }))
         : [{ id: pageId, title: pageId }];
   } else {
     crumbs = matches.flatMap((match) => {

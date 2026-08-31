@@ -13,6 +13,11 @@ import type { BreadcrumbItem, BreadcrumbProps } from "./Breadcrumb";
  *
  * 접기와 줄임은 **남는 폭**의 함수라, 오른쪽 액션까지 있는 진짜 상단바 안에서만
  * 제대로 보입니다.
+ *
+ * **고른 아이콘만 섭니다.** 이모지가 있으면 제목 앞에 서고, **없으면 그 자리도 없습니다** —
+ * 문서 모양으로 채우지 않습니다. 채우는 것은 세로로 줄 서는 사이드바 트리 하나뿐이고,
+ * 세 자리의 규칙은 DESIGN.md §10 「문서 아이콘」 한 표에 모여 있습니다.
+ * 아래 **아이콘이 섞였을 때** 로 확인하세요.
  */
 
 const 경로: Record<string, BreadcrumbItem[] | null> = {
@@ -32,6 +37,12 @@ const 경로: Record<string, BreadcrumbItem[] | null> = {
     { id: "product", title: "제품 기획", icon: "📌" },
     { id: "front", title: "프론트엔드", icon: "🧩" },
     { id: "design", title: "디자인", icon: "📐" },
+    { id: "tokens", title: "토큰 대조표", icon: "🎨" },
+  ],
+  "아이콘이 섞였을 때": [
+    { id: "ws", title: "워크스페이스", icon: "🗂" },
+    { id: "product", title: "제품 기획", icon: null },
+    { id: "design", title: "디자인" },
     { id: "tokens", title: "토큰 대조표", icon: "🎨" },
   ],
   "제목이 아주 길 때": [
