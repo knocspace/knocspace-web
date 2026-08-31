@@ -214,17 +214,54 @@
   font-family: var(--knoc-font-mono);
 }
 
-/* 제목 크기·줄간은 여기 없다. 일부러 없다.
+/* 문서 안쪽 제목 크기·줄간 — DESIGN.md §2 · §7
  *
- * 문서 **안쪽** 제목(제목1·2·3 블록)의 크기는 BlockNote 것을 따르기로 했다 —
- * 제목1 3em(48px) · 제목2 2em(32px) · 제목3 1.3em(20.8px), 줄간 1.5.
- * 한 번 26 · 20 · 17px 로 줄여 봤는데 본문과의 위계가 눌려서 되돌렸다.
+ * 위의 것들과 결이 같다. BlockNote 가 박아 둔 값을 우리 값으로 되돌린다.
+ * 다른 점은 되돌리는 곳이 색이 아니라 크기라는 것뿐이다.
  *
- * DESIGN.md §2 의 34px 은 페이지 제목이지 블록이 아니다. 그 자리는 아직
- * 없다 — F3 §3 에서 PageTitle 을 만들 때 생긴다.
+ * 선언을 새로 얹지 않고 --level 만 바꾼다. 코어가 제목의 font-size 를
+ * font-size: var(--level) 로 읽게 해 뒀기 때문이다. font-size 를 직접 쓰면
+ * 그 규칙과 명시도 싸움이 되고, 코어가 선택자를 손볼 때마다 깨진다.
  *
- * 줄이려면 --level 만 바꾸면 되지만(BlockNote 가 이미 읽는 변수다), 그 전에
- * DESIGN.md §2 와 §7 을 먼저 고친다. */
+ * --prev-level 도 같이 바꾼다. 레벨을 바꾸는 0.2초 동안 코어가 이쪽을 읽는데,
+ * 한쪽만 고치면 전환 중에 옛 크기가 잠깐 스친다.
+ *
+ * 값은 knocspace.css 한 곳에서 온다. 여기에 30px 을 적으면 안 된다 — 문서
+ * 제목(PageTitle)과 같은 스케일이고, 그쪽은 CSS 가 아니라 컴포넌트가 쓴다.
+ *
+ * 4~6 은 여기 없다. 스키마에서 닫아서 만들 수가 없다(schema.ts). 붙여넣기로
+ * 들어온 것은 코어 기본값 그대로 그려진다 — 그 편이 낫다. 우리가 값을 주면
+ * 만들 수 없는 크기를 우리가 정해 두는 셈이 된다.
+ *
+ * 줄간은 --level 처럼 변수로 안 온다. 코어가 .bn-block-outer 에 1.5 를 걸고
+ * 상속으로 내려보내므로(0,1,0), 제목 몸에 직접 건다.
+ *
+ * 위 여백(padding-top: 18px)은 안 건드린다. 그건 크기가 아니라 리듬이고,
+ * 사이드 메뉴 아이콘이 서는 자리이기도 하다 — sideMenuOffset.ts. */
+.bn-container [data-content-type="heading"] {
+  --level: var(--knoc-text-heading-1);
+  line-height: var(--knoc-leading-heading);
+}
+
+.bn-container [data-content-type="heading"][data-level="2"] {
+  --level: var(--knoc-text-heading-2);
+}
+
+.bn-container [data-content-type="heading"][data-level="3"] {
+  --level: var(--knoc-text-heading-3);
+}
+
+.bn-container [data-prev-level="1"] {
+  --prev-level: var(--knoc-text-heading-1);
+}
+
+.bn-container [data-prev-level="2"] {
+  --prev-level: var(--knoc-text-heading-2);
+}
+
+.bn-container [data-prev-level="3"] {
+  --prev-level: var(--knoc-text-heading-3);
+}
 
 /* 표 머리글 칸 — DESIGN.md §7
  *

@@ -1,5 +1,6 @@
 import {
   BlockNoteSchema,
+  createHeadingBlockSpec,
   createTableBlockSpec,
   defaultBlockSpecs,
 } from "@blocknote/core";
@@ -9,10 +10,25 @@ import { knocCodeBlock } from "./codeBlock";
  * 문서에 들어갈 수 있는 것들의 목록. 스키마가 곧 계약이라, 여기 없는 블록은
  * 저장된 문서에도 없다.
  *
- * BlockNote 기본 블록을 그대로 쓰고 코드 블록만 갈아 끼운다. 기본 코드 블록은
- * 하이라이트가 꺼져 있고 언어 목록이 비어 있다 — 그건 하이라이터(Shiki)가
- * 무거워서 코어에서 빼 뒀기 때문이고, @blocknote/code-block 이 그 한 벌이다.
- * 언어 목록은 codeBlock.ts 가, 하이라이터는 useEditorDoc 이 붙인다.
+ * BlockNote 기본 블록을 그대로 쓰고 셋만 갈아 끼운다 — 제목 · 코드 · 표.
+ *
+ * 제목은 레벨을 1·2·3 으로 좁힌다. BlockNote 기본은 여섯 단계지만 H4 는 본문과
+ * 크기가 같고(1em) H5·H6 은 본문보다 **작아서**(0.9em · 0.8em) 위계가 아니라
+ * 각주로 읽힌다. Notion 에도 제목1·2·3 뿐이다.
+ *
+ * `levels` 하나로 셋이 같이 닫히는 것이 이 방법을 고른 이유다 — 슬래시 메뉴는
+ * `propSchema.level.values` 를 훑어 항목을 만들고, 단축키(`Mod-Alt-4`)와 마크다운
+ * 입력규칙(`#### `)도 같은 배열에서 나온다. 슬래시 메뉴만 걸러 내면 나머지 둘로는
+ * 여전히 만들어진다.
+ *
+ * **붙여넣기는 이걸로 안 걸러진다.** `values` 는 타입 레벨 장치이고 런타임 검증이
+ * 없다. 코어의 Heading `parse` 는 `levels` 를 안 받고 태그 이름만 보므로, `<h4>`
+ * 가 든 HTML 을 붙여넣으면 level 4 블록이 그대로 들어온다 — 만들 수도 되돌릴
+ * 수도 없는데 존재는 한다. 문서 가져오기를 붙이는 F4 에서 3 으로 눌러야 한다.
+ *
+ * 코드 블록은 기본 것이 하이라이트가 꺼져 있고 언어 목록이 비어 있다 — 그건
+ * 하이라이터(Shiki)가 무거워서 코어에서 빼 뒀기 때문이고, @blocknote/code-block
+ * 이 그 한 벌이다. 언어 목록은 codeBlock.ts 가, 하이라이터는 useEditorDoc 이 붙인다.
  *
  * codeBlock 이 코어의 createCodeBlockSpec 이 아닌 이유는 하나다 — 언어 선택기가
  * native <select> 라서 펼친 목록을 OS 가 그린다. 스펙에서 render 하나만 바꿔
@@ -35,6 +51,7 @@ import { knocCodeBlock } from "./codeBlock";
 export const knocSchema = BlockNoteSchema.create({
   blockSpecs: {
     ...defaultBlockSpecs,
+    heading: createHeadingBlockSpec({ levels: [1, 2, 3] }),
     codeBlock: knocCodeBlock,
     table: createTableBlockSpec(),
   },

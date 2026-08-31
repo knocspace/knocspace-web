@@ -7,44 +7,42 @@ import type { KnocPartialBlock } from "../schema";
 import { bodyBlock, storyDoc, storyPageId } from "./storyDoc";
 
 /**
- * 문서 **안쪽** 제목 블록. `heading` 한 종류이고 `level` 로 H1~H6 이 갈립니다.
+ * 문서 **안쪽** 제목 블록. `heading` 한 종류이고 `level` 로 H1~H3 이 갈립니다.
  *
  * | | Notion | 크기 | 마크다운 | 슬래시 |
  * | --- | --- | --- | --- | --- |
  * | H1 | 제목1 | 3em · 48px | `# ` | `/제목1` · `Ctrl+Alt+1` |
- * | H2 | 제목2 | 2em · 32px | `## ` | `/제목2` |
- * | H3 | 제목3 | 1.3em · 20.8px | `### ` | `/제목3` |
- * | H4 | 제목4 | 1em · 16px | `#### ` | `/제목4` |
- * | H5 | — | 0.9em · 14.4px | `##### ` | `/제목5` |
- * | H6 | — | 0.8em · 12.8px | `###### ` | `/제목6` |
+ * | H2 | 제목2 | 2em · 32px | `## ` | `/제목2` · `Ctrl+Alt+2` |
+ * | H3 | 제목3 | 1.3em · 20.8px | `### ` | `/제목3` · `Ctrl+Alt+3` |
  *
- * - **Notion 에는 제목4 까지입니다**(2026-03 에 추가 — `knocspace-parity.md`).
- *   H5 · H6 은 BlockNote 에만 있고, 저희 슬래시 메뉴에는 `소제목` 그룹으로 올라옵니다
- * - **크기와 줄간은 BlockNote 것을 그대로 씁니다** — DESIGN.md §2 · §7. 26 · 20 · 17px
- *   로 줄여 봤지만 본문과의 위계가 눌려서 되돌렸습니다
- * - DESIGN.md 가 값을 정해 둔 것은 H1·H2·H3 뿐입니다. H4 부터는 BlockNote 기본값
- *   그대로고, H4 는 본문(16px)과 크기가 같아 굵기로만 구별됩니다
+ * - **H4·H5·H6 은 닫았습니다** (`levels: [1, 2, 3]` — `schema.ts`). BlockNote 에는 여섯
+ *   단계가 있지만 H4 는 본문과 크기가 같고(1em) H5·H6 은 본문보다 **작아서**(0.9em ·
+ *   0.8em) 위계가 아니라 각주로 읽힙니다. Notion 에도 제목1·2·3 뿐입니다
+ * - 슬래시 메뉴 · 단축키(`Ctrl+Alt+4`) · 마크다운(`#### `) 셋이 같이 닫혔습니다.
+ *   셋 다 `propSchema.level.values` 한 곳에서 나오기 때문입니다
+ * - **붙여넣기는 안 걸러집니다.** `<h4>` 가 든 HTML 을 붙여넣으면 level 4 블록이
+ *   그대로 들어옵니다 — 만들 수도 되돌릴 수도 없는데 존재는 합니다. F4 의 문서
+ *   가져오기에서 3 으로 누릅니다
+ * - **크기는 우리 값입니다** — 30 · 24 · 20px, 줄간 1.3 (Notion 값. DESIGN.md §2).
+ *   BlockNote 기본 48 · 32 · 20.8px 은 본문 16px 의 3 · 2 · 1.3 배라 제목1 이 너무
+ *   크게 섭니다. `--knoc-text-heading-*` 에서 오고 브리지가 `--level` 로 넘깁니다
  * - **페이지 제목 34px 과는 다른 것입니다.** 그건 `PageTitle`(F3 §3) 자리고,
  *   문서가 블록 배열 하나뿐인 BlockNote 에는 아예 없는 개념입니다
- * - 토글 제목(`isToggleable`)은 같은 블록의 속성입니다. Notion 도 BlockNote 도
- *   메뉴에는 H1·H2·H3 만 올려 두지만, 속성 자체는 여섯 단계 다 받습니다
+ * - 토글 제목(`isToggleable`)은 같은 블록의 속성이고 세 단계 다 받습니다
  */
 
-const LEVELS = [1, 2, 3, 4, 5, 6] as const;
+const LEVELS = [1, 2, 3] as const;
 type HeadingLevel = (typeof LEVELS)[number];
 
 /* 컨트롤에 찍히는 이름. 값은 숫자 그대로 두고 보이는 글자만 바꾼다 —
  * 블록에 들어가는 것은 `level: 2` 이지 "H2" 가 아니기 때문이다.
  *
- * 숫자 1~6 을 그대로 두면 무엇의 1 인지가 안 보인다. 화면에서도 슬래시 메뉴
+ * 숫자 1~3 을 그대로 두면 무엇의 1 인지가 안 보인다. 화면에서도 슬래시 메뉴
  * 에서도 이것들은 H1 · H2 로 불린다. */
 const LEVEL_LABELS: Record<HeadingLevel, string> = {
   1: "H1",
   2: "H2",
   3: "H3",
-  4: "H4",
-  5: "H5",
-  6: "H6",
 };
 
 /* pageId · content 는 arg 가 아니다. render 가 나머지 arg 로 만들어 넘긴다 — storyDoc.ts. */
@@ -99,13 +97,12 @@ const meta: Meta<HeadingStoryArgs> = {
   argTypes: {
     level: {
       name: "제목",
-      description:
-        "Notion 이름으로 제목1~제목4. H5 · H6 은 Notion 에 없고 BlockNote 에만 있습니다",
+      description: "Notion 이름으로 제목1~제목3. H4~H6 은 `schema.ts` 에서 닫았습니다",
       control: { type: "inline-radio", labels: LEVEL_LABELS },
       options: LEVELS,
       /* 표에는 값이 그대로 보이게 둔다. 컨트롤에 H1 로 찍히니, 블록에 들어가는
        * 것이 숫자라는 걸 어딘가 한 곳에서는 말해 줘야 한다. */
-      table: { category: "제목 블록", type: { summary: "1 | 2 | 3 | 4 | 5 | 6" } },
+      table: { category: "제목 블록", type: { summary: "1 | 2 | 3" } },
     },
     isToggleable: {
       name: "토글 제목",
@@ -123,8 +120,8 @@ const meta: Meta<HeadingStoryArgs> = {
     editable: { description: "끄면 읽기 전용 — F5 의 보기 권한이 여기로 옵니다" },
     onChange: { description: "내용이 바뀔 때마다. Actions 패널에 문서가 통째로 찍힙니다" },
     allLevels: {
-      name: "H1~H6 한 번에",
-      description: "지금 설정 그대로 여섯 단계를 한 문서에. 사이 간격은 붙여 놔야 보입니다",
+      name: "H1~H3 한 번에",
+      description: "지금 설정 그대로 세 단계를 한 문서에. 사이 간격은 붙여 놔야 보입니다",
       control: "boolean",
       table: { category: "스토리 전용" },
     },
@@ -136,10 +133,11 @@ type Story = StoryObj<HeadingStoryArgs>;
 
 /**
  * ### 해 볼 것
- * - **제목** 을 H1 → H6 으로 내려 봅니다. H4 부터는 본문과 크기가 같아 굵기로만 갈립니다
+ * - **제목** 을 H1 → H3 으로 내려 봅니다
  * - **토글 제목** 을 켜고 제목 왼쪽 화살표를 눌러 봅니다
- * - **H1~H6 한 번에** 로 위계가 실제로 보이는지 확인합니다
- * - 빈 줄에서 `# ` `## ` … 또는 `/제목2`, `Ctrl+Alt+2` 로도 같은 블록이 됩니다.
+ * - **H1~H3 한 번에** 로 위계가 실제로 보이는지 확인합니다
+ * - 빈 줄에서 `# ` `## ` `### ` 또는 `/제목2`, `Ctrl+Alt+2` 로도 같은 블록이 됩니다.
+ *   `#### ` 과 `Ctrl+Alt+4` 는 이제 아무 일도 안 합니다.
  *   그렇게 바꾼 결과는 컨트롤에 안 비칩니다(`storyDoc.ts` 의 `storyPageId`)
  * - 위 툴바로 다크로 뒤집어 봅니다. 제목 색은 `blocknote-bridge.css` 가 SEED 로 넘긴 값입니다
  */

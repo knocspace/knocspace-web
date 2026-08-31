@@ -59,8 +59,8 @@ function tableBlock({
   const 둘째줄 = merged
     ? /* colspan 을 주면 그 칸이 오른쪽을 먹는다. 먹힌 칸은 배열에서 빼야 한다 —
        * 안 빼면 열이 하나 더 있는 표가 된다. */
-      [cell("제목", 색), cell("제목1 ~ 제목4 · level 1~6", { ...색, colspan: 2 })]
-    : [cell("제목", 색), cell("제목1 ~ 제목4", 색), cell("level: 1~6", 색)];
+      [cell("제목", 색), cell("제목1 ~ 제목3 · level 1~3", { ...색, colspan: 2 })]
+    : [cell("제목", 색), cell("제목1 ~ 제목3", 색), cell("level: 1~3", 색)];
 
   return {
     type: "table",

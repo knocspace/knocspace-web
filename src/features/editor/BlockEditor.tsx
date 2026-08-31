@@ -1,4 +1,6 @@
 import { BlockNoteView } from "@blocknote/mantine";
+import { SideMenuController } from "@blocknote/react";
+import { sideMenuFloatingOptions } from "./sideMenuOffset";
 import { toEditorDoc, type EditorDoc } from "./doc";
 import { useEditorDoc } from "./useEditorDoc";
 import { useSeedColorScheme } from "./useSeedColorScheme";
@@ -30,7 +32,8 @@ export interface BlockEditorProps {
 /**
  * 문서 본문. props 만 받고 서버도 라우터도 모른다.
  *
- * 슬래시 메뉴 · 포맷 툴바 · 드래그 핸들은 BlockNote 기본 표면 그대로다.
+ * 슬래시 메뉴 · 포맷 툴바는 BlockNote 기본 표면 그대로다. 사이드 메뉴도
+ * 생김새는 기본이고, 세로 위치만 우리가 계산한다 — sideMenuOffset.ts.
  * SEED 표면으로 갈아 끼우는 것은 F3 §2 다 (SlashMenu · FormatToolbar).
  */
 export function BlockEditor({ pageId, content, editable = true, onChange }: BlockEditorProps) {
@@ -54,7 +57,13 @@ export function BlockEditor({ pageId, content, editable = true, onChange }: Bloc
         editable={editable}
         theme={colorScheme}
         onChange={onChange && (() => onChange(toEditorDoc(editor.document)))}
-      />
+        /* 기본 사이드 메뉴를 끄고 같은 것을 다시 넣는다. 자리 계산만 우리 것으로
+         * 바꾸려는 것이고, 안에 그려지는 ＋ 와 ⠿ 는 BlockNote 기본 그대로다
+         * — sideMenuOffset.ts. */
+        sideMenu={false}
+      >
+        <SideMenuController floatingUIOptions={sideMenuFloatingOptions} />
+      </BlockNoteView>
     </div>
   );
 }

@@ -102,6 +102,21 @@
     ui-monospace, "Cascadia Code", Consolas, "SFMono-Regular", Menlo,
     "Liberation Mono", "D2Coding", monospace;
 
+  /* 문서 안쪽 제목 — DESIGN.md §2.
+   *
+   * 값의 출처는 Notion 이다. BlockNote 기본(48 · 32 · 20.8px)은 본문 16px 의
+   * 3 · 2 · 1.3 배라 문서 한 장에서 제목1 이 너무 크게 선다.
+   *
+   * 제목3 의 20px 은 SEED t7 과 같지만 셋을 같이 둔다 — 한 스케일이고, 하나만
+   * 다른 파일에서 오면 고칠 때 하나를 빠뜨린다.
+   *
+   * 굵기는 여기 없다. 400 과 700 둘뿐이라 SEED 토큰으로 충분하다. Notion 은
+   * 제목에 600 을 쓰지만 §2 가 600 을 워드마크 전용으로 묶어 뒀다. */
+  --knoc-text-heading-1: 30px;
+  --knoc-text-heading-2: 24px;
+  --knoc-text-heading-3: 20px;
+  --knoc-leading-heading: 1.3;
+
   /* 밀도 — DESIGN.md 3절 */
   --knoc-space-dense-1: 2px;
   --knoc-space-dense-2: 4px;
