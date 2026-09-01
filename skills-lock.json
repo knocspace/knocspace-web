@@ -1,6 +1,12 @@
 {
   "version": 1,
   "skills": {
+    "feature-sliced-design": {
+      "source": "feature-sliced/skills",
+      "sourceType": "github",
+      "skillPath": "feature-sliced-design/SKILL.md",
+      "computedHash": "f14c4d8f092ef8a6e9e0a2e5937a56884b9cdbd9b1f49c0618fad513d4a59dc8"
+    },
     "seed-design": {
       "source": "daangn/seed-design",
       "sourceType": "github",
