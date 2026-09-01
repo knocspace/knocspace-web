@@ -24,7 +24,7 @@
 - 레이아웃 컴포넌트 — `Breadcrumb`, `PageTree`, `PageTreeItem` (전부 props만 받습니다)
 - 컴포넌트 카탈로그 — 스토리북
 
-**안 만드는 것** — `src/api/`, `src/types/api.ts`, TanStack Query 설정. 전부 [F2](sprint-2.md)입니다.
+**안 만드는 것** — `src/shared/api/`, TanStack Query 설정. 전부 [F2](sprint-2.md)입니다.
 
 자동 테스트도 넣지 않습니다. 스토리북에 더미 데이터를 넣고 눈으로 확인합니다 — 이 스프린트에서 만드는 것이 전부 props 만 받는 순수 UI 라, 스토리 몇 개면 상태를 다 재현할 수 있습니다.
 
@@ -163,7 +163,7 @@ chore: 컴포넌트 카탈로그를 스토리북으로
 - [ ] `npm run storybook` 에서 10종이 라이트·다크 양쪽에서 정상으로 보인다 — **눈으로 확인할 것만 남았습니다**
 - [x] 10종 전부 마우스 없이 조작된다 — 누르는 것은 전부 `<button>` 이거나 SEED 파트이고,
       직접 키를 다루는 넷(`Menu` · `Dialog` · `InlineInput` · `PageTree`)은 각자 핸들러를 갖습니다
-- [x] `src/components/` 안에서 `useQuery`·`fetch`·`localStorage`를 import 하는 곳 0개
+- [x] `src/pages/` · `src/shared/ui/` 안에서 `useQuery`·`fetch`·`localStorage`를 import 하는 곳 0개
 - [x] 이상한 경로 → NotFound, 라우트를 옮겨도 사이드바 폭이 유지된다 — `path: "*"` 와
       `RootLayout` 의 `useSidebarResize`
 - [x] UI 문구가 `messages.ts` 밖에 하드코딩된 곳 0개 — 사이드바 라벨과 문서 자리표시를

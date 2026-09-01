@@ -9,7 +9,7 @@ import {
   MenuTrigger,
 } from "@seed-design/react";
 import type { MenuRootProps } from "@seed-design/react";
-import type { IconComponent } from "@/shared/ui";
+import type { IconComponent } from "../icon";
 
 /**
  * 우클릭 · 드롭다운 메뉴 — DESIGN.md §10.

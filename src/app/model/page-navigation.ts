@@ -1,3 +1,11 @@
+/**
+ * 사이드바 트리 한 행. 화면이 아니라 **전역 레이아웃**이 쓰는 것이라
+ * `pages/` 가 아니라 여기 있다 — `AppLayout` 이 라우트와 상관없이 늘 그린다.
+ *
+ * `app/model/` 에 있는 넷(이 파일 · page-navigation-path · breadcrumb ·
+ * sidebar-resize)이 전부 같은 이유다. 셸이 무엇을 그릴지 고르는 계산이고,
+ * 화면이 갈아 끼워져도 살아 있다.
+ */
 export interface PageNavigationNode {
   id: string;
   title: string;

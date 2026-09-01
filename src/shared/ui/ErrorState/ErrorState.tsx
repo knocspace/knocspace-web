@@ -5,7 +5,7 @@ import {
   PageBannerRoot,
   PageBannerTitle,
 } from "@seed-design/react";
-import { EmptyState } from "@/shared/ui";
+import { EmptyState } from "../EmptyState/EmptyState";
 import type { Message } from "@/shared/config";
 
 /**

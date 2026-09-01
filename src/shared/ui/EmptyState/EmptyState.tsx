@@ -1,6 +1,7 @@
-import type { ComponentType, ReactNode } from "react";
+import type { ReactNode } from "react";
 import { ActionButton } from "@seed-design/react";
 import type { Message } from "@/shared/config";
+import type { IconComponent } from "../icon";
 
 /**
  * 빈 화면 — DESIGN.md §9.
@@ -12,11 +13,6 @@ import type { Message } from "@/shared/config";
  * ErrorState 가 이 컴포넌트를 그대로 쓴다. 골격이 같고 아이콘과 버튼만
  * 다르기 때문이다.
  */
-
-export type IconComponent = ComponentType<{
-  size?: string | number;
-  className?: string;
-}>;
 
 export interface EmptyStateProps extends Message {
   /** seed-icon 컴포넌트. compact 에서는 무시한다 */

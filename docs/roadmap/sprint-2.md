@@ -23,8 +23,8 @@ F1에서 만든 컴포넌트에 **데이터를 꽂습니다.** 데이터의 출�
 
 ## 만드는 것
 
-- `src/types/api.ts` — 백엔드와의 약속
-- `src/api/*` — localStorage mock (느리게 / 실패하게 만드는 스위치 포함)
+- `src/shared/api/*` — 백엔드와의 약속(계약 타입)과 localStorage mock
+  (느리게 / 실패하게 만드는 스위치 포함). 타입과 호출을 한 세그먼트에 둡니다
 - TanStack Query 설정과 쿼리 키 규칙
 - 사이드바 페이지 트리 (펼침·접힘, 선택 표시)
 - 페이지 생성 / 열기 / 제목 수정 / 삭제(휴지통으로 이동)
@@ -38,7 +38,7 @@ F1에서 만든 컴포넌트에 **데이터를 꽂습니다.** 데이터의 출�
 
 ### 1. 백엔드와의 약속 정하기 (2시간) ★ 이 스프린트의 핵심
 
-`src/types/api.ts` 하나에 전부 모읍니다.
+`src/shared/api/` 한 세그먼트에 전부 모읍니다.
 
 판단 기준 하나: **이 파일을 그대로 백엔드 쪽에 넘길 수 있어야 합니다.** mock을 편하게 만들려고 타입을 비틀지 않습니다.
 
@@ -222,9 +222,9 @@ F2 를 끝낼 때 러너가 없어서 못 썼습니다. 아래 둘은 순수 함
 - [ ] `?slow=1`로 Skeleton이, `?fail=save`로 ErrorState가 실제로 뜬다
 - [ ] 마우스 없이 트리를 끝까지 조작할 수 있다
 - [ ] 샘플 300개를 넣어도 트리가 눈에 띄게 안 밀린다 (가상 스크롤은 F6)
-- [ ] `src/api/` 밖에서 `localStorage`를 직접 부르는 곳 0개 (`useSidebarResize`·`useExpandedIds`는 UI 상태라 예외)
-- [ ] `src/components/` 안에서 `useQuery`를 import 하는 곳 0개
-- [ ] `src/types/api.ts`를 백엔드에 그대로 공유할 수 있다
+- [ ] `src/shared/api/` 밖에서 `localStorage`를 직접 부르는 곳 0개 (`useSidebarResize`·`useExpandedIds`는 UI 상태라 예외)
+- [ ] `src/shared/ui/` 안에서 `useQuery`를 import 하는 곳 0개
+- [ ] `src/shared/api/`의 계약 타입을 백엔드에 그대로 공유할 수 있다
 
 [공통 완료 조건](conventions.md)도 함께 확인합니다.
 

@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { fn } from "storybook/test";
-import { EditorSurface } from "@/pages/page-editor";
+import { EditorSurface } from "../../EditorSurface/EditorSurface";
 import { ContentEditor } from "../ContentEditor";
 import type { ContentEditorProps } from "../ContentEditor";
 import { bodyBlock, PALETTE, PALETTE_LABELS, storyDoc, storyPageId } from "./storyDoc";

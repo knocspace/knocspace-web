@@ -1,9 +1,8 @@
 import { createBrowserRouter } from "react-router";
-import { EditorSurface } from "@/pages/page-editor";
-import { routeMessages } from "@/shared/config";
 import { NotFoundPage } from "@/pages/not-found";
-import { PageEditorPage } from "@/pages/page-editor";
-import { AppLayout } from "@/app/ui/AppLayout";
+import { EditorSurface, PageEditorPage } from "@/pages/page-editor";
+import { routeMessages } from "@/shared/config";
+import { AppLayout } from "../ui/AppLayout";
 
 /**
  * URL 과 화면의 대응표. 라우팅 지식은 이 파일 밖으로 새지 않는다.
@@ -26,7 +25,12 @@ export const router = createBrowserRouter([
     element: <AppLayout />,
     // TODO(F1-3): errorElement 에 ErrorBoundary
     children: [
-      // TODO(F2): 홈. 지금은 기존 자리표시 문서를 그대로 둔다.
+      /* TODO(F2): 홈 화면(`pages/home`)이 들어올 자리. 지금은 `page-editor` 의
+       * 문서 표면만 빈 채로 그린다.
+       *
+       * 여기만 화면이 아닌 부품을 라우트에 꽂는다. F2 에 `pages/home` 이
+       * 생기면 이 줄과 `page-editor` public API 의 `EditorSurface` 가 같이
+       * 빠진다 — 그때까지는 홈 슬라이스를 만들 내용이 없어서 비워 둔다. */
       { index: true, element: <EditorSurface />, handle: { crumb: routeMessages.home } },
       { path: "p/:pageId", element: <PageEditorPage /> },
       { path: "*", element: <NotFoundPage /> },

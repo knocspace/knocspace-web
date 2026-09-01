@@ -1,6 +1,6 @@
 import type { CSSProperties } from "react";
 import { ActionButton, Icon as SeedIcon } from "@seed-design/react";
-import type { IconComponent } from "@/shared/ui";
+import type { IconComponent } from "../icon";
 
 /**
  * 아이콘만 있는 버튼 — DESIGN.md §10.
@@ -25,7 +25,7 @@ export interface IconButtonProps {
   onClick?: () => void;
   isSelected?: boolean;
   isDisabled?: boolean;
-  /** 트리처럼 탭 정지점이 하나인 위젯 안에서는 -1 (§10 SidebarPageNavigation) */
+  /** 트리처럼 탭 정지점이 하나인 위젯 안에서는 -1 (§10 PageNavigation) */
   tabIndex?: number;
 }
 

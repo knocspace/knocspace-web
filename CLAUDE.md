@@ -34,6 +34,10 @@ src/
               (슬라이스 없음. 세그먼트별로 public API 를 둔다)
 ```
 
+`app/model/` 은 **전역 레이아웃이 쓰는 계산**이다. 사이드바 트리·상단바 경로처럼
+라우트가 갈아 끼워져도 살아 있는 것이 여기 있다. 한 화면에서만 쓰는 계산은
+`pages/<슬라이스>/model/` 이다.
+
 `features/` `entities/` 는 **지금 없다.** 같은 코드가 실제로 두 곳 이상에서
 쓰이고 경계가 굳었을 때만 만든다. 그 전에는 `pages/` 안에 둔다.
 `widgets/` 는 쓰지 않는다.
@@ -51,6 +55,15 @@ src/
   import { PageEditorPage } from "@/pages/page-editor";      // ✅
   import { PageEditorPage } from "@/pages/page-editor/ui/…";  // ❌
   ```
+- **`@/` 는 경계를 건널 때만 쓴다.** 같은 슬라이스(같은 세그먼트 묶음) 안에서는
+  상대경로다 — 스토리도 앱 코드와 같은 규칙을 따른다
+  ```ts
+  // pages/page-editor/ui/PageTitle/PageTitle.stories.tsx
+  import { EditorSurface } from "../EditorSurface/EditorSurface";  // ✅
+  import { EditorSurface } from "@/pages/page-editor";             // ❌ 자기 index 를 도로 부른다
+  ```
+  안에서 자기 public API 를 거치면 순환이 되고, 슬라이스가 밖으로 무엇을
+  내놓는지가 흐려진다. `shared` 의 세그먼트 안(`shared/ui` 부품끼리)도 같다
 - `shared` 는 세그먼트마다 public API 를 둔다 (`@/shared/ui`, `@/shared/config`).
   최상위 `shared/index.ts` 는 두지 않는다
 - 경로 별칭은 `@/*` → `src/*`. `vite.config.ts` 와 `tsconfig.app.json`

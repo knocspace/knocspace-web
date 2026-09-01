@@ -1,7 +1,7 @@
 import { useState } from "react";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { fn } from "storybook/test";
-import { EditorSurface } from "@/pages/page-editor";
+import { EditorSurface } from "../EditorSurface/EditorSurface";
 import { PageTitle } from "./PageTitle";
 import type { PageTitleProps } from "./PageTitle";
 

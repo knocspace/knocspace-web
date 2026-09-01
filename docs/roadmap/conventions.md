@@ -32,11 +32,13 @@
 
 ### 경계
 
-- [ ] `src/components/` 안에 `useQuery` import 0개
-- [ ] `src/api/` 밖에 `localStorage` 직접 호출 0개
-- [ ] `src/components/ui/` 안에 KnocSpace 문구 0개 — 아직 못 지킵니다.
-      `ErrorBoundary` 가 `boundaryMessages` 를 직접 부릅니다. 문구를 props 로
-      받게 바꿔야 `ui/` 가 다시 앱을 모르게 됩니다. (`Message` 타입 import 는
+- [ ] `src/pages/` · `src/shared/ui/` 안에 `useQuery` import 0개
+- [ ] `src/shared/api/` 밖에 `localStorage` 직접 호출 0개
+      (`useSidebarResize` 는 서버 데이터가 아니라 UI 상태라 예외입니다)
+- [ ] `src/shared/ui/` 안에 KnocSpace 문구 0개 — 아직 못 지킵니다.
+      `EmptyState` · `ErrorState` 가 `@/shared/config` 의 `Message` 를 받아
+      그리는 것까지는 괜찮지만, `app/ui/ErrorBoundary` 는 `boundaryMessages` 를
+      직접 부릅니다. 문구를 props 로 받게 바꿔야 합니다. (`Message` 타입 import 는
       문구가 아니라 props 모양이라 괜찮습니다.)
 
 ---
@@ -55,7 +57,7 @@
 폴더에 뭐가 있는지, 지난주에 뭘 고쳤는지는 문서로 관리하지 않습니다.
 
 **4. 출처가 있는 값은 옮겨 적지 않고 링크합니다.**
-색·치수·문구는 `DESIGN.md`, 타입은 `src/types/api.ts`가 유일한 출처입니다.
+색·치수·문구는 `DESIGN.md`, 백엔드와의 계약 타입은 `src/shared/api/`가 유일한 출처입니다.
 
 **5. 먼 계획은 자세히 쓰지 않습니다.**
 F6 이후는 개요만 두고, 시작 직전에 상세하게 풉니다. 미리 쓴 상세 계획은 시작할 때쯤 대부분 틀려 있습니다.
