@@ -17,7 +17,7 @@ const ContentEditor = lazy(() =>
   import("./ContentEditor").then((module) => ({ default: module.ContentEditor })),
 );
 
-export function DeferredContentEditor(props: ContentEditorProps) {
+export function LazyContentEditor(props: ContentEditorProps) {
   return (
     <Suspense fallback={<EditorSkeleton />}>
       <ContentEditor {...props} />

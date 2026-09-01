@@ -19,7 +19,7 @@ import { storyPageId } from "./storyDoc";
  * - 슬래시 메뉴 · 포맷 툴바 · 드래그 핸들은 **BlockNote 기본 표면 그대로** 입니다.
  *   SEED 표면으로 갈아 끼우는 것은 F3 §2 입니다
  * - 이 컴포넌트는 서버도 라우터도 모릅니다. 저장은 화면 쪽 일이라 `onChange` 만 냅니다
- * - 실제 화면에서는 이걸 직접 안 부르고 `DeferredContentEditor` 로 부릅니다 — BlockNote 는
+ * - 실제 화면에서는 이걸 직접 안 부르고 `LazyContentEditor` 로 부릅니다 — BlockNote 는
  *   ProseMirror · Mantine · Shiki 를 같이 들고 오는 무게라 첫 화면에서 떼어냈습니다
  */
 

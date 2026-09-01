@@ -9,7 +9,7 @@ import { useSeedColorScheme } from "../../model/seed-color-scheme";
  * app/styles/blocknote-bridge.css 한 곳뿐이다 (DESIGN.md §7).
  *
  * global.css 가 아니라 이 파일에서 부르는 이유: 이 컴포넌트는 지연 로드라
- * (DeferredContentEditor) 번들러가 CSS 도 같은 청크로 떼어 준다. 문서를 안 여는
+ * (LazyContentEditor) 번들러가 CSS 도 같은 청크로 떼어 준다. 문서를 안 여는
  * 화면은 gzip 36KB 인 이 CSS 를 안 받는다 (docs/decisions/f3-blocknote-surface.md). */
 import "@blocknote/mantine/style.css";
 

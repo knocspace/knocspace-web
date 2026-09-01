@@ -4,7 +4,7 @@ import { EditorSurface } from "./EditorSurface/EditorSurface";
 import { PageIcon } from "./PageIcon/PageIcon";
 import { PageTitle } from "./PageTitle/PageTitle";
 import { listEmojiCategories, searchEmoji } from "../lib/page-icon-emoji";
-import { DeferredContentEditor } from "./ContentEditor/DeferredContentEditor";
+import { LazyContentEditor } from "./ContentEditor/LazyContentEditor";
 import { samplePageContent } from "../model/sample-page-content";
 
 /**
@@ -54,7 +54,7 @@ export function PageEditorPage() {
         </div>
         <PageTitle value={title} onChange={setTitle} />
       </div>
-      <DeferredContentEditor pageId={pageId} content={samplePageContent()} />
+      <LazyContentEditor pageId={pageId} content={samplePageContent()} />
     </EditorSurface>
   );
 }
