@@ -66,7 +66,7 @@ export function useContentEditor({ pageId, content, collaboration }: UseContentE
         emptyDocument: editorPlaceholders.firstLine,
         default: editorPlaceholders.firstLine,
       },
-      /* 코드 블록 하이라이트(Shiki). 스키마 쪽 언어 목록과 짝이다 — schema.ts. */
+      /* 코드 블록 하이라이트(Shiki). 스키마 쪽 언어 목록과 짝이다 — blocknote-schema.ts. */
       extensions: [syntaxHighlighter, ...(collaboration ?? [])],
     },
     [pageId],

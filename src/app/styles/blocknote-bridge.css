@@ -4,7 +4,7 @@
  * 규칙을 어기면 BlockNote 를 올릴 때마다 깨진다.
  *
  * 라이브러리 CSS 자체(@blocknote/mantine/style.css)는 여기서 안 부른다.
- * 에디터 청크가 자기 것으로 들고 온다 — features/editor/BlockEditor.tsx.
+ * 에디터 청크가 자기 것으로 들고 온다 — ui/ContentEditor/ContentEditor.tsx.
  * 이 파일은 변수 한 뭉치뿐이라 첫 화면에 얹혀도 무게가 없다.
  *
  * ── 선택자가 세 겹인 이유, 그리고 .bn-container 가 아닌 이유
@@ -229,7 +229,7 @@
  * 값은 knocspace.css 한 곳에서 온다. 여기에 30px 을 적으면 안 된다 — 문서
  * 제목(PageTitle)과 같은 스케일이고, 그쪽은 CSS 가 아니라 컴포넌트가 쓴다.
  *
- * 4~6 은 여기 없다. 스키마에서 닫아서 만들 수가 없다(schema.ts). 붙여넣기로
+ * 4~6 은 여기 없다. 스키마에서 닫아서 만들 수가 없다(blocknote-schema.ts). 붙여넣기로
  * 들어온 것은 코어 기본값 그대로 그려진다 — 그 편이 낫다. 우리가 값을 주면
  * 만들 수 없는 크기를 우리가 정해 두는 셈이 된다.
  *
@@ -237,7 +237,7 @@
  * 상속으로 내려보내므로(0,1,0), 제목 몸에 직접 건다.
  *
  * 위 여백(padding-top: 18px)은 안 건드린다. 그건 크기가 아니라 리듬이고,
- * 사이드 메뉴 아이콘이 서는 자리이기도 하다 — sideMenuOffset.ts. */
+ * 사이드 메뉴 아이콘이 서는 자리이기도 하다 — blocknote-side-menu.ts. */
 .bn-container [data-content-type="heading"] {
   --level: var(--knoc-text-heading-1);
   line-height: var(--knoc-leading-heading);

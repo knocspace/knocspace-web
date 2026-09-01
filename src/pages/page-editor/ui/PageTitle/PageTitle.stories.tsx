@@ -35,7 +35,7 @@ import type { PageTitleProps } from "./PageTitle";
 type PageTitleStoryArgs = PageTitleProps & { withBody: boolean };
 
 const meta: Meta<PageTitleStoryArgs> = {
-  title: "레이아웃/PageTitle",
+  title: "문서/PageTitle",
   component: PageTitle,
   args: {
     value: "2분기 제품 로드맵",

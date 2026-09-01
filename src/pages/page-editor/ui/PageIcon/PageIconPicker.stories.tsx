@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { fn } from "storybook/test";
-import { listEmojiCategories, searchEmoji } from "../lib/page-icon-emoji";
+import { listEmojiCategories, searchEmoji } from "../../lib/page-icon-emoji";
 import { PageIconPicker } from "./PageIconPicker";
 import type { PageIconPickerProps } from "./PageIconPicker";
 
@@ -15,7 +15,7 @@ import type { PageIconPickerProps } from "./PageIconPicker";
  * | 표면 | `bg-layer-floating` + 그림자 `s3` | 떠 있는 것 — DESIGN.md §3 · §10 |
  * | 이모지 | 24px = SEED `t9` | `--knoc-text-doc-icon-choice` |
  *
- * - **데이터는 진짜입니다.** `features/editor/emojiSearch` 를 그대로 씁니다 —
+ * - **데이터는 진짜입니다.** `lib/page-icon-emoji` 를 그대로 씁니다 —
  *   목록 1,870개와 검색이 실제로 돕니다
  * - **아무것도 안 쳤을 때와 검색했을 때가 다른 목록입니다.** 전자는 카테고리
  *   순서로 구획을 나누고(표정과 사람 → 자연 → …), 후자는 구획 없이 결과만 줍니다
@@ -24,7 +24,7 @@ import type { PageIconPickerProps } from "./PageIconPicker";
  * - **필터에 상자가 없습니다.** 판이 이미 테두리를 두르고 있어서 안에 상자를 또
  *   두면 상자 안의 상자가 됩니다. 테두리도 배경도 밑줄도 없이 캐럿만 남깁니다 —
  *   문서 제목(`PageTitle`)과 같은 원칙입니다 (DESIGN.md §10)
- * - SEED `TextField` 를 쓰지 않는 이유는 `EmojiPicker.tsx` 주석에 있습니다
+ * - SEED `TextField` 를 쓰지 않는 이유는 `PageIconPicker.tsx` 주석에 있습니다
  */
 
 type PickerStoryArgs = Pick<PageIconPickerProps, "value" | "onPick">;
@@ -35,7 +35,7 @@ type PickerStoryArgs = Pick<PageIconPickerProps, "value" | "onPick">;
  * 컨트롤이 아니라 render 가 진짜 함수로 넘긴다. component 를 적으면 스토리북이
  * arg 와 props 를 맞춰 보다가 빠진 둘 때문에 어긋난다. */
 const meta: Meta<PickerStoryArgs> = {
-  title: "페이지 편집/PageIconPicker",
+  title: "문서/PageIconPicker",
   args: {
     value: undefined,
     onPick: fn(),

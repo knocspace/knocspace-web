@@ -2,8 +2,8 @@ import { useState } from "react";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { fn } from "storybook/test";
 import { EditorSurface } from "@/pages/page-editor";
-import { PageTitle } from "./PageTitle";
-import { listEmojiCategories, searchEmoji } from "../lib/page-icon-emoji";
+import { PageTitle } from "../PageTitle/PageTitle";
+import { listEmojiCategories, searchEmoji } from "../../lib/page-icon-emoji";
 import { PageIcon } from "./PageIcon";
 import type { PageIconProps } from "./PageIcon";
 
@@ -37,10 +37,10 @@ type IconStoryArgs = Pick<PageIconProps, "value" | "editable" | "onChange"> & {
   title: string;
 };
 
-/* component 를 안 적는다 — EmojiPicker 스토리와 같은 이유다. 목록과 검색은
+/* component 를 안 적는다 — PageIconPicker 스토리와 같은 이유다. 목록과 검색은
  * 컨트롤이 아니라 render 가 진짜 함수로 넘긴다. */
 const meta: Meta<IconStoryArgs> = {
-  title: "레이아웃/PageIcon",
+  title: "문서/PageIcon",
   args: {
     value: undefined,
     editable: true,

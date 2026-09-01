@@ -102,7 +102,7 @@ export const editorPlaceholders = {
  * 아니라 "좁히기" 라서다 — 목록이 이미 눈앞에 다 있고, 치는 만큼 줄어든다.
  *
  * **다만 한글로는 하나도 안 걸린다.** 이모지 데이터의 키워드가 영어뿐이다
- * (emojiSearch.ts). 자리 문구로는 그 사실을 알릴 방법이 없어서, 한글을 치면
+ * (page-icon-emoji.ts). 자리 문구로는 그 사실을 알릴 방법이 없어서, 한글을 치면
  * 아무것도 없다고 나온다 — 빈 결과 문구 쪽에서 알린다.
  */
 export const pageIconLabels = {

@@ -141,7 +141,7 @@ F4·F5에서 실서버에 붙은 뒤이므로, 여기부터는 새 기능마다 
 
 **시작 전 필요** — F5(권한), 백엔드 WebSocket 서버
 
-**목표** — F3에서 열어둔 `useEditorDoc`에 Yjs를 끼웁니다. 설계를 지켰다면 에디터 컴포넌트는 안 바뀝니다.
+**목표** — F3에서 열어둔 `useContentEditor`에 Yjs를 끼웁니다. 설계를 지켰다면 에디터 컴포넌트는 안 바뀝니다.
 
 **만드는 것**
 
@@ -159,7 +159,7 @@ npm i yjs y-websocket y-indexeddb
 
 - 백엔드와 프로토콜 확정 — 엔드포인트, 방 이름(`page:{id}`), 인증 방식, 데이터를 누가 보관하는지
 - `features/collab/useCollabDoc.ts` — Y.Doc + WebsocketProvider + IndexeddbPersistence
-- **`useEditorDoc` 안쪽만 교체.** 쓰는 쪽 시그니처는 그대로 두고, 플래그로 로컬 모드도 남깁니다
+- **`useContentEditor` 안쪽만 교체.** 쓰는 쪽 시그니처는 그대로 두고, 플래그로 로컬 모드도 남깁니다
 - 사용자 정보 공유 — `{ userId, name, color }`. `color`는 F2에서 타입에 넣어둔 필드입니다
 - `PresenceStack.tsx` — 상단바 아바타. 3명 넘으면 `+N`
 - `ConnectionStatus.tsx`

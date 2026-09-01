@@ -51,7 +51,7 @@ export function CodeLanguageMenu({
   /* 목록에 없는 언어면 id 를 그대로 보여준다.
    *
    * 코어는 이 경우 throw 했다 — `Language ${lang} is not supported.` 로 에디터가
-   * 통째로 죽는다. 언어 목록은 우리가 고르는 것이고(schema.ts), 목록에서 하나
+   * 통째로 죽는다. 언어 목록은 우리가 고르는 것이고(blocknote-schema.ts), 목록에서 하나
    * 빼는 순간 그 언어로 저장된 옛 문서가 안 열린다. 문서가 라이브러리 설정보다
    * 오래 산다. */
   const selected = languages.find((language) => language.id === value);

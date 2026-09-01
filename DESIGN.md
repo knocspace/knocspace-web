@@ -205,7 +205,7 @@ Pretendard 를 받는 마당에 하나 더 받을 값이 크지 않습니다. �
 값은 `--knoc-text-heading-*` 하나에서 오고 `blocknote-bridge.css` 가 그걸 BlockNote 의
 `--level` 로 넘깁니다. **크기를 다시 바꾸면 사이드 메뉴(＋ · ⠿) 자리가 같이 움직입니다** —
 BlockNote 는 그 자리를 자기 기본 크기에 맞춘 상수로 갖고 있어서, 크기를 바꾸면 아이콘이
-글자와 어긋납니다. `features/editor/sideMenuOffset.ts` 가 첫 줄을 재서 대신 맞추므로 고칠
+글자와 어긋납니다. `ui/ContentEditor/blocknote-side-menu.ts` 가 첫 줄을 재서 대신 맞추므로 고칠
 것은 없지만, 그 자리가 §7 에서 우리 쪽으로 넘어와 있다는 것은 기억해 둡니다.
 
 **H4 · H5 · H6 은 없습니다.** BlockNote 에는 여섯 단계가 있지만 H4 는 본문과 크기가 같고(1em)
@@ -907,7 +907,7 @@ React 가 아니라 코어가 `document.createElement` 로 직접 그리는 DOM 
 없어서입니다 — 트리거는 BlockNote 가 이미 `appearance: none` 으로 지워 놨고, 어긋나는 것은
 **펼친 목록**인데 그건 OS 가 그립니다. 브리지로 닿는 선언이 하나도 없습니다.
 
-그래서 **코드 블록 스펙에서 `render` 하나만 우리 것으로 바꿨습니다** (`features/editor/codeBlock.ts`).
+그래서 **코드 블록 스펙에서 `render` 하나만 우리 것으로 바꿨습니다** (`ui/ContentEditor/code-block.ts`).
 `config` · 파싱 · 단축키 · 하이라이트는 전부 코어 것을 그대로 씁니다. `type` 도 `propSchema` 도
 안 바뀌어서 저장된 문서는 그대로입니다.
 

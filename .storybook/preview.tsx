@@ -99,6 +99,8 @@ const preview: Preview = {
           ],
           "레이아웃",
           ["PageNavigation", "Breadcrumb", "SaveStatus"],
+          "문서",
+          ["PageTitle", "PageIcon", "PageIconPicker"],
           "에디터",
           [
             "문서 한 장",

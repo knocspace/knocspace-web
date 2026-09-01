@@ -1,13 +1,13 @@
-import type { PageContent } from "../../model/page-content";
-import type { KnocPartialBlock } from "../../model/blocknote-schema";
+import type { PageContent } from "../../../model/page-content";
+import type { KnocPartialBlock } from "../../../model/blocknote-schema";
 
 /**
  * 스토리에서만 쓰는 도우미. **앱 코드에서 import 하지 않는다.**
  *
- * 이 폴더(features/editor/stories)에 스토리를 몰아 둔 이유는 단순하다 — 위층에
+ * 이 폴더(ui/ContentEditor/stories)에 스토리를 몰아 둔 이유는 단순하다 — 위층에
  * 두면 에디터 소스 일곱 개와 스토리 열한 개가 한 자리에서 섞인다. 대신
- * features/editor 밖으로는 안 나간다. 문서를 만드는 코드가 밖으로 나가면 그게
- * 두 번째 원본이 되기 때문이고, 그건 sampleDoc 과 같은 이유다.
+ * pages/page-editor 밖으로는 안 나간다. 문서를 만드는 코드가 밖으로 나가면 그게
+ * 두 번째 원본이 되기 때문이고, 그건 samplePageContent 과 같은 이유다.
  *
  * 블록 스토리는 종류마다 파일이 갈리지만, 문서를 담는 방법과 에디터를 다시
  * 만드는 요령은 하나여야 한다. 그 하나가 여기다.
@@ -31,7 +31,7 @@ export function bodyBlock(text = "본문은 16px 이에요. 블록 크기는 이
 /**
  * 컨트롤 값들을 이어 붙여 만든 pageId. **블록 스토리의 요령이 이것이다.**
  *
- * useEditorDoc 은 content 를 처음 한 번만 읽고 deps 가 [pageId] 다. 그래서
+ * useContentEditor 은 content 를 처음 한 번만 읽고 deps 가 [pageId] 다. 그래서
  * 컨트롤을 바꿔도 pageId 가 그대로면 에디터가 그대로 남아 화면이 안 바뀐다.
  * 문서를 만든 값들을 그대로 이어 붙이면, 컨트롤이 바뀔 때마다 다른 페이지로
  * 간 것과 같아져서 에디터가 새 문서로 다시 선다.

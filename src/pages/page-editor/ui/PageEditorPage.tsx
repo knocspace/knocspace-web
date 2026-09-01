@@ -1,19 +1,19 @@
 import { useState } from "react";
 import { useParams } from "react-router";
-import { EditorSurface } from "./EditorSurface";
-import { PageIcon } from "./PageIcon";
-import { PageTitle } from "./PageTitle";
+import { EditorSurface } from "./EditorSurface/EditorSurface";
+import { PageIcon } from "./PageIcon/PageIcon";
+import { PageTitle } from "./PageTitle/PageTitle";
 import { listEmojiCategories, searchEmoji } from "../lib/page-icon-emoji";
-import { DeferredContentEditor } from "./DeferredContentEditor";
+import { DeferredContentEditor } from "./ContentEditor/DeferredContentEditor";
 import { samplePageContent } from "../model/sample-page-content";
 
 /**
  * /p/:pageId — 문서 한 장.
  *
- * TODO(F2): 제목과 내용의 출처가 `usePage(pageId)` 로 바뀐다. 그때 sampleDoc 과
+ * TODO(F2): 제목과 내용의 출처가 `usePage(pageId)` 로 바뀐다. 그때 samplePageContent 과
  * 아래 useState 가 사라지고, 로딩(Skeleton) · 404 · 에러 갈래가 이 자리에 생긴다.
  * TODO(F3): 자동 저장. 지금은 제목도 본문도 바뀐 값을 받아만 두고 안 보낸다.
- * TODO(F3): 제목에서 Enter 로 본문 첫 블록으로 가기. BlockEditor 가 핸들을
+ * TODO(F3): 제목에서 Enter 로 본문 첫 블록으로 가기. ContentEditor 가 핸들을
  * 열어야 한다 — 에디터 인스턴스는 밖으로 안 내보낸다(architecture.md).
  */
 

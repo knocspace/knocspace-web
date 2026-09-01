@@ -4,11 +4,11 @@ import { EditorSurface } from "@/pages/page-editor";
 import { ContentEditor } from "../ContentEditor";
 import type { ContentEditorProps } from "../ContentEditor";
 import type { TableCellProps } from "@blocknote/core";
-import type { KnocPartialBlock } from "../../model/blocknote-schema";
+import type { KnocPartialBlock } from "../../../model/blocknote-schema";
 import { bodyBlock, storyDoc, storyPageId } from "./storyDoc";
 
 /**
- * 표. **기본 블록이 아니라 `schema.ts` 에서 따로 넣은 블록입니다.**
+ * 표. **기본 블록이 아니라 `blocknote-schema.ts` 에서 따로 넣은 블록입니다.**
  *
  * | | Notion | BlockNote |
  * | --- | --- | --- |
@@ -18,7 +18,7 @@ import { bodyBlock, storyDoc, storyPageId } from "./storyDoc";
  * | 셀 안 | 인라인 콘텐츠 | 인라인 콘텐츠 — **블록은 못 넣습니다** |
  *
  * - **헤더로 바꾸기 · 셀 병합 · 셀 배경색 · 셀 글자색은 에디터 옵션(`tables`)입니다.**
- *   넷 다 BlockNote 기본은 `false` 인데 `useEditorDoc` 에서 넷 다 켰습니다. 그래서
+ *   넷 다 BlockNote 기본은 `false` 인데 `useContentEditor` 에서 넷 다 켰습니다. 그래서
  *   표 안 손잡이 메뉴에 그 항목들이 나옵니다
  * - 옵션은 **사용자가 만들 수 있는지**만 정합니다. 문서에 이미 담겨 있는 값은 옵션과
  *   상관없이 그려집니다 — 아래 컨트롤이 그쪽입니다

@@ -5,7 +5,7 @@ import { PageNavigationItem } from "./PageNavigationItem";
 import type { PageNavigationNode } from "../../model/page-navigation";
 
 /**
- * 페이지 트리 — DESIGN.md §10, 시안 "SidebarPageNavigation 키보드".
+ * 페이지 트리 — DESIGN.md §10, 시안 "PageNavigation 키보드".
  *
  * `role="tree"`. **평평한 배열을 받아 그린다** — 중첩을 재귀 컴포넌트로 그리면
  * F8 에서 가상 스크롤이 안 붙는다 (§5).

@@ -3,7 +3,7 @@ import { EditorSurface } from "@/pages/page-editor";
 import { routeMessages } from "@/shared/config";
 import { NotFoundPage } from "@/pages/not-found";
 import { PageEditorPage } from "@/pages/page-editor";
-import { AppLayout } from "@/app/layout/ui/AppLayout";
+import { AppLayout } from "@/app/ui/AppLayout";
 
 /**
  * URL 과 화면의 대응표. 라우팅 지식은 이 파일 밖으로 새지 않는다.

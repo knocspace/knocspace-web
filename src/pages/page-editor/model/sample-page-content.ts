@@ -5,7 +5,7 @@ import type { PageContent } from "./page-content";
  *
  * TODO(F2): `usePage(pageId).content` 로 바뀌면서 이 파일은 통째로 사라진다.
  * 서버(지금은 mock)가 문서를 주기 전까지, 에디터가 실제로 붙었는지 눈으로
- * 확인할 것이 필요해서만 있다. 그래서 features/editor 안에 둔다 — 밖에서
+ * 확인할 것이 필요해서만 있다. 그래서 pages/page-editor 안에 둔다 — 밖에서
  * 문서 내용을 만드는 코드가 생기면 그게 두 번째 원본이 된다.
  *
  * 블록은 mvp.md 의 8종(문단 · 제목1·2·3 · 불릿 · 번호 · 체크박스 · 코드 ·

@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import IconFaceSmileCircleLine from "@karrotmarket/react-monochrome-icon/IconFaceSmileCircleLine";
-import type { EmojiCategory } from "../lib/page-icon-emoji";
+import type { EmojiCategory } from "../../lib/page-icon-emoji";
 import { pageIconLabels } from "@/shared/config";
 import { PageIconPicker } from "./PageIconPicker";
 
@@ -34,7 +34,7 @@ export interface PageIconProps {
   onChange?: (next: string | undefined) => void;
   /** 끄면 읽기 전용 — 눌러도 안 열리고, 아이콘이 없으면 아무것도 안 그린다 */
   editable?: boolean;
-  /** 아무것도 안 쳤을 때 보여줄 목록. features/editor 에서 온다 */
+  /** 아무것도 안 쳤을 때 보여줄 목록. pages/page-editor 에서 온다 */
   listCategories: () => Promise<EmojiCategory[]>;
   /** 질의에 걸리는 것만. 같은 곳에서 온다 */
   searchEmoji: (query: string) => Promise<string[]>;

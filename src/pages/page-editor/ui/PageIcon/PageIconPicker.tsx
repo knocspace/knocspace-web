@@ -1,13 +1,13 @@
 import { useEffect, useState } from "react";
 import IconMagnifyingglassLine from "@karrotmarket/react-monochrome-icon/IconMagnifyingglassLine";
-import type { EmojiCategory } from "../lib/page-icon-emoji";
+import type { EmojiCategory } from "../../lib/page-icon-emoji";
 import { emojiCategoryLabels, pageIconLabels } from "@/shared/config";
 
 /**
  * 이모지 고르는 판 — DESIGN.md §10 PageIcon.
  *
  * 목록과 검색을 자기가 안 갖는다. 받아서 부르기만 한다 — 이모지 데이터는
- * features/editor 안에 있다(emojiSearch.ts). 그쪽이 에디터 인스턴스를 쥐고 있는
+ * pages/page-editor 안에 있다(page-icon-emoji.ts). 그쪽이 에디터 인스턴스를 쥐고 있는
  * 유일한 자리이기 때문이다.
  *
  * **아무것도 안 쳤을 때와 검색했을 때가 다른 목록이다.** 전자는 카테고리 순서로

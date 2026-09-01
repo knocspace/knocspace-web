@@ -3,7 +3,7 @@ import { fn } from "storybook/test";
 import { EditorSurface } from "@/pages/page-editor";
 import { ContentEditor } from "../ContentEditor";
 import type { ContentEditorProps } from "../ContentEditor";
-import type { KnocPartialBlock } from "../../model/blocknote-schema";
+import type { KnocPartialBlock } from "../../../model/blocknote-schema";
 import { storyDoc, storyPageId } from "./storyDoc";
 
 /**
@@ -41,7 +41,7 @@ import { storyDoc, storyPageId } from "./storyDoc";
  * | 미디어 | 이미지 · 비디오 · 오디오 · 파일 |
  * | 기타 | 이모지 |
  *
- * - **메뉴 이름은 한국어입니다.** `useEditorDoc` 이 BlockNote 의 `ko` 사전을 넘깁니다
+ * - **메뉴 이름은 한국어입니다.** `useContentEditor` 이 BlockNote 의 `ko` 사전을 넘깁니다
  *   (23개 로케일 중 하나). 문구를 바꾸려면 사전을 덮습니다
  * - Notion 은 슬래시 명령이 40종 넘습니다. 차이는 대부분 **없는 블록** 만큼입니다 —
  *   콜아웃 · 목차 · 북마크 · 임베드 · 수식(`knocspace-parity.md`)

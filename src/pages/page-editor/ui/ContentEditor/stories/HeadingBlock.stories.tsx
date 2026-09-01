@@ -3,7 +3,7 @@ import { fn } from "storybook/test";
 import { EditorSurface } from "@/pages/page-editor";
 import { ContentEditor } from "../ContentEditor";
 import type { ContentEditorProps } from "../ContentEditor";
-import type { KnocPartialBlock } from "../../model/blocknote-schema";
+import type { KnocPartialBlock } from "../../../model/blocknote-schema";
 import { bodyBlock, storyDoc, storyPageId } from "./storyDoc";
 
 /**
@@ -15,7 +15,7 @@ import { bodyBlock, storyDoc, storyPageId } from "./storyDoc";
  * | H2 | 제목2 | 2em · 32px | `## ` | `/제목2` · `Ctrl+Alt+2` |
  * | H3 | 제목3 | 1.3em · 20.8px | `### ` | `/제목3` · `Ctrl+Alt+3` |
  *
- * - **H4·H5·H6 은 닫았습니다** (`levels: [1, 2, 3]` — `schema.ts`). BlockNote 에는 여섯
+ * - **H4·H5·H6 은 닫았습니다** (`levels: [1, 2, 3]` — `blocknote-schema.ts`). BlockNote 에는 여섯
  *   단계가 있지만 H4 는 본문과 크기가 같고(1em) H5·H6 은 본문보다 **작아서**(0.9em ·
  *   0.8em) 위계가 아니라 각주로 읽힙니다. Notion 에도 제목1·2·3 뿐입니다
  * - 슬래시 메뉴 · 단축키(`Ctrl+Alt+4`) · 마크다운(`#### `) 셋이 같이 닫혔습니다.
@@ -80,10 +80,10 @@ function headingDoc({ level, isToggleable, text, allLevels }: HeadingStoryArgs) 
 
 /* component 를 안 적는다. 다른 스토리들과 다른 점이라 이유를 남긴다.
  *
- * 여기서 보여주는 것은 BlockEditor 라는 컴포넌트가 아니라 그 안에 놓인 제목
+ * 여기서 보여주는 것은 ContentEditor 라는 컴포넌트가 아니라 그 안에 놓인 제목
  * 블록이다. arg 도 컴포넌트 props(pageId · content)가 아니라 블록 props(level ·
  * isToggleable)라, component 를 적으면 스토리북이 arg 와 props 를 맞춰 보다가
- * 어긋난다. BlockEditor 자체의 props 표는 그 컴포넌트 스토리가 생길 때 붙는다. */
+ * 어긋난다. ContentEditor 자체의 props 표는 그 컴포넌트 스토리가 생길 때 붙는다. */
 const meta: Meta<HeadingStoryArgs> = {
   title: "에디터/제목",
   args: {
@@ -97,7 +97,7 @@ const meta: Meta<HeadingStoryArgs> = {
   argTypes: {
     level: {
       name: "제목",
-      description: "Notion 이름으로 제목1~제목3. H4~H6 은 `schema.ts` 에서 닫았습니다",
+      description: "Notion 이름으로 제목1~제목3. H4~H6 은 `blocknote-schema.ts` 에서 닫았습니다",
       control: { type: "inline-radio", labels: LEVEL_LABELS },
       options: LEVELS,
       /* 표에는 값이 그대로 보이게 둔다. 컨트롤에 H1 로 찍히니, 블록에 들어가는
@@ -143,7 +143,7 @@ type Story = StoryObj<HeadingStoryArgs>;
  */
 export const Playground: Story = {
   render: (args) => (
-    /* PageEditorSurface 로 감싸는 것은 거터 때문이다. BlockEditor 가 -mx-doc-gutter
+    /* EditorSurface 로 감싸는 것은 거터 때문이다. ContentEditor 가 -mx-doc-gutter
      * 로 좌우를 도로 물고 있어서, px-doc-gutter 를 깐 표면 안에 넣어야 실제
      * 문서와 같은 자리에 선다 (DESIGN.md §7).
      *

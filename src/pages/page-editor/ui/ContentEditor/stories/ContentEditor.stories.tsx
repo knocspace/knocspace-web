@@ -3,14 +3,14 @@ import { fn } from "storybook/test";
 import { EditorSurface } from "@/pages/page-editor";
 import { ContentEditor } from "../ContentEditor";
 import type { ContentEditorProps } from "../ContentEditor";
-import { emptyPageContent } from "../../model/page-content";
-import { samplePageContent } from "../../model/sample-page-content";
+import { emptyPageContent } from "../../../model/page-content";
+import { samplePageContent } from "../../../model/sample-page-content";
 import { storyPageId } from "./storyDoc";
 
 /**
  * 문서 본문 한 장. 블록 스토리들이 한 종류씩 떼어 보는 것을 여기서는 다 같이 봅니다.
  *
- * **`BlockEditor` 컴포넌트의 스토리이기도 합니다** — 아래 속성 표가 이 컴포넌트가
+ * **`ContentEditor` 컴포넌트의 스토리이기도 합니다** — 아래 속성 표가 이 컴포넌트가
  * 실제로 받는 props 입니다. 블록별 스토리는 이 컴포넌트에 문서를 갈아 끼운 것뿐입니다.
  *
  * - `content` 는 **처음 한 번만** 읽습니다. 그 뒤로 문서의 원본은 에디터 쪽 하나뿐이고,
@@ -19,7 +19,7 @@ import { storyPageId } from "./storyDoc";
  * - 슬래시 메뉴 · 포맷 툴바 · 드래그 핸들은 **BlockNote 기본 표면 그대로** 입니다.
  *   SEED 표면으로 갈아 끼우는 것은 F3 §2 입니다
  * - 이 컴포넌트는 서버도 라우터도 모릅니다. 저장은 화면 쪽 일이라 `onChange` 만 냅니다
- * - 실제 화면에서는 이걸 직접 안 부르고 `LazyBlockEditor` 로 부릅니다 — BlockNote 는
+ * - 실제 화면에서는 이걸 직접 안 부르고 `DeferredContentEditor` 로 부릅니다 — BlockNote 는
  *   ProseMirror · Mantine · Shiki 를 같이 들고 오는 무게라 첫 화면에서 떼어냈습니다
  */
 

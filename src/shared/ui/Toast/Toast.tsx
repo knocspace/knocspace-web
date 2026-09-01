@@ -35,7 +35,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
         * region 은 이미 bottom:0(safe-area) 이라 padding 만으로 맞는다.
         *
         * Tailwind 유틸리티는 utilities 레이어라 seed-components 보다 뒤에
-        * 와서 !important 없이 이긴다 (index.css 의 @layer 순서). */}
+        * 와서 !important 없이 이긴다 (global.css 의 @layer 순서). */}
       <SnackbarRegion className="fixed p-x4">
         <SnackbarRenderer />
       </SnackbarRegion>

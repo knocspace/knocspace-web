@@ -3,11 +3,11 @@ import type { KnocPartialBlock } from "./blocknote-schema";
 /**
  * 문서 한 장의 내용.
  *
- * 밖에서 보면 그냥 덩어리다. blocks 안을 features/editor 밖에서 열어보지
+ * 밖에서 보면 그냥 덩어리다. blocks 안을 pages/page-editor 밖에서 열어보지
  * 않는다 — F10 에서 이 자리가 Yjs 데이터로 바뀌어도 나머지가 안 깨져야 한다
  * (docs/roadmap/architecture.md).
  *
- * 모양은 F2 의 types/api.ts 가 정할 BlockDoc 과 같게 맞춰 뒀다. 그 파일이
+ * 모양은 F2 의 shared/api 가 정할 BlockDoc 과 같게 맞춰 뒀다. 그 파일이
  * 생기면 이 타입은 사라지고 import 만 바뀐다.
  */
 export interface PageContent {
@@ -19,7 +19,7 @@ export interface PageContent {
 /**
  * 새 문서. 블록이 하나도 없는 덩어리다.
  *
- * 빈 문단을 여기서 만들지 않는다. toInitialContent 가 빈 배열을 undefined 로
+ * 빈 문단을 여기서 만들지 않는다. toBlockNoteInitialContent 가 빈 배열을 undefined 로
  * 바꿔서 넘기고, 커서가 앉을 첫 블록은 BlockNote 가 알아서 만든다.
  */
 export function emptyPageContent(): PageContent {

@@ -1,15 +1,15 @@
 import { BlockNoteView } from "@blocknote/mantine";
 import { SideMenuController } from "@blocknote/react";
-import { sideMenuFloatingOptions } from "../lib/blocknote-side-menu";
-import { toPageContent, type PageContent } from "../model/page-content";
-import { useContentEditor } from "../model/content-editor";
-import { useSeedColorScheme } from "../model/seed-color-scheme";
+import { sideMenuFloatingOptions } from "../../lib/blocknote-side-menu";
+import { toPageContent, type PageContent } from "../../model/page-content";
+import { useContentEditor } from "../../model/content-editor";
+import { useSeedColorScheme } from "../../model/seed-color-scheme";
 
 /* 라이브러리 CSS. 변수는 여기서 안 건드린다 — SEED 로 되돌려 가리키는 일은
- * styles/blocknote-bridge.css 한 곳뿐이다 (DESIGN.md §7).
+ * app/styles/blocknote-bridge.css 한 곳뿐이다 (DESIGN.md §7).
  *
- * index.css 가 아니라 이 파일에서 부르는 이유: 이 컴포넌트는 지연 로드라
- * (LazyBlockEditor) 번들러가 CSS 도 같은 청크로 떼어 준다. 문서를 안 여는
+ * global.css 가 아니라 이 파일에서 부르는 이유: 이 컴포넌트는 지연 로드라
+ * (DeferredContentEditor) 번들러가 CSS 도 같은 청크로 떼어 준다. 문서를 안 여는
  * 화면은 gzip 36KB 인 이 CSS 를 안 받는다 (docs/decisions/f3-blocknote-surface.md). */
 import "@blocknote/mantine/style.css";
 
@@ -33,7 +33,7 @@ export interface ContentEditorProps {
  * 문서 본문. props 만 받고 서버도 라우터도 모른다.
  *
  * 슬래시 메뉴 · 포맷 툴바는 BlockNote 기본 표면 그대로다. 사이드 메뉴도
- * 생김새는 기본이고, 세로 위치만 우리가 계산한다 — sideMenuOffset.ts.
+ * 생김새는 기본이고, 세로 위치만 우리가 계산한다 — blocknote-side-menu.ts.
  * SEED 표면으로 갈아 끼우는 것은 F3 §2 다 (SlashMenu · FormatToolbar).
  */
 export function ContentEditor({ pageId, content, editable = true, onChange }: ContentEditorProps) {
@@ -43,7 +43,7 @@ export function ContentEditor({ pageId, content, editable = true, onChange }: Co
   return (
     /* 좌우 거터를 도로 물린다.
      *
-     * PageEditorSurface 는 measure 720px 안쪽에 56px 을 비워 두는데, BlockNote 도
+     * EditorSurface 는 measure 720px 안쪽에 56px 을 비워 두는데, BlockNote 도
      * 에디터에 54px 을 자기 몫으로 잡는다. 그냥 두면 110px 이 겹쳐서 본문 폭이
      * 608px 이 아니라 500px 이 된다.
      *
@@ -59,7 +59,7 @@ export function ContentEditor({ pageId, content, editable = true, onChange }: Co
         onChange={onChange && (() => onChange(toPageContent(editor.document)))}
         /* 기본 사이드 메뉴를 끄고 같은 것을 다시 넣는다. 자리 계산만 우리 것으로
          * 바꾸려는 것이고, 안에 그려지는 ＋ 와 ⠿ 는 BlockNote 기본 그대로다
-         * — sideMenuOffset.ts. */
+         * — blocknote-side-menu.ts. */
         sideMenu={false}
       >
         <SideMenuController floatingUIOptions={sideMenuFloatingOptions} />

@@ -30,32 +30,44 @@ pages   URL 하나 = 화면 하나
 shared  KnocSpace 를 몰라도 되는 기반 코드
 ```
 
-FSD 의 나머지 레이어(`entities` · `features` · `widgets`)는 **일부러 비워 뒀습니다.**
-지금은 에디터도 Page navigation 도 주인이 하나뿐이라, 만들면 파일 개수만 늘고 소유자는
-그대로입니다. 만드는 기준은 [아래](#언제-레이어를-더-만드나)에 적었습니다.
+FSD 의 나머지 레이어(`entities` · `features` · `widgets`)는 **일부러 비워 뒀습니다.
+이것이 FSD 를 안 지킨 것이 아니라, FSD 가 시키는 것입니다.**
+
+- 세 레이어만으로도 온전한 FSD 입니다 — *"Most projects can start with only `shared/`,
+  `pages/`, and `app/`"*
+- 빈 레이어 폴더를 미리 만들지 않습니다 — *"Do not create empty layer folders 'just in case'"*
+- `features` 는 **같은 동작을 두 화면 이상이 실제로 쓸 때** 만듭니다. 지금은 에디터도 Page
+  navigation 도 쓰는 화면이 하나뿐이라, 만들면 공식 린터(Steiger)의 `insignificant-slice`
+  에 걸립니다
+- `widgets` 는 FSD v2.1 이 **새로 쓰지 말라고 권고한** 레이어입니다. 덩어리 UI 는 화면이면
+  `pages`, 앱 전체 틀이면 `app` 입니다
+
+만드는 기준은 [아래](#언제-레이어를-더-만드나)에 적었습니다.
 
 ### 구조 한눈에 보기
 
 ```text
 src/
-├─ app/                         앱 시작과 전역 조립
+├─ app/                         앱 시작과 전역 조립 (슬라이스 없음 — 세그먼트로 바로)
 │  ├─ main.tsx  App.tsx         진입점
 │  ├─ routes/                   URL 과 화면의 대응표
 │  ├─ styles/                   전역 CSS 와 외부 라이브러리 스타일 연결
-│  └─ layout/                   모든 화면을 감싸는 프레임
-│     ├─ model/                 Sidebar 폭, Page navigation · 상단바 경로 계산
-│     └─ ui/
-│        ├─ AppLayout.tsx       셸을 조립하는 자리
-│        ├─ Sidebar/            폭과 접힘만 아는 프레임. 안은 children 으로 받음
-│        ├─ PageNavigation/     그 children 으로 들어가는 트리 (Sidebar 와 형제)
-│        ├─ TopBar/             + Breadcrumb · SaveStatus
-│        └─ ErrorBoundary/      전역 렌더링 오류 화면
+│  ├─ model/                    Sidebar 폭 · Page navigation · 상단바 경로 계산
+│  └─ ui/
+│     ├─ AppLayout.tsx          셸을 조립하는 자리
+│     ├─ Sidebar/               폭과 접힘만 아는 프레임. 안은 children 으로 받음
+│     ├─ PageNavigation/        그 children 으로 들어가는 트리 (Sidebar 와 형제)
+│     ├─ TopBar/                + Breadcrumb · SaveStatus
+│     └─ ErrorBoundary/         전역 렌더링 오류 화면
 │
 ├─ pages/                       URL 단위 화면
 │  ├─ page-editor/              / 와 /p/:pageId
-│  │  ├─ ui/                    화면과 편집 UI (에디터 스토리는 stories/)
-│  │  ├─ model/                 PageContent 와 BlockNote 연동
-│  │  ├─ lib/                   이 화면 전용 순수 보조
+│  │  ├─ model/                 문서 데이터와 에디터 상태 — PageContent · 스키마 · 훅
+│  │  ├─ lib/                   이 화면 전용 순수 함수 — 이모지 검색 · 사이드 메뉴 자리
+│  │  ├─ ui/
+│  │  │  ├─ PageEditorPage.tsx  화면을 조립하는 자리
+│  │  │  ├─ EditorSurface/  PageTitle/  PageIcon/
+│  │  │  └─ ContentEditor/      본문 + 코드 블록 + 블록 동작 스토리
 │  │  └─ index.ts               공개 API
 │  └─ not-found/                알 수 없는 URL
 │
@@ -77,8 +89,8 @@ src/
 | 세그먼트 | 들어가는 것 | 예 |
 |---|---|---|
 | `ui/` | React 컴포넌트와 스토리 | `ContentEditor.tsx` · `PageNavigation/` |
-| `model/` | 상태와 계산. 그 슬라이스의 데이터 로직 | `page-content.ts` · `page-navigation.ts` · `breadcrumb.ts` |
-| `lib/` | 그 슬라이스 전용 순수 함수 | `page-icon-emoji.ts` · `blocknote-side-menu.ts` |
+| `model/` | 상태와 계산. **렌더를 모르는** 데이터 로직 | `page-content.ts` · `page-navigation.ts` · `breadcrumb.ts` |
+| `lib/` | 그 슬라이스 전용 순수 함수 | `page-icon-emoji.ts` |
 | `config/` | 문구와 설정 | `shared/config/messages.ts` |
 | `assets/` | 정적 파일 | `shared/assets/brand/` |
 | `api/` | 서버 호출 | 아직 없음 — [F2 에서 생깁니다](#서버가-붙는-자리-f2f4) |
@@ -86,17 +98,17 @@ src/
 ### 컴포넌트를 파일로 둘지 폴더로 둘지
 
 **여러 곳에서 쓰이는 컴포넌트는 폴더 하나.** 본체 · 스토리 · 그 컴포넌트에서만 쓰는
-하위 부품이 한 폴더에 모입니다. `shared/ui/` 와 `app/layout/ui/` 가 이 모양입니다.
+하위 부품이 한 폴더에 모입니다. `shared/ui/` 와 `app/ui/` 가 이 모양입니다.
 
 **폴더 중첩은 곧 import 소유입니다.** 안에 넣는 기준은 "그 컴포넌트가 직접 import 하는가"
 하나뿐입니다. 화면에서 나란히 보이는 것은 기준이 아닙니다.
 
 ```
-shared/ui/Toast/Toast.tsx  Toast.stories.tsx  useToast.tsx   ← 표면과 띄우는 쪽은 짝
-app/layout/ui/PageNavigation/PageNavigation.tsx
-                             PageNavigationItem.tsx          ← 행은 목록 밖에서 안 쓰임
-app/layout/ui/TopBar/TopBar.tsx  Breadcrumb.tsx  SaveStatus.tsx
-                                                             ← 상단바가 직접 그리는 둘
+shared/ui/Toast/     Toast.tsx  Toast.stories.tsx  useToast.tsx  ← 표면과 띄우는 쪽은 짝
+app/ui/PageNavigation/  PageNavigation.tsx  PageNavigationItem.tsx
+                                                  ← 행은 목록 밖에서 안 쓰임
+app/ui/TopBar/       TopBar.tsx  Breadcrumb.tsx  SaveStatus.tsx
+                                                  ← 상단바가 직접 그리는 둘
 ```
 
 그래서 `PageNavigation` 은 `Sidebar/` 안이 아니라 **옆**에 있습니다. 사이드바는 트리를
@@ -108,10 +120,35 @@ import 하지 않고 `children` 자리만 열어 두며, 둘을 붙이는 것은
 (`TopBar` 가 `BreadcrumbItem` 을 내놓습니다). 바깥에서 폴더 안쪽 파일을 직접 가리키지
 않습니다.
 
-**화면 하나 안에서만 사는 컴포넌트는 파일로 둡니다.** `pages/page-editor/ui/` 가 그렇습니다 —
-`PageTitle.tsx` 와 `PageTitle.stories.tsx` 가 나란히 있고 폴더를 한 겹 더 만들지 않습니다.
-슬라이스 자체가 이미 문맥이라, 폴더를 더 파도 "누구 것인지" 가 더 분명해지지 않습니다.
-블록 타입별 스토리처럼 **컴포넌트가 아니라 에디터 동작을 보여 주는 묶음**만 `ui/stories/` 로 모읍니다.
+스토리도 같은 자리입니다. 한 컴포넌트를 보여 주는 스토리는 그 컴포넌트 옆에 두고,
+`ContentEditor` 처럼 스토리가 여러 개인 것만 그 폴더 밑에 `stories/` 로 모읍니다 —
+`ui/ContentEditor/stories/` 는 전부 `ContentEditor` 를 띄워 블록 동작을 보여 줍니다.
+**`ui/` 바로 밑에 뜬 `stories/` 는 두지 않습니다.** 그러면 그 스토리가 누구 것인지
+폴더가 말해 주지 않습니다.
+
+### 세그먼트는 무엇으로 가르나
+
+**FSD 의 세그먼트는 「무엇을 위한 코드인가」입니다.** 도메인이 아니라 목적입니다.
+그래서 코드 블록 하나가 `model/`(스펙) · `ui/`(뷰) 로 갈라지는 것은 정상입니다.
+갈라진 것을 폴더로 다시 모으려고 세그먼트를 섞지 않습니다.
+
+| 여기 넣는다 | 기준 |
+|---|---|
+| `model/` | 상태를 만들거나 데이터를 정의하는 것 — 타입 · 스키마 · 훅 |
+| `lib/` | 상태가 없는 순수 함수 — 검색 · 좌표 계산 |
+| `ui/` | 화면에 그리는 컴포넌트 |
+
+세그먼트끼리는 서로 import 해도 됩니다. FSD 가 방향을 정한 것은 **레이어**이지
+세그먼트가 아닙니다. `model/code-block.ts` 가 `ui/ContentEditor/CodeBlockView` 를
+부르는 것은 BlockNote 스펙이 렌더 함수를 값으로 품기 때문이고, 규칙 위반이 아닙니다.
+
+**한 덩어리로 보고 싶다는 이유로 파일을 옮기지 않습니다.** 그러면 세그먼트가
+「목적」이 아니라 「도메인」이 되고, 다음 사람이 훅을 `ui/` 에서 찾게 됩니다.
+묶는 일은 이름이 합니다 — `blocknote-*` · `code-block*` · `page-icon-*`.
+
+**`ui/` 바로 밑에 파일로 두는 것은 조립하는 쪽 하나뿐입니다** — `app/ui/AppLayout.tsx` ·
+`pages/page-editor/ui/PageEditorPage.tsx`. 그 파일이 붙이는 단위는 전부 폴더입니다.
+슬라이스가 다르다고 규칙이 달라지지 않습니다.
 
 ### 배럴은 경계에만
 
@@ -145,14 +182,14 @@ app  →  pages  →  shared
 | `shared/config` | 화면 문구 | 컴포넌트 |
 | `pages/*/ui` | props, 같은 슬라이스의 `model` | fetch, localStorage |
 | `pages/*/model` | 도메인 규칙, 서버 훅 | DOM 치수 |
-| `app/layout` | 라우터, 슬라이스 공개 API | 슬라이스 내부 |
+| `app/ui` · `app/model` | 라우터, 슬라이스 공개 API | 슬라이스 내부 |
 | `shared/api` (F2~) | 전송 방식, 저장소 | React |
 
 **확인 방법** — 스프린트가 끝날 때 아래가 전부 0 이어야 합니다.
 
 - `src/shared/ui/` 안의 `useQuery` import
 - `src/shared/ui/` 안의 KnocSpace 문구 (`Message` **타입** import 는 문구가 아니라 props 모양이라 괜찮습니다)
-- `src/shared/api/` 밖의 `localStorage` 직접 호출 — `app/layout/model/sidebar-resize.ts` 는
+- `src/shared/api/` 밖의 `localStorage` 직접 호출 — `app/model/sidebar-resize.ts` 는
   서버 데이터가 아니라 화면 상태라 예외입니다
 
 ### 언제 레이어를 더 만드나
@@ -166,7 +203,7 @@ app  →  pages  →  shared
 | Page 를 **바꾸는 동작**(이름 바꾸기 · 옮기기 · 삭제)을 여러 화면이 씀 | `features/rename-page` 처럼 동작 이름으로 |
 | 여러 슬라이스를 엮은 **덩어리 UI** 를 여러 화면이 씀 | `widgets/*` |
 
-지금은 셋 다 해당 없음입니다. Page navigation 은 셸 하나만 쓰므로 `app/layout` 에,
+지금은 셋 다 해당 없음입니다. Page navigation 은 셸 하나만 쓰므로 `app` 에,
 에디터는 화면 하나만 쓰므로 `pages/page-editor` 에 있습니다.
 
 ---
@@ -186,7 +223,7 @@ shared/api/
 - **Page CRUD 훅은 쓰는 화면이 하나인 동안 `pages/page-editor/api/` 에 둡니다.**
   두 번째 화면이 같은 훅을 부르는 순간 `entities/page/api` 로 올립니다 — 위의 승격 기준 그대로입니다.
 - 훅 이름은 `usePage` · `usePageTree` · `useCreatePage` · `useSavePage`.
-- **자리표시 데이터는 `model/` 에 파일 하나로 둡니다** — `app/layout/model/sample-page-navigation.ts` ·
+- **자리표시 데이터는 `model/` 에 파일 하나로 둡니다** — `app/model/sample-page-navigation.ts` ·
   `pages/page-editor/model/sample-page-content.ts`. F2 에서 이 파일들만 지우면 됩니다.
   화면 컴포넌트 안에 상수로 박아 두면 지울 때 화면 코드를 같이 건드리게 됩니다.
 
@@ -264,7 +301,7 @@ F10 에서 실시간 협업을 붙입니다. 그때 에디터를 다시 만들�
 `PageContent` 는 다른 코드 입장에서 그냥 덩어리입니다. F10 에서 이 자리가 Yjs 데이터로 바뀌어도 나머지가 안 깨집니다.
 에디터 인스턴스도 밖으로 내보내지 않습니다 — 제목에서 본문으로 포커스를 옮기는 것 같은 일은 훅이 핸들로 열어 줍니다.
 
-**4. 훅 하나로 감쌉니다.** `model/content-editor.ts` 의 `useContentEditor` 가 그 자리입니다.
+**4. 훅 하나로 감쌉니다.** `ui/ContentEditor/content-editor.ts` 의 `useContentEditor` 가 그 자리입니다.
 
 ```ts
 // 지금
@@ -286,7 +323,7 @@ F10 의 커서 색으로 그대로 씁니다. 나중에 타입을 고치지 않�
 | 처음 불러오는 중 | `Skeleton`. 레이아웃이 안 흔들리게 실제 치수로 |
 | 이미 데이터가 있고 다시 불러오는 중 | 기존 화면 유지 + 상단바에 작은 표시. **화면을 비우지 않습니다** |
 | 실패 | `ErrorState` — 원인 + 다시 시도 버튼 |
-| 예상 못한 오류 | `app/layout/ui/ErrorBoundary` |
+| 예상 못한 오류 | `app/ui/ErrorBoundary` |
 
 토스트는 **사용자가 뭔가 한 결과에만** 씁니다. 삭제됨, 복구됨, 저장 실패. 조회 실패에는 안 씁니다.
 

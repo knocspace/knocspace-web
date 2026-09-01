@@ -4,7 +4,7 @@ import { Skeleton as SeedSkeleton } from "@seed-design/react";
  * 자리표시 회색 블록 — SEED Skeleton 을 감싼다.
  *
  * 흩어져 있던 자리표시 코드가 전부 여기로 모인다. 지금 Sidebar 와
- * PageEditorSurface 가 각자 rounded-r1 bg-bg-neutral-weak-alpha 로 그리고 있는데,
+ * EditorSurface 가 각자 rounded-r1 bg-bg-neutral-weak-alpha 로 그리고 있는데,
  * 그건 shimmer 도 없고 prefers-reduced-motion 도 안 본다.
  *
  * 반경은 SEED 가 0 / 8 / 16 / full 만 준다. 트리 행이 쓰는 r1(4px)이 없어서
@@ -44,7 +44,7 @@ export function Skeleton({ width, height, shape = "text" }: SkeletonProps) {
  * 트리 자리표시 — 28px 행을 그대로 차지한다.
  *
  * 로드 후 레이아웃이 흔들리면 여기 값이 틀린 것이다. 행 높이·들여쓰기는
- * SidebarPageNavigationItem 과 같은 토큰을 읽는다.
+ * PageNavigationItem 과 같은 토큰을 읽는다.
  */
 export function TreeSkeleton({ rows = 4 }: { rows?: number }) {
   // 실제 목록처럼 보이도록 길이와 깊이를 섞는다. 전부 같은 폭이면 표처럼 보인다.

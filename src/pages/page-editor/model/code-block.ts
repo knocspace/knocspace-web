@@ -6,7 +6,7 @@ import {
 } from "@blocknote/core";
 import { codeBlockOptions } from "@blocknote/code-block";
 import { createReactBlockSpec } from "@blocknote/react";
-import { CodeBlockExternalHTML, CodeBlockView } from "../ui/CodeBlockView";
+import { CodeBlockExternalHTML, CodeBlockView } from "../ui/ContentEditor/CodeBlockView";
 
 /**
  * 코드 블록. BlockNote 기본 스펙에서 **언어 선택기만** 우리 것으로 바꾼 것이다.
@@ -26,7 +26,7 @@ import { CodeBlockExternalHTML, CodeBlockView } from "../ui/CodeBlockView";
  * | 하이라이트 | `meta.highlight` |
  *
  * `type` 도 `propSchema` 도 그대로라 **저장된 문서는 안 건드린다.** 마이그레이션이
- * 없다는 뜻이고, 되돌리고 싶으면 schema.ts 한 줄을 되돌리면 된다.
+ * 없다는 뜻이고, 되돌리고 싶으면 blocknote-schema.ts 한 줄을 되돌리면 된다.
  */
 
 /* 단축키 확장을 코어에서 꺼내오는 자리.

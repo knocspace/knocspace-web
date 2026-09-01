@@ -9,7 +9,7 @@ import type { ContentEditorProps } from "./ContentEditor";
  * 화면에서만 필요한 무게라, 사이드바와 상단바가 그걸 기다릴 이유가 없다
  * (docs/roadmap/sprint-3.md §3).
  *
- * 이 파일 자체는 가벼워야 한다. BlockEditor 를 값으로 import 하면 그 순간
+ * 이 파일 자체는 가벼워야 한다. ContentEditor 를 값으로 import 하면 그 순간
  * 지연 로드가 무의미해지므로, 타입만 가져온다.
  */
 

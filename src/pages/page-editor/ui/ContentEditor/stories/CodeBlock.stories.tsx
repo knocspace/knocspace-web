@@ -19,10 +19,10 @@ import { bodyBlock, storyDoc, storyPageId } from "./storyDoc";
  *
  * - **코어의 기본 코드 블록은 하이라이트가 꺼져 있고 언어 목록이 비어 있습니다.**
  *   하이라이터(Shiki)가 무거워서 코어에서 빼 뒀기 때문입니다. 언어 목록은
- *   `codeBlock.ts` 가, 하이라이터는 `useEditorDoc` 이 붙입니다
+ *   `code-block.ts` 가, 하이라이터는 `useContentEditor` 이 붙입니다
  * - **언어 선택기는 코어 것이 아닙니다.** 코어는 native `<select>` 를 직접 그리는데
  *   펼친 목록을 OS 가 그려서 브릿지가 안 닿습니다. 스펙에서 `render` 하나만 바꿔
- *   슬래시 메뉴와 같은 메뉴 표면으로 돌렸습니다 — `codeBlock.ts` · `CodeLanguageMenu.tsx`
+ *   슬래시 메뉴와 같은 메뉴 표면으로 돌렸습니다 — `code-block.ts` · `CodeLanguageMenu.tsx`
  * - **라이트에서도 배경이 검정입니다.** 표면을 뒤집으려면 Shiki 문법색까지 같이
  *   뒤집어야 해서 DESIGN.md §6 에 미결정으로 열려 있습니다. 브릿지는 반경(`r1_5`)만
  *   가져옵니다

@@ -4,7 +4,7 @@ import type { ReactCustomBlockRenderProps } from "@blocknote/react";
 import { CodeLanguageMenu, type CodeLanguage } from "./CodeLanguageMenu";
 
 /**
- * 코드 블록이 그려지는 모양. 스펙에 꽂히는 자리는 codeBlock.ts 다.
+ * 코드 블록이 그려지는 모양. 스펙에 꽂히는 자리는 code-block.ts 다.
  *
  * 코어의 `render` 와 나오는 DOM 이 같다 — `<div>` 하나와 `<pre><code>` 가 형제로
  * 선다. 안이 native `<select>` 에서 메뉴로 바뀐 것뿐이다.

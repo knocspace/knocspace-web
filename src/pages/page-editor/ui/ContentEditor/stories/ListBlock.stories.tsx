@@ -3,7 +3,7 @@ import { fn } from "storybook/test";
 import { EditorSurface } from "@/pages/page-editor";
 import { ContentEditor } from "../ContentEditor";
 import type { ContentEditorProps } from "../ContentEditor";
-import type { KnocPartialBlock } from "../../model/blocknote-schema";
+import type { KnocPartialBlock } from "../../../model/blocknote-schema";
 import { storyDoc, storyPageId } from "./storyDoc";
 
 /**
