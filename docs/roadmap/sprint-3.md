@@ -41,6 +41,7 @@ F3에서는 **서버 저장을 구현하지 않습니다.**
 * [x] `ContentEditor` 구현
 * [x] 사이드 메뉴 위치 계산
 * [x] 손잡이(⠿)를 눌러 블록 선택 — 고른 동안 포맷 툴바는 안 뜹니다
+* [x] 블록 메뉴(⠿) — 전환 · 색상 · 복제 · 삭제. 전환은 서브메뉴 열두 줄
 * [x] 블록 색·블록 선택 면의 상자 — 반경 r1, 글줄 밖으로 3px · 6px (DESIGN.md §7)
 * [x] `PageTitle` 구현
 * [x] `PageIcon` · `PageIconPicker` 구현
@@ -75,6 +76,11 @@ F3에서는 **서버 저장을 구현하지 않습니다.**
 * [x] `lib/blocknote-side-menu.ts` — ＋ · ⠿ 세로 위치
 * [x] `lib/block-selection.ts` — ⠿ 를 누르면 그 블록에 NodeSelection 을 놓습니다
 * [x] `ui/ContentEditor/BlockSideMenu.tsx` — 기본 사이드 메뉴 + 손잡이 클릭 선택
+* [x] `ui/ContentEditor/BlockDragHandleMenu.tsx` · `TurnIntoMenuItem.tsx` · `model/turn-into-items.ts` — ⠿ 메뉴
+
+⠿ 메뉴는 BlockNote 기본(삭제 · 색깔 · 표 머리글)을 전환 · 색상 · 복제 · 삭제로 바꾼 것입니다. 표면은 BlockNote `Generic.Menu` 그대로고 폭 · 아이콘 · 목록만 우리 것입니다 ([DESIGN.md §9](../../DESIGN.md)).
+
+**「페이지」(블록을 하위 페이지로 전환)는 백로그입니다** ([빼는 것](mvp.md)). 페이지를 가리키는 블록이 없고, 하위 페이지를 만드는 일이라 `shared/api` 를 부르는 유일한 전환이며, 글자가 문서 밖으로 나가서 되돌리기 범위를 같이 정해야 합니다. 이번 스프린트에서 하지 않습니다.
 
 ### 남은 구현
 
