@@ -410,3 +410,47 @@
 .bn-mantine.bn-root .bn-suggestion-menu-label {
   color: var(--seed-color-fg-neutral-subtle);
 }
+
+/* ── 떠 있는 메뉴 두 판의 폭 — DESIGN.md §7
+ *
+ * 슬래시 메뉴(＋ 로도 열린다)와 드래그 핸들 메뉴(⠿)다. 위의 열두 줄과 성격이
+ * 또 다르다. 색도 글꼴도 아니고 **치수**를 얹는 유일한 자리다.
+ *
+ * BlockNote 는 둘 다 내용을 따라가게 두고 바닥·천장만 다르게 준다.
+ *
+ *   .bn-mantine .bn-suggestion-menu            { max-width: 350px }
+ *   .bn-side-menu .mantine-Menu-dropdown       { min-width: 100px }
+ *
+ * 그래서 같은 자리에서 열리는 두 판의 폭이 따로 논다 — 재 보면 슬래시 메뉴는
+ * 336.4px, 드래그 핸들 메뉴는 항목이 짧아 늘 바닥값 100px 이다. 게다가 슬래시
+ * 메뉴는 목록이 걸러지면서 같이 줄어든다(`/제목` 267.5px · `/제목 1` 137.1px)
+ * — 글자를 칠 때마다 판이 움직인다.
+ *
+ * 값은 knocspace.css 한 곳에서 온다. 여기에 340px 을 적으면 안 된다.
+ *
+ * 둘 다 .bn-mantine.bn-root 두 겹으로 (0,3,0) — 저쪽 (0,2,0) 을 이긴다.
+ * .bn-container 가 아닌 것에 주의 — 둘 다 포털 안이다.
+ *
+ * 드래그 핸들 메뉴를 .bn-drag-handle-menu 로 짚는 이유: 같은 판에
+ * .bn-menu-dropdown 도 붙어 있지만 그건 포맷 툴바의 블록 타입 메뉴 · 코드 블록
+ * 언어 목록 · 색깔 서브메뉴도 같이 쓰는 이름이라, 그쪽까지 340px 로 늘어난다. */
+.bn-mantine.bn-root .bn-suggestion-menu {
+  width: var(--knoc-editor-menu-width);
+}
+
+/* **한쪽만 min-width 인 것이 이 두 줄에서 유일하게 이상한 곳이다.**
+ *
+ * 드래그 핸들 메뉴는 mantine Popover 가 그리는 판이라 `width: max-content` 가
+ * **인라인 style 로** 박힌다. 인라인은 명시도로 못 이긴다 — 이 파일이 안 쓰기로
+ * 한 !important 말고는 방법이 없다. width 로 적으면 조용히 아무 일도 안 하고
+ * 100px 그대로다(min-width 바닥값). 실제로 그렇게 썼다가 재 보고 고쳤다.
+ *
+ * min-width 는 다른 속성이라 인라인 width 와 안 싸운다. 쓰이는 폭은
+ * max(max-content, 340px) 이 되고, 이 메뉴 항목은 「삭제」·「복제」·「색깔」이라
+ * max-content 가 340px 을 넘을 일이 없어서 결과가 정확히 340px 이다.
+ *
+ * 넘으면 그때는 이쪽만 넓어진다. 슬래시 메뉴가 BlockNote 천장(350px)에서 잘리는
+ * 것과 같은 종류의 한계고, 사전이 그만큼 긴 말로 바뀌어야 닿는 자리다. */
+.bn-mantine.bn-root .bn-drag-handle-menu {
+  min-width: var(--knoc-editor-menu-width);
+}
