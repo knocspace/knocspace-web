@@ -10,11 +10,11 @@
  * padding:0} 이 SEED 버튼을 이긴다. 토큰이 안 붙은 것처럼 보이는 정체가 이것.
  *
  * 앱의 main.tsx 도 같은 이유로 index.css 를 App 보다 먼저 import 한다. */
-import "@/index.css";
+import "@/app/styles/global.css";
 
 import type { Preview } from "@storybook/react-vite";
 import { withThemeByDataAttribute } from "@storybook/addon-themes";
-import { ToastProvider } from "@/components/ui/Toast/Toast";
+import { ToastProvider } from "@/shared/ui";
 
 /**
  * 모든 스토리에 공통으로 깔리는 것.
@@ -98,7 +98,7 @@ const preview: Preview = {
             "InlineInput",
           ],
           "레이아웃",
-          ["PageTree", "Breadcrumb", "SaveStatus"],
+          ["PageNavigation", "Breadcrumb", "SaveStatus"],
           "에디터",
           [
             "문서 한 장",

@@ -20,26 +20,49 @@ F1~F3은 mock으로 화면을 끝내고, F4에서 Page API, F5에서 User API를
 SEED 스킬이 알려주는 값은 SEED 원본(모바일, 터치) 기준이다.
 충돌하면 `DESIGN.md`가 이긴다.
 
-## 백엔드 없음 — mock 기반
+## 구조는 FSD(Feature-Sliced Design) v2.1 을 따른다
 
-`src/api/*` 는 localStorage mock. 시그니처와 타입은 실제 API 명세를 따른다.
-나중에 내부만 `fetch`로 바뀌고 컴포넌트는 안 바뀌어야 한다.
-
-- 서버 호출은 `src/api/` 안에서만
-- 타입의 출처는 `src/types/api.ts` 하나
-
-## 구조
+레이어 판단이 필요하면 `feature-sliced-design` 스킬을 먼저 부른다.
+스킬과 이 문서가 충돌하면 이 문서가 이긴다.
 
 ```
 src/
-├── api/          서버 호출(현재 mock)
-├── types/api.ts  백엔드와의 계약
-├── hooks/        공용 훅. 서버 상태는 TanStack Query, 그 외는 화면 동작 훅
-├── features/     데이터 로직
-├── components/   순수 UI. props만 받는다. 컴포넌트 하나에 폴더 하나
-│              (스토리·전용 하위 부품은 그 폴더 안. 배럴 index.ts 는 두지 않는다)
-├── routes/       화면. 위의 것들을 조립하는 유일한 자리
-├── lib/          어디에도 안 붙는 순수 유틸
-├── assets/       정적 파일
-└── styles/
+├── app/      앱 초기화 — main·App·router·styles·전역 레이아웃
+│             (슬라이스 없음. 세그먼트로 바로 나눈다)
+├── pages/    화면 단위 슬라이스. 그 화면에만 쓰는 UI·로직은 전부 여기
+└── shared/   업무 로직 없는 인프라 — ui·api·config·lib·assets
+              (슬라이스 없음. 세그먼트별로 public API 를 둔다)
 ```
+
+`features/` `entities/` 는 **지금 없다.** 같은 코드가 실제로 두 곳 이상에서
+쓰이고 경계가 굳었을 때만 만든다. 그 전에는 `pages/` 안에 둔다.
+`widgets/` 는 쓰지 않는다.
+
+세그먼트는 `ui/` `model/` `api/` `lib/` `config/` 다.
+파일 이름은 역할이 아니라 도메인으로 짓는다 — `types.ts` `utils.ts` 말고
+`page-content.ts` `fetch-page.ts`.
+
+### import 규칙
+
+- 아래 레이어에서만 가져온다: `app → pages → shared`
+- 같은 레이어의 다른 슬라이스끼리는 import 하지 않는다
+- 슬라이스 밖에서는 `index.ts`(public API)로만 가져온다
+  ```ts
+  import { PageEditorPage } from "@/pages/page-editor";      // ✅
+  import { PageEditorPage } from "@/pages/page-editor/ui/…";  // ❌
+  ```
+- `shared` 는 세그먼트마다 public API 를 둔다 (`@/shared/ui`, `@/shared/config`).
+  최상위 `shared/index.ts` 는 두지 않는다
+- 경로 별칭은 `@/*` → `src/*`. `vite.config.ts` 와 `tsconfig.app.json`
+  양쪽을 같이 고쳐야 한다
+
+규칙을 깨야 하면 의도적인 선택이어야 하고, 이유를 주석으로 남긴다.
+
+## 백엔드 없음 — mock 기반
+
+`src/shared/api/*` 는 localStorage mock. 시그니처와 타입은 실제 API 명세를 따른다.
+나중에 내부만 `fetch`로 바뀌고 화면은 안 바뀌어야 한다.
+
+- 서버 호출은 `src/shared/api/` 안에서만
+- 백엔드와의 계약 타입도 `src/shared/api/` 하나에서 나온다
+- CRUD 는 인프라다. entity 로 올리지 않는다
