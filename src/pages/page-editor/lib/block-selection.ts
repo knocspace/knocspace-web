@@ -53,3 +53,22 @@ export function isWholeBlockSelected(state: EditorState) {
   const { selection } = state;
   return selection instanceof NodeSelection && selection.node.type.name === "blockContainer";
 }
+
+/**
+ * ⠿ 메뉴가 다루는 블록들 — **고른 것 안에서 열었으면 고른 것 전부, 아니면 그
+ * 블록 하나다.**
+ *
+ * 손잡이는 마우스가 지나는 블록을 따라다니므로, 여러 줄을 골라 둔 채로도 선택
+ * 밖의 블록 옆에 서 있을 수 있다. 그때 고른 것 전부에 걸면 사용자가 안 가리킨
+ * 줄까지 지워진다. 반대로 선택 **안**에서 열었으면 고른 것 전부가 맞다 — 그게
+ * 그 선택을 만든 이유다.
+ *
+ * BlockNote 의 「삭제」가 하던 계산이고(RemoveBlockItem), 전환 · 복제 · 삭제 셋이
+ * 같은 규칙을 따라야 한 메뉴 안에서 줄마다 대상이 달라지지 않는다.
+ */
+export function menuTargetBlocks<TBlock extends { id: string }>(
+  block: TBlock,
+  selected: TBlock[] | undefined,
+): TBlock[] {
+  return selected?.some((candidate) => candidate.id === block.id) ? selected : [block];
+}

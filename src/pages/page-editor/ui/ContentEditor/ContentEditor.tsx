@@ -44,7 +44,8 @@ export interface ContentEditorProps {
  * 슬래시 메뉴 · 포맷 툴바는 아직 BlockNote 기본 **표면**이다. 슬래시 메뉴는
  * 목록만 우리 것으로 넘긴다 — 목차 한 줄을 더하려는 것이고, 그리는 것은
  * BlockNote 다 (slash-menu-items.tsx). 사이드 메뉴도 생김새는 기본이고, 우리 것은
- * 세로 위치(blocknote-side-menu.ts)와 ⠿ 를 눌렀을 때의 블록 선택(BlockSideMenu)이다.
+ * 세로 위치(blocknote-side-menu.ts) · ⠿ 를 눌렀을 때의 블록 선택 · 그때 뜨는
+ * 메뉴의 목록 셋이다 (BlockSideMenu · BlockDragHandleMenu).
  *
  * 표면 자체를 SEED 로 갈아 끼우는 것은 F3 §2 다 (SlashMenu · FormatToolbar).
  */
@@ -79,9 +80,9 @@ export function ContentEditor({ pageId, content, editable = true, onChange }: Co
         theme={colorScheme}
         onChange={onChange && (() => onChange(toPageContent(editor.document)))}
         /* 기본 사이드 메뉴를 끄고 같은 것을 다시 넣는다. 그려지는 ＋ 와 ⠿ 는
-         * BlockNote 기본 그대로고, 우리 것은 자리 계산(blocknote-side-menu.ts)과
-         * ⠿ 를 눌렀을 때의 블록 선택(BlockSideMenu) 둘이다. (크기와 블록까지의
-         * 간격만 CSS 에서 줄인다 — blocknote-bridge.css 맨 아래.) */
+         * BlockNote 기본 그대로고, 우리 것은 자리 계산(blocknote-side-menu.ts) ·
+         * ⠿ 를 눌렀을 때의 블록 선택 · ⠿ 메뉴의 목록 셋이다 (BlockSideMenu).
+         * (크기와 블록까지의 간격만 CSS 에서 줄인다 — blocknote-bridge.css 맨 아래.) */
         sideMenu={false}
         /* 기본 슬래시 메뉴도 끄고 같은 것을 다시 넣는다. 목록에 목차를 더하려면
          * getItems 를 우리가 넘겨야 하고, 그건 컨트롤러 쪽에만 있다.

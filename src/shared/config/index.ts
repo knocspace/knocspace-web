@@ -1,4 +1,5 @@
 export {
+  blockMenuLabels,
   boundaryMessages,
   breadcrumbMessages,
   editorPlaceholders,

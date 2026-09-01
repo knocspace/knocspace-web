@@ -17,7 +17,8 @@ import { storyPageId } from "./storyDoc";
  *   블록을 React state 로 복사하지 않습니다(`docs/roadmap/architecture.md`)
  * - `pageId` 가 바뀌면 에디터를 새로 만듭니다. 다른 페이지로 간다는 뜻입니다
  * - 슬래시 메뉴 · 포맷 툴바 · 드래그 핸들은 **BlockNote 기본 표면 그대로** 입니다.
- *   SEED 표면으로 갈아 끼우는 것은 F3 §2 입니다
+ *   SEED 표면으로 갈아 끼우는 것은 F3 §2 입니다. `⠿` 메뉴만 목록이 우리 것입니다
+ *   (전환 · 색상 · 복제 · 삭제 — `에디터/블록 메뉴` 스토리)
  * - 이 컴포넌트는 서버도 라우터도 모릅니다. 저장은 화면 쪽 일이라 `onChange` 만 냅니다
  * - 실제 화면에서는 이걸 직접 안 부르고 `LazyContentEditor` 로 부릅니다 — BlockNote 는
  *   ProseMirror · Mantine · Shiki 를 같이 들고 오는 무게라 첫 화면에서 떼어냈습니다
