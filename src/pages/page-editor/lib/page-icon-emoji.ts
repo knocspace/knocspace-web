@@ -1,6 +1,5 @@
 import type { EmojiMartData } from "@emoji-mart/data";
-import { BlockNoteEditor } from "@blocknote/core";
-import { getDefaultEmojiPickerItems } from "@blocknote/core/extensions";
+import type { BlockNoteEditor } from "@blocknote/core";
 
 /**
  * 이모지 목록과 검색. **데이터를 우리가 안 들고 다닌다.**
@@ -26,16 +25,25 @@ import { getDefaultEmojiPickerItems } from "@blocknote/core/extensions";
  * 그래서 목록은 `data.categories` 를 읽는다. 표정과 사람 → 자연 → 음식 순으로
  * 오고, 각 묶음이 화면의 한 구획이 된다.
  *
- * **무게는 0이다.** `@emoji-mart/data` 는 이미 우리 번들에 있다 — 슬래시 메뉴가
- * 쓰기 때문이다. package.json 에 적은 것은 안 적혀 있던 것을 적은 것이지 새로
- * 들인 것이 아니다. 동적 import 라 문서를 열 때가 아니라 피커를 열 때 받는다.
+ * **첫 화면에 얹는 무게는 0이다.** 이 파일이 부르는 무거운 것 둘 — 이모지 데이터와
+ * BlockNote — 을 **둘 다 동적 import 로 가져온다.** 파일 맨 위에 남은 것은
+ * `import type` 뿐이고, 타입은 빌드 때 지워져서 번들에 안 들어간다.
+ *
+ * 그래야 하는 이유는 이 파일을 부르는 쪽에 있다. `PageEditorPage` 가 이 파일을
+ * 정적으로 부르는데 그 화면은 lazy 가 아니다. 여기서 값을 맨 위로 올리는 순간
+ * BlockNote 가 그 사슬을 타고 첫 화면 번들에 실리고, `LazyContentEditor` 로
+ * 에디터를 떼어낸 것이 그만큼 헛일이 된다.
+ *
+ * `@emoji-mart/data` 는 코어도 같은 모듈을 동적으로 부르기 때문에 청크 하나를
+ * 나눠 쓴다. package.json 에 적은 것은 안 적혀 있던 것을 적은 것이지 새로
+ * 들인 것이 아니다.
  *
  * **한글로는 안 찾아진다.** 데이터의 키워드가 영어뿐이라 `책` · `로켓` 은 0개다.
  * 자리 문구로 영어를 쓰라고 알린다 (messages.ts).
  *
- * ── 왜 features/editor 인가
+ * ── 왜 pages/page-editor 인가
  *
- * 검색이 에디터 인스턴스를 필요로 하는데, 에디터를 features/editor 밖으로
+ * 검색이 에디터 인스턴스를 필요로 하는데, 에디터를 pages/page-editor 밖으로
  * 내보내지 않기로 했다 (architecture.md). 그래서 인스턴스는 이 파일 안에만 있고
  * 밖으로는 문자열만 나간다.
  *
@@ -78,6 +86,15 @@ export async function listEmojiCategories(): Promise<EmojiCategory[]> {
 
 /** 질의에 걸리는 것만. 빈 질의는 여기로 오지 않는다 — 그건 listEmojiCategories 다. */
 export async function searchEmoji(query: string): Promise<string[]> {
+  /* 맨 위가 아니라 여기서 가져온다. 위에서 값으로 가져오면 이 파일을 정적으로
+   * 부르는 PageEditorPage 를 타고 BlockNote 가 첫 화면 번들에 실린다 —
+   * ContentEditor 를 React.lazy 로 떼어낸 것이 그만큼 무의미해진다.
+   * 위에 남은 것은 `import type` 이라 빌드 때 지워진다(무게 0). */
+  const [{ BlockNoteEditor }, { getDefaultEmojiPickerItems }] = await Promise.all([
+    import("@blocknote/core"),
+    import("@blocknote/core/extensions"),
+  ]);
+
   lookupEditor ??= BlockNoteEditor.create();
   const items = await getDefaultEmojiPickerItems(lookupEditor, query);
   return items.map((item) => item.id);
