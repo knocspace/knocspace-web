@@ -1,8 +1,10 @@
 import { BlockNoteView } from "@blocknote/mantine";
-import { SideMenuController } from "@blocknote/react";
+import { filterSuggestionItems } from "@blocknote/core/extensions";
+import { SideMenuController, SuggestionMenuController } from "@blocknote/react";
 import { sideMenuFloatingOptions } from "../../lib/blocknote-side-menu";
 import { toPageContent, type PageContent } from "../../model/page-content";
 import { useContentEditor } from "../../model/content-editor";
+import { knocSlashMenuItems } from "../../model/slash-menu-items";
 import { useSeedColorScheme } from "../../model/seed-color-scheme";
 
 /* 라이브러리 CSS. 변수는 여기서 안 건드린다 — SEED 로 되돌려 가리키는 일은
@@ -32,9 +34,12 @@ export interface ContentEditorProps {
 /**
  * 문서 본문. props 만 받고 서버도 라우터도 모른다.
  *
- * 슬래시 메뉴 · 포맷 툴바는 BlockNote 기본 표면 그대로다. 사이드 메뉴도
- * 생김새는 기본이고, 세로 위치만 우리가 계산한다 — blocknote-side-menu.ts.
- * SEED 표면으로 갈아 끼우는 것은 F3 §2 다 (SlashMenu · FormatToolbar).
+ * 슬래시 메뉴 · 포맷 툴바는 아직 BlockNote 기본 **표면**이다. 슬래시 메뉴는
+ * 목록만 우리 것으로 넘긴다 — 목차 한 줄을 더하려는 것이고, 그리는 것은
+ * BlockNote 다 (slash-menu-items.tsx). 사이드 메뉴도 생김새는 기본이고 세로
+ * 위치만 우리가 계산한다 — blocknote-side-menu.ts.
+ *
+ * 표면 자체를 SEED 로 갈아 끼우는 것은 F3 §2 다 (SlashMenu · FormatToolbar).
  */
 export function ContentEditor({ pageId, content, editable = true, onChange }: ContentEditorProps) {
   const editor = useContentEditor({ pageId, content });
@@ -61,8 +66,21 @@ export function ContentEditor({ pageId, content, editable = true, onChange }: Co
          * 바꾸려는 것이고, 안에 그려지는 ＋ 와 ⠿ 는 BlockNote 기본 그대로다
          * — blocknote-side-menu.ts. */
         sideMenu={false}
+        /* 기본 슬래시 메뉴도 끄고 같은 것을 다시 넣는다. 목록에 목차를 더하려면
+         * getItems 를 우리가 넘겨야 하고, 그건 컨트롤러 쪽에만 있다.
+         *
+         * 표면은 아직 BlockNote 기본이다 — suggestionMenuComponent 를 안 넘기면
+         * 기본 메뉴가 그대로 그려진다. SEED 로 갈아 끼우는 것은 F3 §2 이고,
+         * 그때 이 자리에 컴포넌트 한 줄이 는다. */
+        slashMenu={false}
       >
         <SideMenuController floatingUIOptions={sideMenuFloatingOptions} />
+        {/* 목록을 만드는 것은 컴포넌트 밖이다 — slash-menu-items.tsx.
+          * 메뉴 본체는 jsdom 에서 안 떠서, 검사할 수 있는 자리가 그쪽뿐이다. */}
+        <SuggestionMenuController
+          triggerCharacter="/"
+          getItems={async (query) => filterSuggestionItems(knocSlashMenuItems(editor), query)}
+        />
       </BlockNoteView>
     </div>
   );

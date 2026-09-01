@@ -5,6 +5,7 @@ import {
   defaultBlockSpecs,
 } from "@blocknote/core";
 import { knocCodeBlock } from "./code-block";
+import { knocTableOfContents } from "./toc-block";
 
 /**
  * 문서에 들어갈 수 있는 것들의 목록. 스키마가 곧 계약이라, 여기 없는 블록은
@@ -42,11 +43,15 @@ import { knocCodeBlock } from "./code-block";
  * 표의 헤더 행 · 헤더 열 · 셀 병합 · 셀 색은 여기가 아니라 에디터 옵션(tables)
  * 에서 켠다. 넷 다 BlockNote 기본은 꺼짐이고, 우리는 넷 다 켰다 — useContentEditor.
  *
+ * 목차는 BlockNote 에 없어서 우리가 만든 블록이다 — toc-block.ts. 기본 블록
+ * 뒤에 더하는 것이라 위 셋(갈아 끼우기)과 성격이 다르다. 슬래시 메뉴 항목도
+ * 사전이 아니라 우리가 붙인다 (slash-menu-items.tsx).
+ *
  * 넣지 않은 것:
  * - 수식 · 다이어그램 — @blocknote/math-block · @blocknote/diagram-block.
  *   KaTeX 와 mermaid 를 같이 들고 오므로 실제로 쓸 때 붙인다
  * - 컬럼 레이아웃 · AI — @blocknote/xl-* 는 상업 라이선스다. 결제 전에는 못 쓴다
- * - 콜아웃 · 목차 · 북마크 — BlockNote 에 없다. 커스텀 블록으로 직접 만든다
+ * - 콜아웃 · 북마크 — BlockNote 에 없다. 목차처럼 커스텀 블록으로 직접 만든다
  */
 export const knocSchema = BlockNoteSchema.create({
   blockSpecs: {
@@ -54,6 +59,7 @@ export const knocSchema = BlockNoteSchema.create({
     heading: createHeadingBlockSpec({ levels: [1, 2, 3] }),
     codeBlock: knocCodeBlock,
     table: createTableBlockSpec(),
+    tableOfContents: knocTableOfContents,
   },
 });
 

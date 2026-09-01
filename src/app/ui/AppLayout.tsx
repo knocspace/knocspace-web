@@ -52,7 +52,12 @@ export function AppLayout() {
           />
         </Sidebar>
 
-        <div className="flex min-w-0 flex-1 flex-col overflow-y-auto">
+        {/* scroll-pt — 상단바가 sticky 라, 문서 안에서 어딘가로 굴려 갈 때
+          * (목차 항목 클릭) 목적지가 그 44px 아래에 깔린다. scrollIntoView 는
+          * 컨테이너의 scroll-padding 을 그대로 지키므로, 가리는 쪽인 셸이
+          * 자기 높이만큼 미리 비워 두는 것이 맞다 — 굴리는 쪽(블록)이
+          * 상단바 높이를 알 필요가 없어진다. */}
+        <div className="flex min-w-0 flex-1 flex-col overflow-y-auto scroll-pt-[var(--knoc-topbar-height)]">
           <TopBar crumbs={crumbs} onCrumbSelect={(id) => navigate(`/p/${id}`)} />
           <ErrorBoundary onGoHome={() => navigate("/")}>
             <Outlet />

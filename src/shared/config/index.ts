@@ -9,6 +9,7 @@ export {
   routeMessages,
   saveStatusMessages,
   sidebarMessages,
+  tableOfContentsLabels,
   treeMessages,
   type Message,
 } from "./messages";

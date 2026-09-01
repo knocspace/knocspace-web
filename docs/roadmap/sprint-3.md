@@ -46,10 +46,10 @@ F3에서는 **서버 저장을 구현하지 않습니다.**
 
 ### 남은 작업
 
-* [ ] SlashMenu 구현
+* [x] 목차 블록
+* [ ] SlashMenu 구현 (표면 교체 — 목차 항목은 기본 메뉴에 붙어 있습니다)
 * [ ] FormatToolbar 구현
 * [ ] 콜아웃 블록
-* [ ] 목차 블록
 * [ ] 제목 → 본문 포커스 이동
 * [ ] 자동 저장
 * [ ] 저장 상태 표시
@@ -74,9 +74,11 @@ F3에서는 **서버 저장을 구현하지 않습니다.**
 
 ### 남은 구현
 
-* [ ] `model/slash-menu-items.ts`
+* [x] `model/slash-menu-items.tsx` — 기본 24항목 + 목차. 컴포넌트 밖이라 순수 node 에서 검사됩니다
 * [ ] `ui/ContentEditor/SlashMenu.tsx`
 * [ ] `ui/ContentEditor/FormatToolbar.tsx`
+
+`ContentEditor` 가 이미 `slashMenu={false}` + `SuggestionMenuController` 로 목록을 넘기고 있습니다. 표면만 BlockNote 기본이라, §2 에서 바뀌는 것은 `suggestionMenuComponent` 한 줄입니다.
 
 ### SlashMenu
 
@@ -149,7 +151,9 @@ BlockNote 기본 코드 블록은 언어 선택기가 native `<select>`입니다
 BlockNote가 제공하지 않는 블록입니다. `createReactBlockSpec`으로 만듭니다.
 
 * [ ] 콜아웃
-* [ ] 목차
+* [x] 목차 — `model/toc-block.ts` · `model/table-of-contents.ts` · `ui/ContentEditor/TableOfContentsView.tsx`
+
+목차는 담는 것이 없는 블록입니다(`content: "none"`, `propSchema: {}`). 저장되는 것은 `{ "type": "tableOfContents" }` 한 줄이고, 목록은 그릴 때 문서에서 다시 셉니다 — 제목 글자를 props 로 복사해 두면 같은 글자가 문서에 두 벌이 됩니다.
 
 데이터베이스 · 뷰는 [F6·F7](later-sprints.md)에서 진행합니다.
 

@@ -1,0 +1,138 @@
+import type { Meta, StoryObj } from "@storybook/react-vite";
+import { fn } from "storybook/test";
+import { EditorSurface } from "../../EditorSurface/EditorSurface";
+import { ContentEditor } from "../ContentEditor";
+import type { ContentEditorProps } from "../ContentEditor";
+import type { KnocPartialBlock } from "../../../model/blocknote-schema";
+import { storyDoc, storyPageId } from "./storyDoc";
+
+/**
+ * 목차 — **BlockNote 에 없어서 우리가 만든 첫 블록입니다** (F3 §3).
+ *
+ * 문서의 제목1·2·3 을 모아 보여주고, 항목을 누르면 그 제목으로 굴러갑니다.
+ *
+ * ### 담는 것이 없습니다
+ *
+ * 저장되는 것은 `{ "type": "tableOfContents" }` 한 줄이 전부입니다. 화면에 있는
+ * 글자는 전부 제목 블록에서 그때그때 센 것이라, 제목을 고치면 목차가 따라
+ * 바뀝니다 — **사본을 두지 않습니다.** 제목 글자를 목차의 props 로 복사해 두면
+ * 같은 글자가 문서에 두 벌이 되고, F10 협업에서 어느 쪽이 맞는지 알 수 없게
+ * 됩니다 (`architecture.md`).
+ *
+ * ### 규칙
+ *
+ * | | |
+ * | --- | --- |
+ * | 모으는 것 | 제목1 · 2 · 3 (스키마가 셋으로 닫혀 있습니다) |
+ * | 들여쓰기 | 층마다 16px |
+ * | 빼는 것 | 글자가 빈 제목 — 누를 수는 있는데 아무것도 안 적힌 줄이 됩니다 |
+ * | 찾는 범위 | 접을 수 있는 목록 · 표 안까지 (children 을 따라 내려갑니다) |
+ * | 긴 제목 | 한 줄로 자릅니다. 접히면 층이 안 보입니다 |
+ *
+ * ### 슬래시 메뉴
+ *
+ * `/` 를 치고 **고급** 그룹에서 표 바로 아래입니다. `/목차` · `/toc` ·
+ * `/table of contents` · `/개요` 로도 걸립니다.
+ *
+ * 아이콘은 `IconDocumentLine` — seed-icon 입니다 (DESIGN.md §8). 680개에 "목차"
+ * 라는 뜻의 아이콘은 없지만, seed-icon 은 **이름이 뜻이 아니라 모양** 이라
+ * 테두리 안에 가로선 셋이 든 이 아이콘이 Notion 의 목차와 같은 그림입니다.
+ *
+ * **메뉴 표면은 아직 BlockNote 기본입니다.** SEED 로 갈아 끼우는 것은 F3 §2 이고,
+ * 아이콘 결정(DESIGN.md §6)이 닫혀야 시작합니다.
+ */
+
+const STARTS = ["제목 있는 문서", "제목 없는 문서", "긴 문서"] as const;
+type Start = (typeof STARTS)[number];
+
+type TocStoryArgs = Omit<ContentEditorProps, "pageId" | "content"> & {
+  start: Start;
+};
+
+function heading(level: 1 | 2 | 3, text: string): KnocPartialBlock {
+  return { type: "heading", props: { level }, content: text };
+}
+
+function startBlocks(start: Start): KnocPartialBlock[] {
+  if (start === "제목 없는 문서") {
+    /* 안내 문구가 뜨는 상태. 목차를 먼저 넣고 제목을 나중에 치는 순서가
+     * 실제로 흔해서, 그때 이 블록이 뭘 기다리는지 보여야 합니다. */
+    return [
+      { type: "tableOfContents" },
+      { type: "paragraph", content: "위에 목차가 있고 제목은 아직 없습니다. 아래에 `# ` 를 쳐 보세요." },
+      { type: "paragraph", content: "" },
+    ];
+  }
+
+  if (start === "긴 문서") {
+    /* 눌러서 굴러가는 것을 보려면 화면보다 긴 문서가 필요합니다. */
+    return [
+      { type: "tableOfContents" },
+      ...Array.from({ length: 6 }, (_, index) => [
+        heading(2, `${index + 1}장. 스크롤 확인용 제목`),
+        { type: "paragraph", content: "본문이 이만큼 있습니다." } as KnocPartialBlock,
+        { type: "paragraph", content: "목차에서 이 장을 누르면 여기로 굴러옵니다." } as KnocPartialBlock,
+        { type: "paragraph", content: "" } as KnocPartialBlock,
+      ]).flat(),
+    ];
+  }
+
+  return [
+    { type: "tableOfContents" },
+    heading(1, "제목1 — 가장 왼쪽"),
+    { type: "paragraph", content: "제목을 고치면 위 목차가 같이 바뀝니다." },
+    heading(2, "제목2 — 한 칸 들어옵니다"),
+    heading(3, "제목3 — 두 칸 들어옵니다"),
+    { type: "paragraph", content: "본문은 목차에 안 들어갑니다." },
+    heading(2, "글자가 아주 길어서 한 줄에 다 안 들어가는 제목은 목차에서 말줄임으로 잘립니다"),
+    {
+      type: "toggleListItem",
+      content: "접힌 자리 안에도 제목이 있습니다",
+      children: [heading(3, "접힌 안쪽의 제목3")],
+    },
+  ];
+}
+
+const meta: Meta<TocStoryArgs> = {
+  title: "에디터/블록/목차",
+  args: {
+    start: "제목 있는 문서",
+    editable: true,
+    onChange: fn(),
+  },
+  argTypes: {
+    editable: { description: "끄면 읽기 전용 — 목차 항목은 그대로 눌립니다" },
+    onChange: { description: "제목을 고칠 때마다 찍힙니다. 목차는 문서를 다시 읽습니다" },
+    start: {
+      name: "시작 상태",
+      description: "제목 없는 문서는 안내 문구를, 긴 문서는 눌러서 굴러가는 것을 봅니다",
+      control: "inline-radio",
+      options: STARTS,
+      table: { category: "스토리 전용" },
+    },
+  },
+};
+
+export default meta;
+type Story = StoryObj<TocStoryArgs>;
+
+/**
+ * ### 해 볼 것
+ * - 제목을 고쳐 봅니다. **한 글자마다** 목차가 따라옵니다
+ * - 제목 하나를 지웠다가 되돌립니다(`Ctrl+Z`). 목차에서 줄이 빠졌다 돌아옵니다
+ * - **긴 문서** 로 바꾸고 목차 항목을 눌러 굴러가는지 봅니다
+ * - 빈 줄에서 `/목차` 를 쳐서 하나 더 넣어 봅니다. 둘이 같은 목록을 그립니다
+ * - **읽기 전용** 을 꺼도 항목은 눌립니다 — 이동은 편집이 아닙니다
+ * - 제목 블록을 만들고 글자를 안 치면 목차에 안 들어옵니다
+ */
+export const Playground: Story = {
+  render: ({ start, ...args }) => (
+    <EditorSurface>
+      <ContentEditor
+        {...args}
+        pageId={storyPageId("toc", start)}
+        content={storyDoc(startBlocks(start))}
+      />
+    </EditorSurface>
+  ),
+};
