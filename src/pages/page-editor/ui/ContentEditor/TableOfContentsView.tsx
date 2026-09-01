@@ -21,11 +21,35 @@ export type TableOfContentsRenderProps = ReactCustomBlockRenderProps<
   typeof tableOfContentsConfig
 >;
 
-/** 층마다 왼쪽으로 16px. comfy-3 · comfy-6 이고 셋째 층이 끝이다 (제목은 1·2·3). */
+/**
+ * 층마다 왼쪽으로 24px. comfy-5 · comfy-7 이고 셋째 층이 끝이다 (제목은 1·2·3).
+ *
+ * 16px 에서 올렸다. 목차 항목은 같은 크기의 글자가 줄줄이 서는 목록이라, 한 칸이
+ * 16px 이면 층이 "들여쓴 것" 이 아니라 "줄이 삐뚤어진 것" 으로 보인다. 트리 행
+ * 들여쓰기(14px)보다 넓은 것도 같은 이유다 — 저쪽은 접기 화살표와 아이콘이 층을
+ * 같이 말해 주지만, 목차에는 자리뿐이다.
+ *
+ * **키는 제목 크기가 아니라 층수(depth)다.** 제목3 이 늘 두 칸인 것이 아니라,
+ * 그 위에 제목2 가 있었으면 두 칸이고 제목1 밑에 바로 오면 한 칸이다. 층수를
+ * 세는 곳은 model/table-of-contents.ts 의 withDepth 다.
+ *
+ * **거는 자리가 li 가 아니라 그 안의 div 다.** BlockNote 가 본문에 이걸 박아
+ * 두기 때문이다 —
+ *
+ *   .bn-default-styles :is(p, h1…h6, li) { margin: 0; padding: 0 }
+ *
+ * 그 선언은 에디터 청크가 들고 오는 style.css 에 있고 **cascade layer 밖**이다.
+ * 우리 유틸리티는 @layer utilities 안이라, 명시도를 아무리 올려도 layer 밖에
+ * 그냥 진다 (global.css 의 layer 순서). li 에 ps-comfy-3 을 걸면 클래스는
+ * 붙는데 padding 은 0 으로 남는다 — 실제로 그래서 층이 안 보였다.
+ *
+ * div 는 저 목록에 없다. 한 겹 넣는 것으로 끝나고, 브리지에 자손 선택자를
+ * 새로 만들지 않아도 된다 (DESIGN.md §7 — 목록에 있는 것만 쓴다).
+ */
 const INDENT: Record<number, string> = {
-  1: "ps-0",
-  2: "ps-comfy-3",
-  3: "ps-comfy-6",
+  0: "ps-0",
+  1: "ps-comfy-5",
+  2: "ps-comfy-7",
 };
 
 /**
@@ -67,11 +91,33 @@ export function TableOfContentsView({ editor }: TableOfContentsRenderProps) {
     /* contentEditable={false} — 안에 버튼이 있는 블록이라 이게 없으면
      * ProseMirror 가 이 DOM 을 문서 내용으로 보고 커서를 들여보낸다.
      * 코드 블록의 언어 메뉴와 같은 이유다 (CodeBlockView.tsx). */
-    <nav contentEditable={false} aria-label={tableOfContentsLabels.title} className="w-full">
+    /* 글자 크기는 nav 한 곳에서 정한다 — 항목도 안내 띠도 같이 따라온다.
+     * 본문 16px 이 아니라 t4(14px)고, 값은 knocspace.css 에 있다. */
+    <nav
+      contentEditable={false}
+      aria-label={tableOfContentsLabels.title}
+      className="w-full text-toc-entry"
+    >
       {headings.length === 0 ? (
         /* 빈 화면 컴포넌트를 쓰지 않는다. 문서 안에 든 블록 하나가 아이콘과
-         * 제목을 세우면 그 자리만 화면처럼 읽힌다 (DESIGN.md §9). */
-        <p className="text-fg-neutral-muted">{tableOfContentsLabels.empty}</p>
+         * 제목을 세우면 그 자리만 화면처럼 읽힌다 (DESIGN.md §9) — 여기는 한
+         * 줄짜리 안내 띠다.
+         *
+         * 옅은 파랑으로 칠하는 이유는 **자리를 보이게 하려는 것**이다. 글자만
+         * 두면 아직 빈 목차 블록이 본문 한 줄과 구별되지 않아서, 방금 넣은
+         * 블록이 어디 있는지 안 보인다. 띠가 곧 "여기가 목차 자리" 라는
+         * 표시고, 제목을 하나 넣는 순간 목록으로 바뀌면서 사라진다.
+         *
+         * 상태색 중 informative 를 쓰는 것은 DESIGN.md §1 이 열어 둔 그대로다
+         * — 경고도 오류도 아닌 안내다. 잠깐 있는 것이라 테두리는 안 두른다.
+         *
+         * p 가 아니라 div 다. 한 문장이라 p 가 맞지만, BlockNote 가 본문의 p
+         * 에도 padding: 0 을 layer 밖에서 박아서 띠의 안쪽 여백이 통째로
+         * 날아간다 — 들여쓰기와 같은 이유다 (INDENT). */
+        <div className="rounded-r1 bg-bg-informative-weak px-dense-4 py-dense-2
+          text-fg-neutral-muted">
+          {tableOfContentsLabels.empty}
+        </div>
       ) : (
         <ul className="list-none p-0">
           {headings.map((entry) => (
@@ -89,18 +135,43 @@ export function TableOfContentsView({ editor }: TableOfContentsRenderProps) {
 
 function TocRow({ entry, onSelect }: { entry: TocEntry; onSelect: () => void }) {
   return (
-    <li className={INDENT[entry.level]}>
-      <button
-        type="button"
-        onClick={onSelect}
-        /* 한 줄로 자른다. 긴 제목이 두세 줄로 접히면 목차의 층이 안 보인다 —
-         * 들여쓰기 16px 보다 접힌 줄이 눈에 먼저 띈다. 잘려도 읽어 주는 쪽에는
-         * 글자가 다 간다(버튼 이름이 곧 제목이다). */
-        className="block w-full truncate rounded-r1 px-dense-2 py-dense-1 text-left
-          text-fg-neutral hover:bg-bg-neutral-weak-alpha hover:underline knoc-focus-ring"
-      >
-        {entry.text}
-      </button>
+    <li>
+      {/* 들여쓰기를 지는 div. li 에 걸면 BlockNote 의 padding: 0 에 진다 (INDENT) */}
+      <div className={INDENT[entry.depth]}>
+        <button
+          type="button"
+          onClick={onSelect}
+          /* 한 줄로 자른다. 긴 제목이 두세 줄로 접히면 목차의 층이 안 보인다 —
+           * 들여쓰기 24px 보다 접힌 줄이 눈에 먼저 띈다. 잘려도 읽어 주는 쪽에는
+           * 글자가 다 간다(버튼 이름이 곧 제목이다).
+           *
+           * **밑줄은 처음부터 그어 둔다.** hover 에만 두면 누를 수 있다는 것이
+           * 마우스를 얹기 전에는 안 보인다 — 목차는 본문과 같은 색·같은 크기의
+           * 글자라 밑줄 말고는 링크임을 알릴 표시가 없고, 마우스가 없는 쪽(터치·
+           * 키보드)에는 hover 가 아예 오지 않는다.
+           *
+           * 밑줄 색은 글자보다 옅게 둔다. 목록 전체에 그어지는 선이라 글자와
+           * 같은 진하기면 층(들여쓰기)보다 밑줄이 먼저 읽힌다.
+           *
+           * 글자는 fg-neutral 이 아니라 **fg-neutral-muted** 다. 목차는 본문을
+           * 가리키는 표지판이지 본문이 아니라서, 제목들과 같은 진하기면 문서
+           * 맨 위에서 제일 진한 덩어리가 된다. 한 단계 물러선 회색이 본문에
+           * 자리를 내준다.
+           *
+           * 여기서 더 옅은 fg-neutral-subtle 로는 안 간다. 라이트에서 #868b94
+           * 라 흰 바탕 대비가 3.2:1 이고, 이 크기 글자에 필요한 4.5:1 에 못
+           * 미친다 (muted 는 #555d6d, 7.5:1). 누르는 것이라 더 그렇다.
+           *
+           * hover 에서 fg-neutral 로 진해진다. 배경만 깔면 옅은 회색 글자가
+           * 옅은 회색 배경에 얹혀 오히려 흐려진다. */
+          className="block w-full truncate rounded-r1 px-dense-2 py-dense-1 text-left
+            text-fg-neutral-muted underline decoration-stroke-neutral-muted
+            underline-offset-2 hover:bg-bg-neutral-weak-alpha hover:text-fg-neutral
+            knoc-focus-ring"
+        >
+          {entry.text}
+        </button>
+      </div>
     </li>
   );
 }

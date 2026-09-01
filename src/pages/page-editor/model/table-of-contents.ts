@@ -17,6 +17,12 @@ export interface TocEntry {
   id: string;
   /** 1 · 2 · 3. 스키마가 셋으로 닫아 뒀다 (blocknote-schema.ts) */
   level: number;
+  /**
+   * 목차에서 몇 칸 들여 쓸지. 0 · 1 · 2 다.
+   *
+   * **`level - 1` 이 아니다.** 앞에 나온 제목들과의 관계로 정한다 — withDepth.
+   */
+  depth: number;
   /** 서식을 벗긴 글자만. 목차는 굵기도 색도 안 따라간다 */
   text: string;
 }
@@ -56,18 +62,52 @@ function inlineText(content: unknown): string {
  * 있지만 아무 글자도 없는 줄이 생긴다. Notion 도 같다.
  */
 export function collectHeadings(blocks: readonly KnocBlock[]): TocEntry[] {
-  const entries: TocEntry[] = [];
+  return withDepth(flatten(blocks));
+}
+
+type Heading = Omit<TocEntry, "depth">;
+
+function flatten(blocks: readonly KnocBlock[]): Heading[] {
+  const headings: Heading[] = [];
 
   for (const block of blocks) {
     if (block.type === "heading") {
       const text = inlineText(block.content).trim();
-      if (text) entries.push({ id: block.id, level: block.props.level, text });
+      if (text) headings.push({ id: block.id, level: block.props.level, text });
     }
 
     if (block.children.length > 0) {
-      entries.push(...collectHeadings(block.children));
+      headings.push(...flatten(block.children));
     }
   }
 
-  return entries;
+  return headings;
+}
+
+/**
+ * 층수를 매긴다. **제목 크기가 아니라 앞에 나온 제목들과의 관계로 정한다.**
+ *
+ * `level - 1` 로 하면 안 되는 이유는 문서가 제목1 부터 쓰지 않기 때문이다.
+ * 제목2·3 만 쓰는 문서가 흔한데(제목1 은 문서 제목이 이미 맡고 있다), 그러면
+ * 목차 전체가 한 칸씩 밀린 채로 시작하고 첫 층이 비어 있게 된다.
+ *
+ * 지금 열려 있는 제목들을 쌓아 두고, 새 제목이 오면 자기보다 작지 않은 것을
+ * 전부 닫는다. 남은 높이가 그 제목의 층이다. 건너뛴 크기는 층을 안 만든다 —
+ * 제목1 다음의 제목3 은 두 칸이 아니라 한 칸이고, 그 뒤에 제목2 가 오면 그
+ * 제목3 과 같은 한 칸이다. Notion 이 하는 것과 같다.
+ *
+ *   제목1 · 제목3 · 제목2 · 제목3 · 제목1  →  0 · 1 · 1 · 2 · 0
+ */
+function withDepth(headings: readonly Heading[]): TocEntry[] {
+  /* 아직 안 닫힌 제목들의 크기. 늘 오름차순이라 맨 뒤만 보면 된다. */
+  const open: number[] = [];
+
+  return headings.map((heading) => {
+    while (open.length > 0 && open[open.length - 1] >= heading.level) open.pop();
+
+    const depth = open.length;
+    open.push(heading.level);
+
+    return { ...heading, depth };
+  });
 }

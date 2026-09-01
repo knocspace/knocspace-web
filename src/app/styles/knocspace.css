@@ -136,6 +136,19 @@
   --knoc-text-doc-icon: 52px;
   --knoc-text-doc-icon-choice: var(--seed-font-size-t9);
 
+  /* 목차 항목 — DESIGN.md §9 「목차 블록」.
+   *
+   * 본문(16px)이 아니라 t4(14px)다. 값의 출처는 Notion 이고, 이유는 목차가
+   * 본문을 가리키는 표지판이지 본문이 아니기 때문이다 — 같은 크기로 서면
+   * 문서 맨 위에서 본문 한 덩어리가 하나 더 있는 것처럼 읽힌다.
+   *
+   * 52px 과 달리 SEED 것을 가리킨다. t 스케일 안에 있는 값이라 그럴 수 있고,
+   * 그래야 OS 글자 크기를 키웠을 때 같이 커진다(SEED 의 font-size 는 clamp 로
+   * 배율을 받는다). 아이콘 피커 격자(t9)와 같은 이유다.
+   *
+   * 줄간은 안 둔다. 한 줄로 잘리는 목록이라 줄간이 쓰일 자리가 없다. */
+  --knoc-text-toc-entry: var(--seed-font-size-t4);
+
   /* 밀도 — DESIGN.md 3절 */
   --knoc-space-dense-1: 2px;
   --knoc-space-dense-2: 4px;
@@ -307,6 +320,7 @@
   --tracking-doc-title: var(--knoc-tracking-doc-title);
   --text-doc-icon: var(--knoc-text-doc-icon);
   --text-doc-icon-choice: var(--knoc-text-doc-icon-choice);
+  --text-toc-entry: var(--knoc-text-toc-entry);
 
   --spacing-dense-1: var(--knoc-space-dense-1);
   --spacing-dense-2: var(--knoc-space-dense-2);
