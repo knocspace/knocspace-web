@@ -64,7 +64,8 @@ export function ContentEditor({ pageId, content, editable = true, onChange }: Co
         onChange={onChange && (() => onChange(toPageContent(editor.document)))}
         /* 기본 사이드 메뉴를 끄고 같은 것을 다시 넣는다. 자리 계산만 우리 것으로
          * 바꾸려는 것이고, 안에 그려지는 ＋ 와 ⠿ 는 BlockNote 기본 그대로다
-         * — blocknote-side-menu.ts. */
+         * — blocknote-side-menu.ts. (크기와 블록까지의 간격만 CSS 에서 줄인다 —
+         * blocknote-bridge.css 맨 아래.) */
         sideMenu={false}
         /* 기본 슬래시 메뉴도 끄고 같은 것을 다시 넣는다. 목록에 목차를 더하려면
          * getItems 를 우리가 넘겨야 하고, 그건 컨트롤러 쪽에만 있다.
