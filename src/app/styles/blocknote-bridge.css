@@ -334,9 +334,9 @@
   border-color: var(--seed-color-stroke-neutral-weak);
 }
 
-/* ── 선택 계열 넷 — DESIGN.md §1 · §7
+/* ── 선택 계열 다섯 — DESIGN.md §1 · §7
  *
- * F3 §0 조사에서 빠졌던 것들이다. 넷 다 파란색이 hex 로 박혀 있는데, §1 은
+ * 뒤의 넷은 F3 §0 조사에서 빠졌던 것들이다. 넷 다 파란색이 hex 로 박혀 있는데, §1 은
  * "강조색은 purple 계열 하나만. 선택 상태, 주 액션, 커서, 삽입선" 이라고
  * 못 박아 두었다. 정확히 그 자리라 우리 색이어야 한다.
  *
@@ -351,6 +351,112 @@
  * 선택자가 ProseMirror / prosemirror-tables 것이라 오히려 안정적이다.
  * BlockNote 클래스가 아니라 그 아래 계층이고, 수년째 안 바뀐 이름이다.
  */
+
+/* 블록 선택 면 — ⠿ 를 눌러 블록을 통째로 골랐을 때.
+ *
+ * **뒤의 넷과 성격이 다르다.** 저쪽은 박힌 파랑을 되돌리는 것이고, 이건 BlockNote
+ * 에 없던 선언을 새로 얹는 것이다 — 표 머리글 칸 배경과 같은 자리다.
+ *
+ * BlockNote 는 손잡이를 눌러도 메뉴만 열고 아무것도 안 고른다. 고르는 일은 우리가
+ * 한다(page-editor 의 block-selection.ts). 그러면 ProseMirror 가 그 블록의 바깥
+ * 상자에 .ProseMirror-selectednode 를 붙이고, 칠하는 것이 이 두 규칙이다.
+ *
+ * **덮는 자리는 블록 상자 전체다** — 글줄에 위아래 여백까지. 제목이면 자기
+ * padding-top(18px)도 여기 든다. 블록을 통째로 고른 것이므로 덮는 것도 블록이
+ * 차지한 자리 전부여야 한다.
+ *
+ * 그래서 **블록 색은 이보다 작아야 한다.** BlockNote 기본대로 두면 색이 .bn-block
+ * 과 .bn-block-content 에 깔려 이 상자와 정확히 겹치고, 색을 칠한 블록을 고르면
+ * 8% 짜리 면이 그 색 위에 묻혀 사라진다 — 골라 놓고도 골랐는지 알 수가 없다.
+ * 색 쪽을 글줄 상자로 줄이는 것이 바로 아래 두 줄이다. 둘은 한 벌로 읽어야 한다.
+ *
+ * **바로 아래의 노드 선택 링과 안 겹친다.** 저쪽은 선택이 blockContent 에 앉았을
+ * 때고(이미지·구분선을 직접 눌렀을 때), 이쪽은 blockContainer 에 앉았을 때다.
+ * 클래스는 같아도 붙는 엘리먼트가 한 겹 다르다 — 그래서 선택자도 안 겹친다.
+ *
+ * 면만 있고 링이 없다. **트리 행 선택과 같은 모양이어야 한다** — 사이드바에서
+ * 페이지를 고르는 것과 본문에서 블록을 고르는 것이 사용자에게 같은 일이다.
+ * 반경 r1 도 거기서 그대로 온다 (app/ui/PageNavigation/PageNavigationItem).
+ *
+ * 색도 새로 만들지 않고 아래 넷이 쓰는 --knoc-color-selection-surface 다. 8% 를
+ * 깔면 나오는 색이 bg-brand-weak(purple-100) 과 거의 같다 — 트리 행이 쓰는 그
+ * 색이라, 같은 토큰을 두 벌 두지 않고도 같은 모양이 된다.
+ *
+ * **반투명이어야 하는 이유는 아래와 같다.** inset: 0 으로 블록 위에 덮으므로
+ * 불투명하면 글자가 가려진다. 오버레이 대신 배경으로 깔 수도 없다 — 그러면 색을
+ * 칠한 블록이나 코드 블록처럼 자기 배경을 가진 블록에서 그 배경 뒤로 숨는다.
+ *
+ * **상자를 글줄 밖으로 내보낸다.** inset 이 음수인 이유다 — 글자가 벽에 붙으면
+ * 답답하고, 그렇다고 글자를 밀 수는 없다(본문 왼쪽 끝은 문서 제목과 맞춰 둔
+ * 자리다). 나갈 수 있는 거리와 값의 출처는 knocspace.css 다.
+ *
+ * position 을 같이 주는 것은 오버레이의 기준점이 필요해서다. 겹쳐 있는 블록에는
+ * BlockNote 가 이미 relative 를 걸어 두었고(.bn-block-group .bn-block-group >
+ * .bn-block-outer), 맨 바깥 블록만 비어 있었다.
+ *
+ * (0,3,0) 이라 명시도로 다툴 상대가 없다. 이 자리에 BlockNote 규칙이 없다. */
+.bn-container .bn-block-outer.ProseMirror-selectednode {
+  position: relative;
+}
+
+.bn-container .bn-block-outer.ProseMirror-selectednode::after {
+  content: "";
+  position: absolute;
+  inset: calc(var(--knoc-editor-block-pad-y) * -1)
+    calc(var(--knoc-editor-block-select-bleed) * -1);
+  border-radius: var(--seed-radius-r1);
+  background-color: var(--knoc-color-selection-surface);
+  pointer-events: none;
+}
+
+/* 블록 색이 덮는 자리 — 위의 선택 면과 한 벌이다.
+ *
+ * **색은 우리가 안 고른다.** 여덟 색의 값은 이미 --bn-colors-highlights-*-background
+ * 로 SEED 를 가리키고 있다(이 파일 위쪽). 여기서 잡는 것은 **상자**뿐이라 색 이름
+ * 여덟 개를 다시 적지 않아도 된다.
+ *
+ * BlockNote 는 같은 색을 두 군데에 깐다 (react 의 styles.css).
+ *
+ *   [data-background-color="gray"]                                  ← .bn-block-content
+ *   .bn-block:has(> .bn-block-content[data-background-color="gray"]) ← 그 부모
+ *
+ * 둘 다 블록이 차지한 자리 전체다. 그러면 위의 선택 면과 상자가 정확히 같아져서
+ * 두 겹이 구분되지 않는다 — Notion 은 선택이 바깥, 색이 안쪽으로 서로 다른 상자다.
+ *
+ * 부모 쪽은 끈다. 그건 접힌 자식까지 같이 칠하려고 있는 것인데, 자식은 자기 색을
+ * 따로 갖는다 — 부모 색이 자식 뒤로 깔리면 자식만 색을 지웠을 때 안 지워진다.
+ *
+ * 남은 한 겹의 상자를 세 가지로 잡는다.
+ *
+ *   좌우   글줄 밖으로 조금 내보낸다. 폭이 auto 라 음수 마진만큼 넓어지고
+ *          (부모가 세로 flex 라 늘어난다), 같은 값을 padding 으로 도로 넣어
+ *          **글자는 제자리**에 둔다. 배경은 테두리 상자를 칠하므로 그 패딩까지
+ *          칠해진다 — 글자와 벽 사이가 그만큼 뜬다
+ *   위아래  블록 사이 여백과 같은 값. 제목만 BlockNote 가 위를 18px 로 키워 둬서
+ *          짝이 안 맞는데, 뺀 만큼을 margin 으로 돌려준다(다음 규칙) — 여백은
+ *          그대로고 색만 안 칠해진다. 그 자리는 선택 면이 가져간다
+ *   모서리  트리 행 · 선택 면과 같은 r1
+ *
+ * 값은 전부 knocspace.css 에서 온다. 여기에 3px 이나 18px 을 적으면 안 된다.
+ *
+ * 명시도: 저쪽 :has 규칙이 (0,3,0) 이라 .bn-container 를 앞에 붙여 (0,4,0) 으로
+ * 이긴다(:has 는 인자 중 가장 센 것만 센다). width 는 .bn-block-content (0,1,0),
+ * padding-top 은 [data-content-type="heading"] (0,1,0) 이 상대라 넉넉히 이긴다. */
+.bn-container .bn-block:has(> .bn-block-content[data-background-color]) {
+  background-color: transparent;
+}
+
+.bn-container .bn-block-content[data-background-color] {
+  width: auto;
+  margin-inline: calc(var(--knoc-editor-block-color-bleed) * -1);
+  padding-inline: var(--knoc-editor-block-color-bleed);
+  padding-block: var(--knoc-editor-block-pad-y);
+  border-radius: var(--seed-radius-r1);
+}
+
+.bn-container [data-content-type="heading"][data-background-color] {
+  margin-top: calc(var(--knoc-editor-heading-pad-top) - var(--knoc-editor-block-pad-y));
+}
 
 /* 노드 선택 링 — 구분선 · 이미지 · 표 · 코드 블록을 통째로 고를 때.
  *

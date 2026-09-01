@@ -40,6 +40,8 @@ F3에서는 **서버 저장을 구현하지 않습니다.**
 * [x] `useContentEditor` 구현
 * [x] `ContentEditor` 구현
 * [x] 사이드 메뉴 위치 계산
+* [x] 손잡이(⠿)를 눌러 블록 선택 — 고른 동안 포맷 툴바는 안 뜹니다
+* [x] 블록 색·블록 선택 면의 상자 — 반경 r1, 글줄 밖으로 3px · 6px (DESIGN.md §7)
 * [x] `PageTitle` 구현
 * [x] `PageIcon` · `PageIconPicker` 구현
 * [x] 에디터 lazy loading 적용
@@ -71,6 +73,8 @@ F3에서는 **서버 저장을 구현하지 않습니다.**
 * [x] `ui/ContentEditor/ContentEditor.tsx`
 * [x] `ui/ContentEditor/LazyContentEditor.tsx`
 * [x] `lib/blocknote-side-menu.ts` — ＋ · ⠿ 세로 위치
+* [x] `lib/block-selection.ts` — ⠿ 를 누르면 그 블록에 NodeSelection 을 놓습니다
+* [x] `ui/ContentEditor/BlockSideMenu.tsx` — 기본 사이드 메뉴 + 손잡이 클릭 선택
 
 ### 남은 구현
 
@@ -79,6 +83,8 @@ F3에서는 **서버 저장을 구현하지 않습니다.**
 * [ ] `ui/ContentEditor/FormatToolbar.tsx`
 
 `ContentEditor` 가 이미 `slashMenu={false}` + `SuggestionMenuController` 로 목록을 넘기고 있습니다. 표면만 BlockNote 기본이라, §2 에서 바뀌는 것은 `suggestionMenuComponent` 한 줄입니다.
+
+포맷 툴바도 `formattingToolbar={false}` + `FormattingToolbarController` 로 이미 갈라 두었습니다. 지금 우리 것은 **언제 뜨는지**(블록 선택 중에는 안 뜸) 하나뿐이고, §2 에서 바뀌는 것은 `formattingToolbar` prop 한 줄입니다.
 
 ### SlashMenu
 

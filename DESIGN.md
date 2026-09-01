@@ -627,7 +627,7 @@ BlockNote 인 이유는 그 자리가 드래그 핸들의 히트 영역이기 �
 
 ### 예외 열여섯 줄 — 변수가 안 달린 곳
 
-BlockNote 가 색과 글꼴을 전부 변수로 뺀 것은 아닙니다. 아래 **열여섯 규칙만** 자손 선택자를 씁니다.
+BlockNote 가 색과 글꼴을 전부 변수로 뺀 것은 아닙니다. 아래 **스물한 규칙만** 자손 선택자를 씁니다.
 
 아래 표의 순서가 곧 이어지는 절의 순서입니다.
 
@@ -636,10 +636,11 @@ BlockNote 가 색과 글꼴을 전부 변수로 뺀 것은 아닙니다. 아래 
 | 색 — 인용 · 구분선 · 코드 블록 · 표 격자선 | 4 | 박힌 값을 SEED 로 되돌리기 |
 | 글꼴 — 본문 · 인라인 코드 | 2 | 박힌 값을 되돌리기 |
 | 배경 — 표 머리글 칸 | 1 | **없던 선언을 새로 얹기** |
-| **선택 — 노드 링 · 셀 선택 · 열 손잡이 · 드롭 커서** | 4 | 박힌 값을 되돌리기 (§1) |
+| **선택 — 블록 면 · 노드 링 · 셀 선택 · 열 손잡이 · 드롭 커서** | 6 | 되돌리기 넷 + **없던 선언 얹기** 둘 (§1) |
+| **블록 색이 덮는 자리** | 3 | 색이 아니라 **상자**를 다시 잡기 — 위의 블록 면과 한 벌 |
 | **글자색 — 슬래시 메뉴 그룹 라벨** | 1 | 뒤 규칙에 눌린 앞 규칙의 의도 되살리기 |
 
-「배경」·「글자색」·「폭」·「크기·간격」만 성격이 다르니 해당 절을 따로 읽으세요. 뒤의 두 묶음은
+「배경」·「글자색」·「폭」·「크기·간격」만 성격이 다르니 해당 절을 따로 읽으세요 — 「선택」 여섯 중 앞의 둘(블록 면)과 「블록 색」 둘도 얹는 쪽입니다. 뒤의 두 묶음은
 색도 글꼴도 아닌 **치수**를 얹는 자리입니다.
 
 (위의 `--mantine-` 둘은 여기 안 셉니다. 그건 변수 선언이라 자손 선택자를 안 씁니다.)
@@ -832,9 +833,9 @@ gray-300 인데, 문서 바탕(`bg-layer-default`)이 각각 gray-00 · gray-100
 **표 안쪽 구조는 여전히 BlockNote 것입니다.** 여기서 가져오는 것은 색 하나뿐이고, 격자선
 굵기·칸 여백·열 너비 손잡이는 안 건드립니다 — 아래 표의 오른쪽 열입니다.
 
-#### 선택 넷 — 노드 링 · 셀 선택 · 열 손잡이 · 드롭 커서
+#### 선택 여섯 — 블록 면 · 노드 링 · 셀 선택 · 열 손잡이 · 드롭 커서
 
-F3 §0 조사에서 빠져 있던 것들입니다. 넷 다 **파란색**이 hex 로 박혀 있었는데, §1 은
+뒤의 넷은 F3 §0 조사에서 빠져 있던 것들입니다. 넷 다 **파란색**이 hex 로 박혀 있었는데, §1 은
 「강조색은 purple 계열 하나만. 선택 상태, 주 액션, **커서, 삽입선**」이라고 못 박아 두었습니다.
 정확히 그 자리라 우리 색이어야 합니다.
 
@@ -842,10 +843,22 @@ F3 §0 조사에서 빠져 있던 것들입니다. 넷 다 **파란색**이 hex 
 
 | | 자리 | 값 |
 |---|---|---|
-| 선택 = **면** | 노드 선택 링 · 표 셀 선택 | `--knoc-color-selection-surface` · `-ring` |
+| 선택 = **면** | 블록 선택 · 노드 선택 링 · 표 셀 선택 | `--knoc-color-selection-surface` · `-ring` |
 | 커서·삽입선 = **선** | 열 리사이즈 손잡이 · 드롭 커서 | `bg-brand-solid` (솔리드) |
 
 ```css
+.bn-container .bn-block-outer.ProseMirror-selectednode {
+  position: relative;                                    /* 오버레이의 기준점 */
+}
+
+.bn-container .bn-block-outer.ProseMirror-selectednode::after {
+  content: ""; position: absolute; pointer-events: none;
+  inset: calc(var(--knoc-editor-block-pad-y) * -1)
+         calc(var(--knoc-editor-block-select-bleed) * -1);   /* 글줄 밖으로 */
+  border-radius:    var(--seed-radius-r1);
+  background-color: var(--knoc-color-selection-surface);
+}
+
 .bn-container .bn-block-content.ProseMirror-selectednode > *::after,
 .bn-container .ProseMirror-selectednode > .bn-block-content > *::after,
 .bn-container .bn-block-content .ProseMirror-selectednode::after,
@@ -859,7 +872,36 @@ F3 §0 조사에서 빠져 있던 것들입니다. 넷 다 **파란색**이 hex 
 .bn-container .bn-table-drop-cursor      { background-color: var(--seed-color-bg-brand-solid) }
 ```
 
-**앞의 둘이 반투명인 것은 취향이 아니라 구조입니다.** 그 색이 깔리는 곳이 `:after { inset: 0 }`
+**블록 면 둘만 성격이 다릅니다.** `⠿` 를 눌러 블록을 통째로 고른 자리인데, BlockNote 에는 이 상태가
+아예 없습니다 — 손잡이를 눌러도 메뉴만 열고 아무것도 안 고릅니다. 고르는 일은 우리가 하고
+(`pages/page-editor/lib/block-selection.ts`), 칠하는 것이 저 두 줄입니다. 박힌 값을 되돌리는
+나머지 넷과 달리 **없던 선언을 새로 얹는 자리**입니다.
+
+**면만 있고 링이 없습니다 — 트리 행 선택과 같은 모양이어야 합니다.** 사이드바에서 페이지를
+고르는 것과 본문에서 블록을 고르는 것이 사용자에게 같은 일입니다. 반경 `r1` 도 트리 행에서
+그대로 옵니다 (§5). 색도 새로 만들지 않고 나머지가 쓰는 `--knoc-color-selection-surface` 입니다
+— 8% 를 깔면 나오는 색이 트리 행의 `bg-brand-weak`(purple-100) 과 거의 같습니다. 토큰을 두 벌
+두지 않고도 같은 모양이 됩니다.
+
+**덮는 자리는 블록 상자 전체에 조금 더**입니다 — 글줄에 위아래 여백까지, 제목이면 자기
+`padding-top`(18px)도 여기 듭니다. 블록을 통째로 고른 것이니 덮는 것도 블록이 차지한 자리
+전부여야 합니다. `inset` 이 음수인 것은 **글자가 상자 벽에 붙으면 답답하기 때문**입니다. 글자를
+오른쪽으로 밀 수는 없습니다 — 본문 왼쪽 끝은 문서 제목과 맞춰 둔 자리라 움직이면 둘이
+어긋납니다. 그래서 글자는 두고 상자를 밖으로 내보냅니다.
+
+**나갈 수 있는 거리가 정해져 있습니다.** 사이드 메뉴가 본문 왼쪽에 딱 붙어 서고(판 `[-52, 0]`),
+오른쪽 끝 4px 이 패딩이라 `⠿` 그림은 `-7` 에서 끝납니다. 남는 자리가 7px 이고, 선택 면 6px 이 그
+안에서 가장 큰 값입니다. 색 상자는 그 절반이라 둘 사이에 3px 이 남습니다 — Notion 도 2~3px
+입니다.
+
+**그래서 블록 색은 이보다 작아야 합니다.** 다음 절이 그 세 줄이고, 이 둘은 한 벌로 읽어야
+합니다.
+
+**노드 선택 링과는 안 겹칩니다.** 저쪽은 선택이 `blockContent` 에 앉았을 때고(이미지·구분선을
+직접 눌렀을 때), 이쪽은 `blockContainer` 에 앉았을 때입니다. 붙는 클래스는 같아도 엘리먼트가
+한 겹 달라서 선택자가 서로 안 닿습니다.
+
+**면 셋이 반투명인 것은 취향이 아니라 구조입니다.** 그 색이 깔리는 곳이 `:after { inset: 0 }`
 으로 블록 **위에** 덮는 오버레이라, 불투명하면 글자가 가려집니다. `bg-brand-weak` 는 솔리드라
 여기 못 씁니다 — §2 의 alpha 예외가 이것입니다.
 
@@ -872,7 +914,63 @@ F3 §0 조사에서 빠져 있던 것들입니다. 넷 다 **파란색**이 hex 
 **선택자가 오히려 안정적입니다.** `.ProseMirror-selectednode` 는 ProseMirror 코어,
 `.selectedCell` · `.column-resize-handle` 은 prosemirror-tables 기본 클래스입니다. BlockNote 것이
 아니라 그 아래 계층이고, 수년째 안 바뀐 이름입니다. 실패해도 색이 파랑으로 되돌아갈 뿐
-레이아웃이 깨지지 않습니다.
+(블록 면은 아무것도 안 칠해질 뿐) 레이아웃이 깨지지 않습니다.
+
+#### 블록 색 셋 — 색이 덮는 자리
+
+앞 절의 블록 선택 면과 한 벌입니다. **색을 고르는 것이 아니라 상자를 다시 잡습니다.**
+
+BlockNote 는 같은 색을 두 군데에 깝니다 (`@blocknote/react` 의 `styles.css`).
+
+```css
+[data-background-color="gray"]                                   /* .bn-block-content */
+.bn-block:has(> .bn-block-content[data-background-color="gray"]) /* 그 부모 */
+```
+
+둘 다 블록이 차지한 자리 전체입니다. 그러면 앞 절의 선택 면과 **상자가 정확히 같아져서** 두 겹이
+구분되지 않습니다. 색을 칠한 블록을 고르면 8% 짜리 면이 그 색 위에 묻혀 사라집니다 — 골라 놓고도
+골랐는지 알 수가 없습니다. Notion 은 선택이 바깥, 색이 안쪽으로 서로 다른 상자입니다.
+
+```css
+.bn-container .bn-block:has(> .bn-block-content[data-background-color]) {
+  background-color: transparent;
+}
+
+.bn-container .bn-block-content[data-background-color] {
+  width: auto;                                                    /* 좌우로 나가고 */
+  margin-inline:  calc(var(--knoc-editor-block-color-bleed) * -1);
+  padding-inline: var(--knoc-editor-block-color-bleed);            /* 글자는 제자리 */
+  padding-block:  var(--knoc-editor-block-pad-y);
+  border-radius:  var(--seed-radius-r1);
+}
+
+.bn-container [data-content-type="heading"][data-background-color] {
+  margin-top: calc(var(--knoc-editor-heading-pad-top) - var(--knoc-editor-block-pad-y));
+}
+```
+
+**부모 쪽은 끕니다.** 그건 접힌 자식까지 같이 칠하려고 있는 것인데, 자식은 자기 색을 따로
+갖습니다 — 부모 색이 자식 뒤로 깔리면 자식만 색을 지웠을 때 안 지워집니다.
+
+**좌우는 글줄 밖으로 내보냅니다.** 폭이 `auto` 라 음수 마진만큼 넓어지고(부모가 세로 flex 라
+늘어납니다), 같은 값을 `padding` 으로 도로 넣어 **글자는 제자리**에 둡니다. 배경은 테두리 상자를
+칠하므로 그 패딩까지 칠해집니다 — 글자와 벽 사이가 그만큼 뜹니다.
+
+**위아래는 블록 사이 여백과 같은 값**입니다. 제목만 BlockNote 가 위를 18px 로 키워 둬서 짝이 안
+맞는데(위 18px · 아래 3px), 뺀 만큼을 `margin` 으로 돌려줍니다 — **여백은 그대로고 색만 안
+칠해집니다.** 그 자리는 선택 면이 가져갑니다. 색을 칠한 제목을 고르면 색 상자 위로 보라가 넓게
+남는 것이 그래서입니다.
+
+**색 이름 여덟 개를 다시 적지 않습니다.** 값은 이미 `--bn-colors-highlights-*-background` 로 SEED
+를 가리키고 있습니다(§7 위쪽). 여기서 잡는 것은 상자뿐입니다.
+
+**값은 전부 `knocspace.css` 에서 옵니다.** 이 절에 `3px` 이나 `18px` 을 적으면 안 됩니다.
+`--knoc-editor-heading-pad-top` 은 이 파일이 옮겨 적는 **유일한 BlockNote 치수**이고, 그래서
+토큰으로 한 번만 적습니다.
+
+명시도는 저쪽 `:has` 규칙이 (0,3,0) 이라 `.bn-container` 를 앞에 붙여 (0,4,0) 으로 이깁니다
+(`:has` 는 인자 중 가장 센 것만 셉니다). `width` 는 `.bn-block-content`(0,1,0), `padding-top` 은
+`[data-content-type="heading"]`(0,1,0) 이 상대라 넉넉히 이깁니다.
 
 #### 글자색 하나 — 슬래시 메뉴 그룹 라벨
 
@@ -1021,9 +1119,11 @@ Popover 가 그리는 판이라 `width: max-content` 가 **인라인 style 로**
 | 서체 — 본문과 인라인 코드 둘 다 (§2) | 블록 상하 여백 · 드래그 핸들의 생김새와 히트 영역 |
 | 반경 — 코드 블록 포함 | 커서·선택 동작 |
 | 슬래시 메뉴·포맷 툴바 표면 | 테이블 블록 내부 구조 |
-| 하이라이트 팔레트 (글자 500 · 배경 200) | brown · pink — SEED 팔레트에 없어서 기본값 그대로 |
+| 하이라이트 팔레트 (글자 500 · 배경 200) + 블록 색이 **덮는 범위** (§7) | brown · pink — SEED 팔레트에 없어서 기본값 그대로 |
 | 체크박스 강조색 (`accent-color`) | 코드 블록 다크 표면과 Shiki 문법색 |
-| 선택·커서·삽입선 (§1 · 예외 넷) | 선택의 **동작** — 무엇이 선택되는지 |
+| 선택·커서·삽입선 (§1 · 예외 여섯) | 선택의 **동작** — `⠿` 말고 무엇이 선택되는지 |
+| `⠿` 를 눌렀을 때의 **블록 선택** (§7) | |
+| 포맷 툴바가 **언제 뜨는지** — 블록 선택 중에는 안 띄웁니다 (§7) | 포맷 툴바의 **표면**과 항목 (F3 §2 까지) |
 | 코드 블록 언어 선택기 — 스펙의 `render` 만 (§7) | |
 | 제목 크기 · 줄간 (§2) — `--level` 로 넘깁니다 | |
 | 사이드 메뉴의 **세로 위치** — 첫 줄을 재서 맞춥니다 | |
