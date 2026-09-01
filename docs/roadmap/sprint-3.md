@@ -1,271 +1,331 @@
-# F3 · 에디터와 자동 저장 — 화면 MVP
+# F3 · 에디터와 자동 저장
 
 ← [로드맵으로](../../ROADMAP.md)
 
-| | |
-|---|---|
-| 기간 | 1주 (약 15시간) |
-| 선행 | F2 |
-| 백엔드 | B3 진행 중 — 기다리지 않습니다 |
-| 우선순위 | P0 |
-| 결과물 | **화면 MVP 완성** (데이터는 아직 localStorage) |
+| 항목   | 내용                              |
+| ---- | ------------------------------- |
+| 기간   | 1주                              |
+| 선행   | F2                              |
+| 우선순위 | P0                              |
+| 결과물  | 에디터 화면 MVP + localStorage 자동 저장 |
 
 ---
 
 ## 목표
 
-문서에 BlockNote를 얹고, 쓴 게 남게 합니다.
+페이지에서 문서를 작성하고 자동 저장할 수 있는 화면 MVP를 완성합니다.
 
-**서버가 있어야 하는 저장 로직은 여기서 안 합니다.** 버전 충돌·재시도·오프라인은 [F4](sprint-4.md)입니다. 여기서는 mock 상대로 "멈추면 저장되고, 새로고침해도 남는다"까지입니다.
+F3에서는 **서버 저장을 구현하지 않습니다.**
 
-## 만드는 것
+* 문서 작성
+* 새로고침 후에도 내용 유지
+* 저장 상태 표시
+* 저장되지 않은 상태에서 이탈 시 경고
 
-- BlockNote 통합 + SEED 색 연결
-- 블록 8종 — 문단 / 제목1·2·3 / 불릿 / 번호 목록 / 체크박스 / 코드 / 인용 / 구분선
-- 슬래시 메뉴 (SEED 스타일, 폭 320px, 행 32px, 마크다운 단축 표기 같이 표시, **10줄** — DESIGN.md §5)
-- 포맷 툴바 (SEED 스타일, 높이 34px, 켜진 버튼만 `bg-brand-weak`)
-- 마크다운 단축 입력
-- 자동 저장 + 저장 상태 표시 + 이탈 경고
-- 빈 문서 상태 — 컴포넌트 없이 안내 문구 두 줄
+서버 연동과 버전 충돌 처리는 F4에서 진행합니다.
 
 ---
 
-## 먼저 읽을 것
+## 진행 상황
 
-이 스프린트의 설계 결정이 F10(실시간 협업)의 난이도를 정합니다.
-**[프론트엔드 구조 — 에디터 구조](architecture.md#에디터-구조--나중에-yjs를-붙이기-위한-준비)를 먼저 읽고 시작하세요.**
+### 완료
 
-요약하면 네 가지입니다.
+* [x] BlockNote 적용 가능 여부 확인
+* [x] BlockNote 패키지 설치
+* [x] SEED 색상 연결 (`blocknote-bridge.css`)
+* [x] 스키마 확정 (`blocknote-schema.ts`)
+* [x] 제목 1~3 스타일 적용
+* [x] 코드 블록 하이라이트 (Shiki)
+* [x] 코드 블록 언어 메뉴 직접 구현
+* [x] `useContentEditor` 구현
+* [x] `ContentEditor` 구현
+* [x] 사이드 메뉴 위치 계산
+* [x] `PageTitle` 구현
+* [x] `PageIcon` · `PageIconPicker` 구현
+* [x] 에디터 lazy loading 적용
 
-1. 문서의 원본은 에디터 하나뿐 — 블록을 React state로 복사하지 않습니다
-2. 블록 id는 클라이언트가 만듭니다
-3. 문서 내용은 `features/editor/` 밖에서 열어보지 않습니다
-4. `useEditorDoc` 훅 하나로 감싸서, F10에서 훅 안쪽만 바꿉니다
+### 남은 작업
+
+* [ ] SlashMenu 구현
+* [ ] FormatToolbar 구현
+* [ ] 콜아웃 블록
+* [ ] 목차 블록
+* [ ] 제목 → 본문 포커스 이동
+* [ ] 자동 저장
+* [ ] 저장 상태 표시
+* [ ] 이탈 경고
+* [ ] 테스트
 
 ---
 
-## 할 일
+# 1. 에디터
 
-### 0. 첫날 — 사전 확인 (3시간) — 끝
+`pages/page-editor/` 안에서 BlockNote 관련 기능을 관리합니다.
 
-BlockNote의 슬래시 메뉴를 SEED 스타일로 교체할 수 있는지 **작은 예제로 먼저 확인합니다.** 여기가 막히면 이번 주 계획을 바꿔야 하므로, 다른 작업보다 먼저 합니다.
+문서의 원본은 에디터 하나입니다. 블록을 React state로 복사하지 않습니다.
 
-**[결과 — BlockNote 표면 교체](../decisions/f3-blocknote-surface.md). 됩니다. 계획을 바꾸지 않습니다.**
+### 완료
 
-BlockNote CSS 를 끄거나 덮지 않고 **우리 마크업을 대신 그려 넣는** 방식이라 §7 의 금지에 걸리지 않습니다. `slashMenu={false}` 를 준 뒤 DOM 에 기본 표면이 남지 않는 것까지 확인했습니다.
+* [x] `model/blocknote-schema.ts` — 스키마가 곧 계약입니다. 여기 없는 블록은 문서에도 없습니다
+* [x] `model/content-editor.ts` — 에디터를 만드는 훅. 한국어 로케일 · 표 옵션 · 자리 문구
+* [x] `ui/ContentEditor/ContentEditor.tsx`
+* [x] `ui/ContentEditor/LazyContentEditor.tsx`
+* [x] `lib/blocknote-side-menu.ts` — ＋ · ⠿ 세로 위치
 
-확인 중에 나온 것들은 **§2 · §6 · 완료 조건에 각각 반영했습니다.** 여기서 다시 읽을 필요는 없습니다.
+### 남은 구현
 
-#### 이름 — 우리 것과 BlockNote 것
+* [ ] `model/slash-menu-items.ts`
+* [ ] `ui/ContentEditor/SlashMenu.tsx`
+* [ ] `ui/ContentEditor/FormatToolbar.tsx`
 
-**BlockNote 에 `SlashMenuController` 는 없습니다.** 슬래시 메뉴는 `/` 를 트리거로 받는
-suggestion 메뉴의 한 경우라서, 실제 export 이름이 `SuggestionMenuController` 입니다.
-`GridSuggestionMenuController`(이모지)도 같은 계열입니다.
+### SlashMenu
 
-그래서 **우리 이름으로 한 겹 감쌉니다.** 이 프로젝트에서 부르는 이름은 `SlashMenu` ·
-`FormatToolbar` 이고, 파일 이름과 export 이름이 같습니다 (`PageTree.tsx` → `PageTree` 와
-같은 규칙).
+BlockNote 기본 UI 대신 프로젝트 UI를 사용합니다.
 
-| 우리 이름 | 파일 | 그 안에서만 쓰는 BlockNote 이름 |
-|---|---|---|
-| `SlashMenu` | `features/editor/SlashMenu.tsx` | `SuggestionMenuController` |
-| `SlashMenuList` | 〃 (같은 폴더의 표면 부품) | — |
-| `FormatToolbar` | `features/editor/FormatToolbar.tsx` | `FormattingToolbarController` |
+* 기본 Slash Menu 비활성화 (`slashMenu={false}`)
+* 기본 Formatting Toolbar 비활성화 (`formattingToolbar={false}`)
 
-**`SuggestionMenuController` 가 `SlashMenu.tsx` 밖에 나오면 안 됩니다.** 다른 규칙이 아니라
-`useEditorDoc` 과 같은 이유입니다 — 라이브러리 이름이 화면 코드까지 퍼지면 F10 에서 안쪽을
-바꿀 때 바꿔야 할 자리가 늘어납니다.
+지원 블록:
 
-**다만 §2 를 시작하기 전에 닫아야 할 결정이 하나 생겼습니다 — 슬래시 메뉴 아이콘.**
-BlockNote 기본 아이콘은 seed-icon 이 아니라 §8 위반이고, seed-icon 에는 번호 목록과 코드 블록이 없으며 제목1·2·3 을 구분할 아이콘도 없습니다. 후보 셋을 [DESIGN.md §6](../../DESIGN.md#6-미결정과-확정-기록) 에 올려 뒀습니다. **고르기 전에는 아이콘 자리를 임의로 채우지 마세요.**
+* 문단
+* 제목 1
+* 제목 2
+* 제목 3
+* 불릿 목록
+* 번호 목록
+* 체크박스
+* 코드
+* 인용
+* 구분선
 
-### 1. 설치와 색 연결 (2시간)
+항목 선택 기준은 BlockNote의 `title`이 아니라 **`key`를 사용합니다.**
 
-- [x] 설치 — `@blocknote/core` · `@blocknote/react` · `@blocknote/mantine` · `@blocknote/code-block`
+마크다운 단축 표기도 함께 보여줍니다.
 
-  코드 블록의 하이라이트(Shiki)와 언어 목록이 `code-block` 에 따로 있습니다. 코어의 기본
-  코드 블록은 하이라이트가 꺼져 있고 언어 목록이 비어 있습니다 — `schema.ts` 참고.
+예:
 
-- [x] `src/styles/blocknote-bridge.css` 작성 — DESIGN.md §7의 변수 표를 그대로 옮깁니다
-- [x] `index.css`에 import
-- [x] 하이라이트 8색을 SEED 스케일로 — 글자 500 · 배경 200
-- [x] 체크박스 `accent-color` — 안 걸면 체크 표시가 SEED 보라가 아니라 OS 기본 파랑입니다
-- [x] `knocspace.css` 에 문서 제목 토큰 — `--knoc-text-doc-title`(40px) · `--knoc-leading-doc-title` · `--knoc-tracking-doc-title`. 에디터 밖이라 브리지를 안 거칩니다 (DESIGN.md §2)
-- [x] **예외 네 줄** — 색 셋(인용 · 구분선 · 코드 블록 반경) + 글꼴 하나(본문 서체). 변수가 안 달려 있어서 자손 선택자로만 닿습니다 (DESIGN.md §7)
+`#` · `##` · `###` · `-` · `1.` · `>`
 
-**BlockNote CSS를 끄거나, `!important`로 덮지 않습니다.** 변수만 SEED 쪽을 가리키게 바꿉니다. 이걸 어기면 BlockNote를 올릴 때마다 깨집니다.
+목록을 만드는 부분은 컴포넌트 밖(`slash-menu-items.ts`)에 둡니다. jsdom에서 메뉴가 안 떠서 테스트할 수 있는 자리가 여기뿐입니다.
 
-**자손 선택자는 DESIGN.md §7 이 연 네 줄만 씁니다.** 그 밖에 새로 여는 것은 §7 을 고친 다음입니다. `!important` 없이 명시도로 이깁니다.
+### FormatToolbar
 
-**`--bn-font-family` 는 본문에 안 닿습니다.** 그 변수를 읽는 규칙은 `.bn-root` 하나인데, `.bn-default-styles` 가 안쪽 `.bn-editor` 에 같이 붙어서 Inter 스택을 직접 선언하고 상속을 끊습니다. 변수만 걸어 두면 **사이드바는 시스템 글꼴인데 본문만 Inter · Open Sans** 로 나옵니다. 스택이 달라서 한글 대체 글꼴도 같이 갈립니다 — 문서만 따로 노는 이유입니다.
+텍스트 선택 시 표시되는 포맷 툴바입니다.
 
-**문서 안쪽 제목 크기는 우리 값입니다 — 30 · 24 · 20px, 줄간 1.3** (Notion 값. DESIGN.md §2). `--knoc-text-heading-*` 에서 오고 `blocknote-bridge.css` 가 `--level` 로 넘깁니다. 한 번 26 · 20 · 17px 까지 줄여 봤다가 되돌린 자리입니다. 40px 짜리 문서 제목은 이것과 다른 것이고 `PageTitle` 이 맡습니다.
+활성화된 스타일은 `useActiveStyles(editor)`를 기준으로 표시합니다.
 
-**사이드 메뉴(＋ · ⠿) 자리는 크기를 바꾸면 같이 틀어집니다.** BlockNote 가 제목 레벨별로 39 · 27 · 18.5px 를 박아 뒀는데(`SideMenuController` 의 `getBlockOffset`), 자기 기본 크기 48 · 32 · 20.8px 에 맞춰 손으로 계산한 값입니다. `features/editor/sideMenuOffset.ts` 가 첫 줄을 재서 대신 맞춥니다 — 기본 사이드 메뉴를 끄고(`sideMenu={false}`) 같은 것을 다시 넣되 자리 계산만 바꿉니다.
+### 먼저 정해야 할 것
 
-**제목은 H1~H3 뿐입니다.** `schema.ts` 의 `levels: [1, 2, 3]` 으로 닫았습니다. H4 는 본문과 크기가 같고 H5·H6 은 본문보다 작습니다. 슬래시 메뉴 · 단축키 · 마크다운 셋이 같이 닫혔지만 **붙여넣기는 안 걸러집니다** — `<h4>` 가 든 HTML 은 level 4 블록으로 들어옵니다. F4 의 문서 가져오기에서 3 으로 누릅니다.
+두 항목 모두 [DESIGN.md §6](../../DESIGN.md#6-미결정과-확정-기록)에 있습니다.
 
-**코드 블록은 배경을 안 건드리고 반경만 가져옵니다.** 라이트에서도 검정으로 남습니다 — 표면을 뒤집으려면 Shiki 문법색까지 같이 뒤집어야 해서 [DESIGN.md §6](../../DESIGN.md#6-미결정과-확정-기록) 에 열려 있습니다. **F3 밖으로 미뤄도 됩니다.**
+| 항목   | 내용                                                       |
+| ---- | -------------------------------------------------------- |
+| 아이콘  | BlockNote 기본은 인라인 SVG(§8 위반). seed-icon에 번호 목록·코드 블록이 없음 |
+| 줄 수  | §5는 10줄 기준인데 스키마가 14종이라 기본 항목이 17줄                       |
 
-### 2. 에디터 (`features/editor/`) (4시간)
+구현 시 주의할 점은 [BlockNote 표면 교체 결정](../decisions/f3-blocknote-surface.md)에 있습니다.
 
-**시간을 반씩 나누지 마세요.** 훅은 이미 있고, 남은 무게는 툴바 쪽입니다 (§0).
+---
 
-| | 시간 | Controller 가 주는 것 | 우리가 읽어야 하는 것 |
-|---|---|---|---|
-| `BlockEditor` 손보기 | 0.5h | — | — |
-| `slashItems` | 1h | — | — |
-| `SlashMenu` | 1h | `items` · `selectedIndex` · `onItemClick` · `loadingState` | 없음 |
-| `FormatToolbar` | 1.5h | `blockTypeSelectItems?` 하나뿐 | 켜짐 여부 — `useActiveStyles(editor)` |
+# 2. 코드 블록 (완료)
 
-- [x] `useEditorDoc.ts` — 초기 블록 배열을 받아 로컬 에디터를 만듭니다. `collaboration?` 자리를 optional 로 열어 뒀습니다
-- [ ] `BlockEditor.tsx` — `onChange`를 밖으로 넘겨주기만 합니다. `slashMenu={false}` · `formattingToolbar={false}` 를 주고 `SlashMenu` · `FormatToolbar` 를 자식으로 넣습니다
-- [ ] `slashItems.ts` — **목록을 만드는 부분을 컴포넌트 밖에 둡니다.** jsdom 에서 메뉴가 안 떠서, §6 이 검사할 수 있는 자리가 여기뿐입니다
-- [ ] `SlashMenu.tsx` — `SlashMenu` 와 표면 부품 `SlashMenuList`
-- [ ] `FormatToolbar.tsx` — 버튼 상태는 `useActiveStyles` 로 직접 읽습니다
+BlockNote 기본 코드 블록은 언어 선택기가 native `<select>`입니다. 펼친 목록을 OS가 그려서 CSS가 닿지 않습니다 ([DESIGN.md §7](../../DESIGN.md)).
 
-`slashItems.ts` 에서 지킬 것 셋입니다.
+스펙에서 `render`만 교체했습니다. `type`과 `propSchema`는 그대로라 저장된 문서는 바뀌지 않습니다.
 
-- **목록은 `@blocknote/core/extensions` 의 `getDefaultSlashMenuItems` 로 가져옵니다.** React 쪽 `getDefaultReactSlashMenuItems` 는 타입에서 `key` 를 지워 버려서, 항목을 고를 기준이 `title` 밖에 안 남습니다. 우리는 `dictionary: ko` 라 title 이 `"인용"` 이고, BlockNote 가 번역을 다듬으면 메뉴에서 항목이 조용히 사라집니다
-- **고르기와 정렬을 `key` 순서 배열 하나로 합칩니다.** 기본 순서는 우리 순서가 아닙니다 — 본문이 한가운데 있습니다
+* [x] `model/code-block.ts` — 스펙 교체
+* [x] `ui/ContentEditor/CodeBlockView.tsx`
+* [x] `ui/ContentEditor/CodeLanguageMenu.tsx` — 슬래시 메뉴와 같은 표면
+* [x] Shiki 하이라이트
+* [x] 목록에 없는 언어로 저장된 문서에서 에디터가 죽지 않게 처리
+* [x] 내보내기 HTML에서 메뉴 제외
 
-  ```ts
-  const ORDER = new Map(
-    ["paragraph", "heading", "heading_2", "heading_3", "bullet_list",
-     "numbered_list", "check_list", "code_block", "quote", "divider"]
-      .map((key, index) => [key, index]),
-  );
-  ```
+코드 블록 표면은 라이트 모드에서도 어둡게 고정입니다. Shiki 문법색까지 같이 뒤집어야 해서 [DESIGN.md §6](../../DESIGN.md#6-미결정과-확정-기록)에 열려 있습니다.
 
-- **마크다운 단축 표기는 우리 표에서 옵니다.** BlockNote 의 `badge` 는 키보드 단축키(`heading` → `Ctrl+Alt+1`)이고, `subtext` 는 `"섹션 제목(대)"` 같은 설명문입니다. `# ` · `- ` · `1. ` 은 사전 어디에도 없습니다
+---
 
-`SlashMenu.tsx` 는 이렇게 생깁니다. **`SuggestionMenuController` 가 보이는 유일한 파일입니다.**
+# 3. 커스텀 블록
 
-```tsx
-// features/editor/SlashMenu.tsx
-export function SlashMenu({ editor }: { editor: KnocEditor }) {
-  return (
-    <SuggestionMenuController<(query: string) => Promise<SlashItem[]>>
-      triggerCharacter="/"
-      suggestionMenuComponent={SlashMenuList}
-      onItemClick={(item) => item.onItemClick()}
-      getItems={async (query) => filterSuggestionItems(slashItems(editor), query)}
-    />
-  );
-}
+BlockNote가 제공하지 않는 블록입니다. `createReactBlockSpec`으로 만듭니다.
+
+* [ ] 콜아웃
+* [ ] 목차
+
+데이터베이스 · 뷰는 [F6·F7](later-sprints.md)에서 진행합니다.
+
+---
+
+# 4. 페이지 조립
+
+`PageEditorPage`에서 아이콘 · 제목 · 에디터를 하나의 문서 화면으로 조립합니다.
+
+구조:
+
+```text
+EditorSurface
+├── PageIcon
+├── PageTitle
+└── ContentEditor
 ```
 
-**타입 인자를 손으로 적어야 합니다.** props 가 조건부 타입이라 `getItems` 만으로는 추론이 기본값(`DefaultReactSuggestionItem`)으로 떨어지고, `suggestionMenuComponent` 가 안 맞는다는 긴 에러가 납니다. 같은 이유로 `onItemClick` 도 optional 이 아니게 되니 같이 넘깁니다.
+### 제목
 
-### 3. 조립 (2시간)
+BlockNote에는 페이지 제목이 없습니다. 문서가 블록 배열 하나가 전부입니다.
+제목은 에디터 밖에 따로 서고 `Page.title`이 됩니다.
 
-- [x] `components/PageTitle/PageTitle.tsx` — `InlineInput` 을 **안 씁니다**. 아래 세 가지가 걸려서 `textarea` 한 겹으로 따로 만들었습니다
-- [ ] `PageRoute`에서 `DocumentSurface` 안에 `PageTitle` + `BlockEditor` 배치
-- [ ] 제목에서 Enter/↓ → 첫 블록으로 포커스
-- [ ] 빈 문서 문구 (DESIGN.md §9)
+* [x] `ui/PageTitle/PageTitle.tsx` — `textarea` 한 겹. `InlineInput`을 쓰지 않습니다
+* [x] `ui/PageIcon/PageIcon.tsx` · `PageIconPicker.tsx`
+* [x] `ui/EditorSurface/EditorSurface.tsx`
+* [x] 빈 문서 문구
 
-  > 제목 자리: `제목 없음`
-  > 첫 줄: `바로 쓰거나, / 를 눌러 블록을 넣으세요`
-  > 버튼 없음 — 다음 행동이 클릭이 아니라 타이핑입니다
+### 포커스 이동
 
-- [x] 에디터를 `React.lazy`로 분리해서 첫 화면 로딩에 안 얹히게
+제목에서 아래 입력 시 첫 번째 블록으로 이동합니다.
 
-**BlockNote 에는 페이지 제목이 없습니다.** 문서가 블록 배열 하나가 전부입니다. 지금 `sampleDoc` 의 첫 블록이 제목1 로 제목인 척하고 있는데, F2 에서 `Page.title` 이 오는 순간 둘을 갈라야 합니다.
+* `Enter`
+* `↓`
 
-`InlineInput` 을 그대로 쓸 수 있는지 한 번 붙여 봤습니다. **되지만 세 군데가 걸립니다** — 만들 때 참고하세요.
+* [ ] `ContentEditor`가 포커스 핸들만 열기
 
-- **평상시가 더블클릭입니다.** 트리 행에서는 한 번 누르는 것이 "그 페이지 열기" 라 맞지만, 이미 열려 있는 문서 제목은 한 번에 들어가야 합니다. 감싼 쪽 `onClick` 으로 열면 됩니다
-- **`↓` 를 `stopPropagation` 으로 막습니다.** 트리에서 행이 같이 움직이지 않게 하는 것인데, 제목에서 본문으로 내려가는 키가 그거라 `onKeyDownCapture` 로 먼저 잡아야 합니다
-- **`truncate` 가 박혀 있습니다.** 28px 트리 행에는 맞지만 34px 제목이 잘리면 뒷부분을 영영 못 봅니다. 접으려면 편집 중에도 `textarea` 여야 합니다 — `input` 은 CSS 로 뭘 해도 한 줄이라, 평상시만 접히면 상태마다 박스 크기가 달라져서 이 컴포넌트가 지키기로 한 것을 깹니다
+에디터 인스턴스를 외부에 노출하지 않습니다. 노출하면 F10에서 Yjs로 바꿀 때 밖까지 깨집니다.
 
-**그리고 `InlineInput` 에 버그가 하나 있습니다.** `selectOnEdit={false}` 일 때 캐럿이 끝이 아니라 **맨 앞**에 섭니다 — `select()` 를 안 하면 브라우저가 0 에 세우기 때문입니다. DESIGN.md §10 이 "문서 제목은 뒤에 덧붙이는 일이 많아" 라고 한 동작이 지금 반대로 납니다. `setSelectionRange(끝, 끝)` 한 줄이면 됩니다.
+### 빈 문서
 
-**포커스 이동은 `BlockEditor` 가 핸들로 열어야 합니다.** 에디터 인스턴스 자체를 내보내면 안 됩니다 — 문서 내용을 밖에서 열어볼 수 있게 되고, F10 에서 안쪽을 Yjs 로 바꿀 때 밖까지 깨집니다 ([architecture.md](architecture.md#에디터-구조--나중에-yjs를-붙이기-위한-준비)).
+제목:
 
-### 4. 자동 저장 (`features/editor/useAutosave.ts`) (3시간)
+> 제목 없음
 
-언제 저장할지:
+본문:
 
-| 시점 | 동작 |
-|---|---|
-| 타이핑이 멈추고 800ms | 저장 |
-| 계속 타이핑해도 5초마다 | 강제 저장 |
-| 포커스가 빠지거나 창을 닫을 때 | 즉시 저장 |
+> 바로 쓰거나, / 를 눌러 블록을 넣으세요
 
-- [ ] 저장이 진행 중일 때 새 저장 요청이 오면, 앞의 것을 취소하고 **마지막 것만** 보냅니다
-- [ ] 저장 중에도 타이핑은 막지 않습니다
-- [ ] `hooks/useSavePage.ts` — 낙관적 업데이트. 목록의 제목과 수정 시각이 바로 반영됩니다
-- [ ] `features/editor/useUnsavedGuard.ts` — 저장 안 된 상태에서 페이지를 벗어나려 하면 경고
-
-### 5. 저장 상태 표시 (1시간)
-
-F1에서 만든 `SaveStatus`에 실제 상태를 연결합니다. 문구는 사과하지 않습니다 (DESIGN.md §8).
-
-| 상태 | 문구 |
-|---|---|
-| 저장 중 | 저장 중 |
-| 완료 | 저장됨 |
-| 실패 | 저장 실패 · 다시 시도 |
-
-### 6. 테스트 (1시간)
-
-**여기서 vitest 를 처음 켭니다.** F1·F2 에는 러너가 없었습니다.
-
-- [ ] `package.json` 에 `"test": "vitest"` 한 줄. **`vite.config.ts` 는 안 건드립니다** —
-      `BlockNoteEditor.create()` · `getDefaultSlashMenuItems` 가 `document` 없이 돕니다(확인함).
-      기본 `environment: "node"` 로 충분합니다
-- [ ] devDependencies 에서 `jsdom` 과 `@testing-library/*` 3종 제거 — 쓸 자리가 없습니다
-
-유닛 — 컴포넌트를 띄우지 않고 도는 것만:
-
-- [ ] 슬래시 메뉴 목록 — 정한 것만, 정한 순서로, 배지가 마크다운 표기다 (`slashItems.ts`)
-- [ ] 타이핑을 멈추면 `updatePage`가 한 번만 불린다 — **디바운스를 훅 밖 유틸로 빼 두면** 가짜 타이머로 검사됩니다
-- [ ] [F2 §7](sprint-2.md#7-테스트-1시간--f3-으로-넘어갔습니다) 에서 넘어온 둘 — `visibleItems` · api mock
-
-F4 의 E2E 로 넘기는 것:
-
-- [ ] 마크다운 단축 입력 (`# `, `- `, `1. `, `> `) — 키 입력이라 살아 있는 뷰가 필요합니다
-- [ ] 슬래시 메뉴로 제목 블록 삽입
-
-**메뉴가 뜨는 것 자체는 jsdom 으로 못 봅니다** (§0 결과). floating-ui 가 레이아웃을 필요로 하는데 jsdom 은 모든 rect 가 0 이고, `elementFromPoint` 도 없습니다. 폴리필로도 안 됩니다. 그래서 위처럼 **목록 검사와 삽입 검사를 갈라 놓았습니다** — 목록을 만드는 함수를 컴포넌트 밖에 두면 에디터 인스턴스 하나로 검사되고, 삽입은 브라우저가 있는 F4 로 갑니다 ([테스트 정책](architecture.md#테스트)).
+별도 버튼은 만들지 않습니다.
 
 ---
 
-## 완료 조건
+# 5. 자동 저장
 
-- [ ] 블록 8종을 슬래시 메뉴와 마크다운 단축 양쪽으로 만들 수 있다 (메뉴는 10줄)
-- [ ] 슬래시 메뉴 항목을 `title` 로 고르는 코드 0개 — 기준은 `key` 다
-- [ ] 슬래시 메뉴 배지가 마크다운 표기다. `Ctrl+Alt+1` 이 보이는 곳 0개
-- [ ] 슬래시 메뉴 아이콘이 [DESIGN.md §6](../../DESIGN.md#6-미결정과-확정-기록) 에서 고른 방식을 따른다
-- [ ] `SuggestionMenuController` · `FormattingToolbarController` 가 `SlashMenu.tsx` · `FormatToolbar.tsx` 밖에 나오는 곳 0개
-- [ ] 타이핑을 멈추면 1초 안에 `저장됨`으로 바뀌고, 새로고침해도 내용이 남는다
-- [ ] mock 지연을 3초로 올려도(`?slow=1`) 타이핑이 끊기지 않는다
-- [ ] `?fail=save`로 실패를 넣으면 `저장 실패`가 뜬다
-- [ ] BlockNote 기본 CSS를 `!important` 로 덮은 곳 0개
-- [ ] 자손 선택자가 DESIGN.md §7 이 연 네 줄 말고 0개
-- [ ] BlockNote 기본 슬래시 메뉴·툴바가 DOM 에 남아 있지 않다
-- [ ] 라이트·다크 모두에서 에디터 색이 SEED 토큰을 따른다
-      — **코드 블록 표면과 Shiki 문법색은 예외.** 다크 고정입니다 ([DESIGN.md §6](../../DESIGN.md#6-미결정과-확정-기록))
-- [x] 에디터가 별도 번들로 분리되고, 첫 화면 번들이 300KB(gzip) 이하
-      — §0 에서 확인. 첫 화면 124.2KB, 에디터 청크 368.6KB. §2·§3 이 끝나면 다시 잽니다
-- [ ] 블록 내용이 React state에 복사돼 있는 곳 0개
-- [ ] `Page.content`를 다루는 코드가 `features/editor/` 밖에 0개
-- [ ] [MVP 판정 기준](mvp.md#mvp-판정-기준) 7개 전부 통과
+`pages/page-editor/model/autosave.ts`
 
-[공통 완료 조건](conventions.md)도 함께 확인합니다.
+현재 단계에서는 서버 대신 localStorage에 저장합니다. F2의 `updatePage` mock이 필요합니다.
 
----
+### 저장 시점
 
-## 끝나면 할 수 있는 것
+| 상황     | 동작         |
+| ------ | ---------- |
+| 입력 중단  | 800ms 후 저장 |
+| 계속 입력  | 최대 5초마다 저장 |
+| 포커스 이탈 | 즉시 저장      |
+| 창 종료   | 즉시 저장      |
 
-**화면이 전부 완성됩니다.** 만들고, 쓰고, 저장되고, 다시 엽니다.
-다만 데이터가 브라우저 안에만 있어서, 다른 기기에서는 안 보입니다. 그건 [F4](sprint-4.md)입니다.
+### 구현
+
+* [ ] `model/autosave.ts`
+* [ ] 마지막 변경 내용만 저장
+* [ ] 저장 중에도 계속 입력 가능
+* [ ] `model/unsaved-guard.ts`
+
+저장 요청 때문에 에디터 입력이 막히면 안 됩니다.
+
+디바운스는 훅 밖 유틸로 뺍니다. 가짜 타이머로 테스트하기 위해서입니다.
 
 ---
 
-## 다음을 위해 하나만 더
+# 6. 저장 상태
 
-F4를 시작하기 전에 **백엔드와 엔드포인트·에러 코드·페이로드를 최종 확인**합니다. 확인할 목록은 [백엔드 연동 계약](backend-sync.md#f4-시작-전-확인할-것)에 있습니다.
+`app/ui/TopBar/SaveStatus.tsx`는 F1에서 끝났습니다. 연결만 남았습니다.
+
+| 상태       | 표시                |
+| -------- | ----------------- |
+| `idle`   | 표시 없음             |
+| `saving` | 저장 중              |
+| `saved`  | 저장됨 (2초 후 사라짐)    |
+| `offline` | 오프라인 — 연결되면 저장할게요 |
+
+* [ ] 자동 저장 상태를 `AppLayout` → `TopBar`로 전달
+
+실패 상태는 상단바에 두지 않습니다 ([DESIGN.md §9](../../DESIGN.md)). 재시도까지 실패한 것은 F4에서 본문 위 배너로 올립니다.
+
+---
+
+# 7. 테스트
+
+F3부터 Vitest를 사용합니다.
+
+### 설정
+
+* [ ] `package.json`에 `test: vitest` 추가
+* [ ] 불필요한 jsdom / testing-library 의존성 제거
+
+`vite.config.ts`는 건드리지 않습니다.
+
+### Unit Test
+
+* [ ] SlashMenu 항목 종류 확인
+* [ ] SlashMenu 순서 확인
+* [ ] 마크다운 단축 표기 확인
+* [ ] 자동 저장 debounce 확인
+* [ ] F2에서 넘어온 `getVisiblePageNavigationNodes`
+* [ ] F2에서 넘어온 API mock
+
+브라우저 동작이 필요한 테스트는 F4 E2E에서 진행합니다.
+
+* 마크다운 단축 입력
+* SlashMenu 블록 삽입
+
+메뉴가 뜨는 것 자체는 jsdom에서 확인할 수 없습니다. floating-ui가 레이아웃을 필요로 하는데 jsdom은 모든 rect가 0입니다.
+
+---
+
+# 완료 조건
+
+## 에디터
+
+* [ ] 10개 SlashMenu 항목이 정상적으로 표시된다
+* [ ] 블록 선택 기준으로 `key`를 사용한다
+* [ ] SlashMenu에 마크다운 단축 표기가 표시된다
+* [ ] 기본 BlockNote SlashMenu가 표시되지 않는다
+* [ ] 기본 BlockNote FormattingToolbar가 표시되지 않는다
+* [ ] `SuggestionMenuController` · `FormattingToolbarController`가 해당 파일 밖에 없다
+* [ ] 라이트/다크 모드에서 SEED 토큰을 따른다 (코드 블록 표면 제외)
+* [ ] BlockNote CSS에 `!important`를 사용하지 않는다
+
+## 저장
+
+* [ ] 입력을 멈추면 1초 안에 `저장됨`으로 변경된다
+* [ ] 새로고침해도 작성 내용이 남아 있다
+* [ ] 저장 중에도 계속 입력할 수 있다
+* [ ] 저장되지 않은 상태에서 페이지를 벗어나면 경고한다
+
+## 구조
+
+* [ ] 블록 내용을 별도 React state에 복사하지 않는다
+* [ ] `PageContent` 처리는 `pages/page-editor/` 내부에서만 한다
+* [x] 에디터가 별도 번들로 분리되어 있다 (첫 화면 124.2KB · 에디터 368.6KB)
+
+[공통 완료 조건](conventions.md) · [MVP 판정 기준](mvp.md#mvp-판정-기준)도 함께 확인합니다.
+
+---
+
+# 구현 순서
+
+```text
+1. SlashMenu / FormatToolbar
+      ↓
+2. 콜아웃 / 목차 블록
+      ↓
+3. 제목 → 본문 포커스 이동
+      ↓
+4. 자동 저장
+      ↓
+5. 저장 상태 / 이탈 경고
+      ↓
+6. 테스트
+```
+
+F3가 끝나면 **페이지를 열고 → 작성하고 → 자동 저장하고 → 다시 열어도 내용이 남는 화면 MVP**가 완성됩니다.
+
+서버에 실제 문서를 저장하는 작업은 F4에서 진행합니다.
 
 ---
 
