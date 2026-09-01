@@ -594,3 +594,63 @@
   width: var(--knoc-editor-handle-icon);
   height: var(--knoc-editor-handle-icon);
 }
+
+/* ── 블록 드롭 삽입선의 모양과 움직임 — DESIGN.md §7
+ *
+ * ⠿ 로 블록을 끌 때 「여기에 놓인다」를 가리키는 가로선이다. 위의 표 드롭
+ * 커서(.bn-table-drop-cursor)와 이름만 비슷하고 다른 것이다 — 저건 표 안에서
+ * 열·행을 옮길 때, 이건 문서에서 블록을 옮길 때다.
+ *
+ * **색과 굵기는 여기가 아니다.** 그 둘은 확장이 만든 div 에 인라인 style 로
+ * 박혀서 CSS 로는 !important 없이 못 이긴다. 라이브러리가 옵션을 열어 뒀고
+ * 값은 거기서 준다 — model/content-editor.ts 의 dropCursor.
+ *
+ * 옵션에 없는 것이 둘 남는다.
+ *
+ * **끝을 둥글게.** 3px 짜리 막대라 full 을 줘도 알약이 되는 것이지 동그래지지
+ * 않는다. 사각 막대는 이 굵기에서 유독 무겁게 보인다.
+ *
+ * **가로로도 미끄러지게.** BlockNote 는 top·bottom 만 전환에 걸어 둔다. 선이
+ * 세로로는 미끄러지고 가로로는 순간이동한다는 뜻이라, 들여쓰기가 다른 블록
+ * 사이를 지날 때마다(목록 안팎) 튄다. 같은 전환에 left·width 를 더한다.
+ * duration 과 timing 은 안 건드린다 — 인용의 border-left-color 와 같은
+ * 원칙이다. 움직일 것만 더하고 세기는 BlockNote 값(150ms)을 남긴다.
+ *
+ * 뜨는 순간의 페이드는 transition 이 아니라 animation 이다. 이 div 는 드래그
+ * 한 번마다 새로 만들어지고 놓으면 지워지는데, 처음 그려지는 자리엔 전 값이
+ * 없어서 transition 이 안 걸린다.
+ *
+ * **선택자가 .bn-container 로 시작하지 않는 것에 주의.** 이 div 는 에디터
+ * 밖이다 — 확장이 view.dom.offsetParent 에 붙이는데 우리 화면에서 그건
+ * <body> 다. 클래스 이름은 prosemirror-dropcursor 것을 BlockNote 가 그대로
+ * 물려받은 것이라, 그 아래 계층이고 수년째 안 바뀌었다.
+ *
+ * 한 겹으로 짚는다. BlockNote 가 이 셋 중 선언해 둔 것은 transition-property
+ * 하나뿐이라, 그 줄만 두 겹(0,2,0)으로 올린다 — 에디터 CSS 가 지연 로드라
+ * 나중에 붙어서 동점이면 진다. */
+.prosemirror-dropcursor-block,
+.prosemirror-dropcursor-inline {
+  border-radius: var(--seed-radius-full);
+  animation: knoc-drop-indicator-in 100ms ease-out;
+}
+
+.prosemirror-dropcursor-block.prosemirror-dropcursor-block {
+  transition-property: top, bottom, left, width;
+}
+
+@keyframes knoc-drop-indicator-in {
+  from {
+    opacity: 0;
+  }
+}
+
+/* 움직임을 끈 사람에게는 선을 그 자리에 그냥 세운다 — Skeleton 과 같다(§10).
+ * BlockNote 가 걸어 둔 150ms 까지 같이 끈다. 여기서 끄는 것이 우리가 더한
+ * 움직임만이면, 정작 원래 있던 미끄러짐이 남는다. */
+@media (prefers-reduced-motion: reduce) {
+  .prosemirror-dropcursor-block.prosemirror-dropcursor-block,
+  .prosemirror-dropcursor-inline.prosemirror-dropcursor-inline {
+    transition-duration: 0s;
+    animation: none;
+  }
+}

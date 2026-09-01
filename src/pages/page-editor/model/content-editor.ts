@@ -66,6 +66,32 @@ export function useContentEditor({ pageId, content, collaboration }: UseContentE
         emptyDocument: editorPlaceholders.firstLine,
         default: editorPlaceholders.firstLine,
       },
+      /* 블록을 끌 때 「여기에 놓인다」를 가리키는 삽입선 — DESIGN.md §1 · §7.
+       *
+       * BlockNote 기본은 5px 짜리 #ddeeff 다. §1 이 「커서, 삽입선」을 강조색
+       * 하나로 못 박아 뒀는데 이 선만 빠져 있었다 — 표 쪽의 같은 선
+       * (.bn-table-drop-cursor)은 이미 우리 색이다.
+       *
+       * 값은 --knoc-color-drop-indicator 다. 강조색을 그대로 쓰지 않고 60% 로
+       * 두는 이유는 knocspace.css 에 적어 뒀다 — 짧게 말하면 본문을 가로지르는
+       * 600px 짜리 선이라, 표 안의 짧은 막대와 같은 세기로 두면 문서 위에
+       * 보라색 띠가 그어진다.
+       *
+       * **CSS 가 아니라 여기인 이유.** 이 선은 확장이 만드는 div 에 자리와 크기,
+       * 색까지 인라인 style 로 박힌다. 특히 굵기는 좌표 계산에도 쓰여서(경계선
+       * 위아래로 width/2 씩) CSS 로는 !important 없이 못 이긴다. 색만 CSS 로
+       * 갈라 두면 짝이 흩어지므로, 라이브러리가 열어 둔 옵션 하나로 같이 준다.
+       *
+       * 3px 은 5px 을 그냥 줄인 값이 아니다. 옅은 색에서 진한 색으로 오면서 같은
+       * 굵기가 두 배로 무거워졌다. 블록 사이 여백이 3px 이라(--knoc-editor-block-pad-y)
+       * 선이 그 틈을 정확히 채우고, Notion 도 이 자리에서 2~3px 이다.
+       *
+       * 옵션에 없는 둘 — 둥근 끝과 가로 미끄러짐 — 은 blocknote-bridge.css 맨
+       * 아래가 얹는다. */
+      dropCursor: {
+        width: 3,
+        color: "var(--knoc-color-drop-indicator)",
+      },
       /* 코드 블록 하이라이트(Shiki). 스키마 쪽 언어 목록과 짝이다 — blocknote-schema.ts. */
       extensions: [syntaxHighlighter, ...(collaboration ?? [])],
     },
