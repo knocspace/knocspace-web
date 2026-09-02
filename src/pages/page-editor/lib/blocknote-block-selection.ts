@@ -40,7 +40,7 @@ import {
  * | | 하는 일 |
  * | --- | --- |
  * | 넓히기 | 줄을 넘어간 선택을 블록 경계까지 밀어 낸다 (`appendTransaction`) |
- * | 칠하기 | 그렇게 잡힌 블록마다 `.ProseMirror-selectednode` 를 얹는다 |
+ * | 칠하기 | 그렇게 잡힌 블록마다 `.knoc-selected-block` 을 얹는다 |
  * | 키보드 | 블록 선택 중일 때의 키 — 화살표 · `Enter` · `Backspace` · `⌘A` · `⌘D` |
  *
  * **넓히기가 마우스 코드를 없앤다.** 끌기를 직접 듣지 않는다 — 브라우저가 만든
@@ -49,8 +49,9 @@ import {
  * 브라우저와 선택을 두고 다투지 않는다.
  *
  * **칠하기가 필요한 이유.** ProseMirror 는 NodeSelection 만 알아서 칠해 준다
- * (`.ProseMirror-selectednode`). 여러 블록일 때는 우리가 같은 클래스를 데코레이션으로
- * 얹는다 — 색과 상자는 blocknote-bridge.css 에 이미 있는 것을 그대로 쓴다
+ * (`.ProseMirror-selectednode`). 여러 블록일 때는 우리가 `.knoc-selected-block` 을
+ * 데코레이션으로 얹는다 — 색과 상자는 blocknote-bridge.css 에 이미 있는 것을
+ * 그대로 쓴다. 이름만 갈라 둔 이유는 아래 `decorations` 에 적어 두었다
  * (DESIGN.md §7). 그 면이 글줄 상자 **안쪽**이라 줄마다 갈라져 보인다.
  *
  * 브라우저의 파란 글자 하이라이트는 `knoc-blocks-selected` 로 감춘다. 선택의
@@ -128,9 +129,21 @@ function blockSelectionPlugin(editor: AnyBlockNoteEditor) {
 
     props: {
       /**
-       * 고른 블록마다 `.ProseMirror-selectednode` — ⠿ 로 하나를 골랐을 때
-       * ProseMirror 가 붙여 주는 그 클래스다. 칠하는 규칙을 새로 만들지 않고
-       * 이미 있는 것을 그대로 쓴다 (blocknote-bridge.css · DESIGN.md §7).
+       * 고른 블록마다 `.knoc-selected-block`. 칠하는 값은 `⠿` 로 하나를 골랐을
+       * 때와 **한 자도 다르지 않다** — blocknote-bridge.css 의 같은 규칙이 두
+       * 클래스를 같이 짚는다 (DESIGN.md §7).
+       *
+       * **이름만 우리 것이어야 한다.** 처음에는 ProseMirror 가 붙여 주는
+       * `.ProseMirror-selectednode` 를 그대로 얹었는데, **한 번 NodeSelection
+       * 이었던 블록이 여럿 선택으로 넘어가는 순간 그 줄만 안 칠해졌다.**
+       *
+       * 저쪽이 그 클래스를 데코레이션이 아니라 **DOM 에 직접** 붙였다 뗐다
+       * 하기 때문이다(`selectNode` · `deselectNode`). 우리 데코레이션이 같은
+       * 상자에 같은 이름을 얹어 두면, 선택이 NodeSelection 에서 풀릴 때
+       * `deselectNode` 의 `classList.remove` 가 **우리 것까지 걷어 간다.**
+       *
+       * `Esc`(한 줄) → `shift`+`↓`, 여백에서 아래로 끌기(첫 줄이 잠깐 혼자
+       * 잡힌다) 둘 다 그 길을 지난다. 이름을 갈라 두면 서로 안 건드린다.
        *
        * 자식이 있는 블록은 한 장으로 덮인다. 데코레이션이 `blockContainer`
        * 바깥 상자에 붙고 그 상자가 자식까지 품고 있어서다 — 부모를 고르면
@@ -147,7 +160,7 @@ function blockSelectionPlugin(editor: AnyBlockNoteEditor) {
         return DecorationSet.create(
           state.doc,
           blocksInRange(state.doc, range).map(({ node, pos }) =>
-            Decoration.node(pos, pos + node.nodeSize, { class: "ProseMirror-selectednode" }),
+            Decoration.node(pos, pos + node.nodeSize, { class: "knoc-selected-block" }),
           ),
         );
       },

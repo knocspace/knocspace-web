@@ -133,6 +133,14 @@ Notion 공식 문서([keyboard shortcuts](https://www.notion.com/help/keyboard-s
 블록의 글자 끝까지라, ProseMirror 에게 맡기면 지워진 자리에 **빈 문단 하나가 남습니다.** Notion 은
 안 남깁니다.
 
+**칠하는 클래스는 `.knoc-selected-block` 입니다 — `.ProseMirror-selectednode` 가 아닙니다.**
+처음에는 그쪽을 그대로 얹었는데, **한 번 블록 하나로 골랐던 줄이 여럿 선택으로 넘어가는 순간
+그 줄만 안 칠해졌습니다.** ProseMirror 가 그 클래스를 데코레이션이 아니라 DOM 에 직접 붙였다
+뗐다 해서(`selectNode` · `deselectNode`), 선택이 풀릴 때의 `classList.remove` 가 우리 데코레이션
+까지 걷어 갑니다. `Esc` 로 한 줄을 잡고 `shift`+`↓` 를 누르면 먼저 잡혔던 줄만 색이 빠졌습니다.
+칠하는 **값**은 그대로입니다 — blocknote-bridge.css 의 같은 규칙이 `:is()` 로 두 클래스를 같이
+짚습니다 ([DESIGN.md §7](../../DESIGN.md)).
+
 **여러 블록을 골랐을 때는 포맷 툴바가 뜹니다** — Notion 도 그렇고, `⌘B` 가 고른 줄 전부에 걸립니다.
 안 띄우는 것은 블록을 **하나** 골랐을 때뿐입니다 (`⠿` · `Esc`).
 

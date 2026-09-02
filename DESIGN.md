@@ -851,11 +851,12 @@ gray-300 인데, 문서 바탕(`bg-layer-default`)이 각각 gray-00 · gray-100
 | 커서·삽입선 = **선** | 열 리사이즈 손잡이 · 드롭 커서 | `bg-brand-solid` (솔리드) |
 
 ```css
-.bn-container .bn-block-outer.ProseMirror-selectednode {
+/* 하나 = ProseMirror 가 직접 붙이는 것 · 여럿 = 우리 확장이 얹는 것 */
+.bn-container .bn-block-outer:is(.ProseMirror-selectednode, .knoc-selected-block) {
   position: relative;                                    /* 오버레이의 기준점 */
 }
 
-.bn-container .bn-block-outer.ProseMirror-selectednode::after {
+.bn-container .bn-block-outer:is(.ProseMirror-selectednode, .knoc-selected-block)::after {
   content: ""; position: absolute; pointer-events: none;
   inset: calc(var(--knoc-editor-block-pad-y) * -1)
          calc(var(--knoc-editor-block-select-bleed) * -1);   /* 글줄 밖으로 */
@@ -883,9 +884,16 @@ gray-300 인데, 문서 바탕(`bg-layer-default`)이 각각 gray-00 · gray-100
 
 **여러 블록도 같은 두 줄이 칠합니다.** 끌기가 줄을 넘어가면 Notion 은 두 줄을 통째로 잡는데,
 BlockNote 는 그냥 글자 선택으로 둡니다. 그 자리를 우리가 메우면서 **색도 상자도 그대로 씁니다** —
-ProseMirror 가 블록 하나에 붙여 주는 `.ProseMirror-selectednode` 를 고른 블록마다 데코레이션으로
-얹을 뿐입니다(`lib/blocknote-block-selection.ts`). 위아래를 안으로 들여 둔 덕에 **줄마다 갈라진
-채로 이어집니다** — Notion 과 같은 그림입니다.
+고른 블록마다 데코레이션 하나를 얹을 뿐입니다(`lib/blocknote-block-selection.ts`). 위아래를 안으로
+들여 둔 덕에 **줄마다 갈라진 채로 이어집니다** — Notion 과 같은 그림입니다.
+
+**클래스 이름만 갈라 둡니다 — `.knoc-selected-block` 입니다.** 처음에는 여럿일 때도
+`.ProseMirror-selectednode` 를 그대로 얹었는데, **한 번 블록 하나로 골랐던 줄이 여럿 선택으로
+넘어가는 순간 그 줄만 안 칠해졌습니다.** ProseMirror 가 그 클래스를 데코레이션이 아니라 **DOM 에
+직접** 붙였다 뗐다 하기 때문입니다(`selectNode` · `deselectNode`) — 선택이 풀릴 때의
+`classList.remove` 가 우리 데코레이션까지 걷어 갑니다. `Esc` 로 한 줄을 잡고 `shift`+`↓` 를
+누르는 흔한 길이 바로 그것입니다. 이름을 갈라 두면 서로 안 건드리고, 칠하는 값은 위 규칙이
+`:is()` 로 둘을 같이 짚어 **한 자도 다르지 않습니다.**
 
 **규칙이 하나만 붙습니다.** 여러 블록일 때의 선택은 그대로 `TextSelection` 이라 브라우저가 파란
 띠를 한 겹 더 그리는데, `.knoc-blocks-selected *::selection { background: transparent }` 로

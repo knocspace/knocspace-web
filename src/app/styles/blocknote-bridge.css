@@ -435,11 +435,20 @@
  * .bn-block-outer), 맨 바깥 블록만 비어 있었다.
  *
  * (0,3,0) 이라 명시도로 다툴 상대가 없다. 이 자리에 BlockNote 규칙이 없다. */
-.bn-container .bn-block-outer.ProseMirror-selectednode {
+/* 두 클래스를 같이 짚는다. `.ProseMirror-selectednode` 는 블록 **하나**를 골랐을
+ * 때 ProseMirror 가 직접 붙이는 것이고, `.knoc-selected-block` 은 **여럿**일 때
+ * 우리 확장이 데코레이션으로 얹는 것이다 (blocknote-block-selection.ts).
+ *
+ * **이름을 갈라 둔 이유는 그쪽이 DOM 을 직접 만지기 때문이다.** 같은 이름을 쓰면
+ * NodeSelection 이 풀릴 때 `deselectNode` 의 `classList.remove` 가 우리 데코레이션
+ * 까지 걷어 간다 — `Esc` 뒤에 `shift`+`↓` 를 누르면 그 줄만 안 칠해졌다.
+ *
+ * `:is()` 는 인자 중 가장 센 것만 세므로 명시도는 (0,3,0) 그대로다. */
+.bn-container .bn-block-outer:is(.ProseMirror-selectednode, .knoc-selected-block) {
   position: relative;
 }
 
-.bn-container .bn-block-outer.ProseMirror-selectednode::after {
+.bn-container .bn-block-outer:is(.ProseMirror-selectednode, .knoc-selected-block)::after {
   content: "";
   position: absolute;
   inset: calc(var(--knoc-editor-block-gap) / 2 - var(--knoc-editor-block-select-rim-y))
