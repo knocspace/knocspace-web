@@ -727,3 +727,28 @@
     animation: none;
   }
 }
+
+/* 끌어서 여러 블록을 고르는 동안 따라오는 사각형 — DESIGN.md §7.
+ *
+ * **선택자가 .bn-container 로 시작하지 않는 것에 주의.** 삽입선과 같은 이유다 —
+ * 이 div 는 에디터 밖이다. 확장이 view.dom.offsetParent 에 붙이는데 우리 화면에서
+ * 그건 <body> 다 (pages/page-editor/lib/blocknote-marquee-selection.ts).
+ * BlockNote 규칙이 없는 자리라 한 겹으로 짚는다.
+ *
+ * **여기만 면에 테두리가 붙는다.** 블록 선택은 면만 쓰고 링이 없는데(§7), 이
+ * 사각형은 이미 8% 로 칠해진 블록 **위**에 겹쳐 놓이는 것이라 면만으로는 자기
+ * 가장자리가 안 보인다. 값은 새로 만들지 않고 노드 링이 쓰는 -ring(30%) 이다.
+ *
+ * 반경 r1 도 블록 선택 면과 같은 값이다. 사각형이 지나간 자리에 같은 모양의
+ * 면이 남는 것이라 두 상자의 모서리가 어긋나면 안 된다.
+ *
+ * 움직임은 안 준다. 자리가 마우스에 1:1 로 매여 있어서 transition 을 걸면
+ * 사각형이 손끝을 뒤따라온다 — 삽입선과 반대다. 저쪽은 자리가 블록 단위로
+ * 튀어서 미끄러짐이 필요했다. */
+.knoc-marquee {
+  position: absolute;
+  border: 1px solid var(--knoc-color-selection-ring);
+  border-radius: var(--seed-radius-r1);
+  background-color: var(--knoc-color-selection-surface);
+  pointer-events: none;
+}

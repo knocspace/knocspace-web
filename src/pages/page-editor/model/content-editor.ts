@@ -4,6 +4,7 @@ import { syntaxHighlighter } from "@blocknote/code-block";
 import { useCreateBlockNote } from "@blocknote/react";
 import { editorPlaceholders } from "@/shared/config";
 import { knocBlockSelection } from "../lib/blocknote-block-selection";
+import { knocMarqueeSelection } from "../lib/blocknote-marquee-selection";
 import { knocDocumentBoundary } from "../lib/blocknote-document-boundary";
 import { knocPageKeys } from "../lib/blocknote-page-keys";
 import { knocBlockShortcuts } from "./block-shortcuts";
@@ -103,6 +104,11 @@ export function useContentEditor({ pageId, content, collaboration }: UseContentE
        * 넘어가는 선택을 그냥 글자 선택으로 두는데 Notion 은 블록을 잡는다
        * (blocknote-block-selection.ts).
        *
+       * knocMarqueeSelection 은 그 짝이다 — **여백에서** 시작한 끌기 하나만
+       * 맡는다. 저쪽은 브라우저가 만든 글자 선택을 밀어 내는 방식이라 글 밖에서
+       * 시작한 끌기를 못 보고, 한 블록만 훑었을 때 통째로 잡지도 못한다. 끄는
+       * 동안의 사각형도 이쪽이 그린다 (blocknote-marquee-selection.ts).
+       *
        * knocPageKeys 는 PageUp · PageDown 이다 — 고른 블록이 있으면 선택이,
        * 없으면 커서가 한 화면 움직인다. 그 둘만 화면 좌표를 재야 해서 갈라 뒀다.
        *
@@ -115,6 +121,7 @@ export function useContentEditor({ pageId, content, collaboration }: UseContentE
       extensions: [
         syntaxHighlighter,
         knocBlockSelection,
+        knocMarqueeSelection,
         knocPageKeys,
         knocBlockShortcuts,
         knocDocumentBoundary(),

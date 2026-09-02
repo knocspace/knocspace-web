@@ -9,6 +9,7 @@ import {
 import { useEffect, useImperativeHandle, type Ref } from "react";
 import { isWholeBlockSelected } from "../../lib/block-selection";
 import { knocDocumentBoundary } from "../../lib/blocknote-document-boundary";
+import { isMarqueeDragging } from "../../lib/blocknote-marquee-selection";
 import { sideMenuFloatingOptions } from "../../lib/blocknote-side-menu";
 import { toPageContent, type PageContent } from "../../model/page-content";
 import { useContentEditor } from "../../model/content-editor";
@@ -162,6 +163,16 @@ export function ContentEditor({
     selector: ({ editor }) => isWholeBlockSelected(editor.prosemirrorState),
   });
 
+  /* 여백에서 사각형을 끄는 동안에도 안 띄운다 — blocknote-marquee-selection.ts.
+   *
+   * 에디터 **안에서** 시작한 끌기라면 BlockNote 가 스스로 접는다(`view.dom` 의
+   * `pointerdown` 을 듣는다). 문서 좌우 빈 판에서 시작한 것은 그 귀에 안
+   * 들어와서, 끌고 있는 내내 툴바가 따라다녔다. */
+  const isMarquee = useEditorState({
+    editor,
+    selector: ({ editor }) => isMarqueeDragging(editor.prosemirrorState),
+  });
+
   return (
     /* 좌우 거터를 도로 물린다.
      *
@@ -205,7 +216,7 @@ export function ContentEditor({
         {/* 컨트롤러를 아예 안 그린다. BlockNote 의 shouldShow 는 선택이 비어 있지
           * 않으면 참이라 블록 선택에서도 툴바가 뜨는데, 그 판단은 확장 안쪽이라
           * 밖에서 못 바꾼다 — 뜨고 나서 숨기는 것보다 안 붙이는 쪽이 깨끗하다. */}
-        {!isBlockSelected && <FormattingToolbarController />}
+        {!isBlockSelected && !isMarquee && <FormattingToolbarController />}
       </BlockNoteView>
     </div>
   );

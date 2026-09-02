@@ -19,6 +19,7 @@ import {
   blockRangeAt,
   blocksInRange,
   isBackwardSelection,
+  releaseBlockRange,
   selectBlockRange,
   selectedBlockRange,
   wholeDocumentBlockRange,
@@ -355,7 +356,7 @@ function escapeKey({ editor }: { editor: AnyBlockNoteEditor }) {
   const range = selectedBlockRange(state);
 
   if (range) {
-    editor.transact((tr) => tr.setSelection(TextSelection.near(tr.doc.resolve(range.to), -1)));
+    editor.transact((tr) => releaseBlockRange(tr, range));
     return false;
   }
 

@@ -281,6 +281,19 @@ export function selectBlockRange(tr: Transaction, range: BlockRange, backward = 
   tr.setSelection(BlockRangeSelection.create(tr.doc, range.from, range.to, backward));
 }
 
+/**
+ * 블록 선택을 **푼다** — 마지막 줄 **끝**에 커서를 놓는다.
+ *
+ * 그 자리인 이유는 고르기를 끝낸 자리가 거기라서다. `Esc` 도, 에디터 밖을
+ * 클릭하는 것도 같은 자리로 내려앉아야 손이 헷갈리지 않는다.
+ *
+ * **커서를 놓는 것이 곧 푸는 것이다.** 블록 선택은 따로 켜고 끄는 상태가 아니라
+ * 「선택이 블록 경계에 맞아 있나」로만 갈리기 때문이다 (`selectedBlockRange`).
+ */
+export function releaseBlockRange(tr: Transaction, range: BlockRange) {
+  tr.setSelection(TextSelection.near(tr.doc.resolve(range.to), -1));
+}
+
 /** 선택이 거꾸로 잡혀 있나 — 아래에서 위로 끌었나. */
 export function isBackwardSelection(state: EditorState) {
   return state.selection.anchor > state.selection.head;
