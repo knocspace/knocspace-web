@@ -325,8 +325,8 @@
    * 가져온 것이다. 색만 바꾸고 세기는 남긴다 — 인용의 border-left-color 와
    * 같은 원칙이다.
    *
-   * bg-brand-solid 가 이미 모드별로 갈리므로(라이트 purple-700 · 다크
-   * purple-600) 한 벌로 라이트·다크 양쪽이 맞는다. */
+   * **면만 모드별로 갈린다.** 아래 다크 블록을 보라 — 처음엔 bg-brand-solid 가
+   * 이미 갈리니 한 벌로 맞는다고 봤는데, 재 보니 틀렸다. */
   --knoc-color-selection-surface: color-mix(
     in srgb,
     var(--seed-color-bg-brand-solid) 8%,
@@ -407,6 +407,36 @@
   --knoc-color-grid-line: var(--seed-color-stroke-neutral-subtle);
   --knoc-color-grid-edge: var(--seed-color-stroke-neutral-muted);
   --knoc-color-grid-border: var(--seed-color-stroke-neutral-weak);
+}
+
+/* 다크에서 선택 면만 두 배 — DESIGN.md §7.
+ *
+ * **8% 한 벌로 두 모드가 맞는다고 봤던 것이 틀렸다.** 근거는 「블록 선택이
+ * 트리 행 선택과 같아 보여야 한다」였는데, 재 보니 그게 라이트에서만 맞는다.
+ *
+ * | | 트리 행 (bg-brand-weak) | 그 색을 문서 바탕에서 내는 알파 |
+ * | --- | --- | --- |
+ * | 라이트 | #f5f3fe (흰 바탕) | **8%** ← 지금 값이 정확히 이것 |
+ * | 다크 | #28213b (#16171b 바탕) | **16%** |
+ *
+ * 브랜드 solid 가 모드별로 갈리는 것(purple-700 ↔ 600)은 **색**의 문제고,
+ * weak 단계가 다크에서 훨씬 진한 것은 **세기**의 문제라 따로 논다. 8% 로
+ * 두면 다크에서 합성색이 rgb(32,30,44) 인데 트리 행은 rgb(40,33,59) 이다 —
+ * 절반쯤에서 멈춘다.
+ *
+ * **링(30%)은 안 건드린다.** 저건 면이 아니라 선이라 같은 알파에서도 픽셀당
+ * 세기가 다르고, 다크에서 이미 rgb(58,48,90) 으로 충분히 선다.
+ *
+ * 선택자는 위 다크 블록과 같은 한 벌이다. 여기가 `:root` 뒤에 와야 이긴다 —
+ * 명시도가 같으면 나중 것이 이기고, 위 다크 블록은 `:root` 보다 앞에 있다. */
+:root[data-seed-color-mode="system"][data-seed-user-color-scheme="dark"],
+:root[data-seed-color-mode="dark-only"],
+:root [data-seed-color-mode="dark-only"] {
+  --knoc-color-selection-surface: color-mix(
+    in srgb,
+    var(--seed-color-bg-brand-solid) 16%,
+    transparent
+  );
 }
 
 /* Tailwind 유틸리티 노출 — DESIGN.md 4절.
