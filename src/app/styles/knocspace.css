@@ -360,6 +360,25 @@
 
   --knoc-color-focus-ring-halo: var(--seed-color-bg-layer-default);
 
+  /* 문서 제목의 자리 문구 — DESIGN.md §9 「빈 문서」.
+   *
+   * SEED 의 fg 계열에는 `fg-placeholder`(gray-600) 보다 옅은 자리가 없다.
+   * 그 아래는 `fg-disabled`(gray-500) 인데, 여기 글자는 비활성이 아니라
+   * 지금 커서가 서 있는 줄이다 — 뜻이 다른 토큰을 색이 맞는다고 끌어다
+   * 쓰면 나중에 disabled 색이 움직일 때 이 자리가 같이 딸려 간다.
+   *
+   * 그래서 단계만 빌린다. 40px 은 같은 색이어도 본문 크기와 다르게 존재해서,
+   * `fg-placeholder` 로도 아직 아무도 안 쓴 글자가 빈 문서에서 제일 큰
+   * 덩어리다. 한 단계 더 물러서야 커서가 선 자리가 먼저 읽힌다.
+   *
+   * 팔레트가 모드별로 뒤집히므로 한 줄로 양쪽이 맞는다 — 라이트 #d1d3d8
+   * (흰 바탕 대비 1.5:1), 다크 #5b606a (2.8:1). 자리 문구는 읽으라고 두는
+   * 글자가 아니라 여기가 빈 줄이라는 표시라서 본문 대비 기준을 적용하지
+   * 않는다. 진짜 이름이 들어오면 그 자리는 `fg-neutral` 이다.
+   *
+   * 첫 줄(16px)은 본문 크기라 여기 안 딸려 온다 — `fg-neutral-muted` 그대로. */
+  --knoc-color-doc-placeholder: var(--seed-color-palette-gray-500);
+
   /* 격자선 — DESIGN.md 5절.
    * stroke-neutral-subtle/muted 는 static-black-alpha(라이트) ↔ static-white-alpha(다크)로
    * SEED 가 알아서 뒤집는다. alpha 라서 행 호버/선택 배경 위에서도 색이 어긋나지 않는다.
@@ -428,6 +447,8 @@
   --max-width-empty:   var(--knoc-empty-measure);
 
   --blur-toast: var(--knoc-toast-blur);
+
+  --color-doc-placeholder: var(--knoc-color-doc-placeholder);
 
   --color-grid-line: var(--knoc-color-grid-line);
   --color-grid-edge: var(--knoc-color-grid-edge);

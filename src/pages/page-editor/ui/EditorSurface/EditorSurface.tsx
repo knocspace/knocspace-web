@@ -27,7 +27,7 @@ function Placeholder() {
     <div className="flex flex-col gap-x4">
       {/* 자리표시라도 크기는 진짜 제목과 같아야 한다. 다르면 이 표면 위에
         * PageTitle 이 앉는 순간 문서가 한 번 튄다. */}
-      <span className="text-doc-title leading-doc-title tracking-doc-title font-bold text-fg-neutral-subtle">
+      <span className="text-doc-title leading-doc-title tracking-doc-title font-bold text-doc-placeholder">
         {editorPlaceholders.title}
       </span>
 

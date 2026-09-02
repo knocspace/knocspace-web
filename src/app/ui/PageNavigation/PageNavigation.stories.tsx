@@ -38,7 +38,7 @@ const 기본트리: PageNavigationNode[] = [
   { id: "design", title: "디자인 시스템 정리", icon: "🎨", depth: 1, hasChildren: false, isExpanded: false },
   { id: "notes", title: "회의록", icon: null, depth: 0, hasChildren: true, isExpanded: false },
   /* 제목이 빈 페이지 — 만들자마자 아직 아무것도 안 쓴 상태다.
-   * 트리가 "제목 없음" 으로 대신 그린다. */
+   * 트리가 "새 페이지" 로 대신 그린다. */
   { id: "empty", title: "", icon: null, depth: 0, hasChildren: false, isExpanded: false },
 ];
 

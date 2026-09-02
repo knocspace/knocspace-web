@@ -302,7 +302,7 @@ Pretendard 는 `-dynamic-subset` 쪽입니다. 통짜 `pretendardvariable.css` �
 **값은 파일이 정답입니다.** 여기 옮겨 적지 않습니다 — 두 벌이 되면 반드시 어긋납니다. 파일은 세 부분입니다.
 
 1. **brand 8개 재매핑** — carrot → purple. §1 의 허용 목록이 곧 이 블록입니다. 라이트·다크 두 벌.
-2. **`--knoc-` 변수** — 글꼴(sans/mono), 밀도(dense/comfy 각 7단계), 레이아웃 치수, 격자선.
+2. **`--knoc-` 변수** — 글꼴(sans/mono), 밀도(dense/comfy 각 7단계), 레이아웃 치수, 격자선, 문서 제목 자리 문구 색.
 3. **`@theme inline`** — 위 변수를 Tailwind 유틸리티로 노출. 글꼴만 성격이 다릅니다 — 유틸리티가 아니라 `--font-sans` · `--font-mono` 에 얹어서 preflight 가 앱 전체에 걸게 합니다(§2).
 
 파일 전체를 `@layer` **밖에** 둡니다. SEED 의 토큰은 `@layer seed-base` 안에 있고, layer 없는 선언은 어떤 layer 보다도 우선하므로 명시도와 무관하게 이깁니다.
@@ -313,6 +313,7 @@ Pretendard 는 `-dynamic-subset` 쪽입니다. 통짜 `pretendardvariable.css` �
 h-tree-row  h-grid-row  h-topbar   w-sidebar   max-w-measure
 p-dense-1..7           p-comfy-1..7           px-doc-gutter
 border-grid-line       border-grid-edge
+text-doc-placeholder
 ```
 
 다크모드는 `<html data-seed-color-mode="dark-only">`, 시스템을 따르게 하려면 `data-seed-color-mode="system"` + `data-seed-user-color-scheme`. 별도 팔레트를 만들지 않습니다.
@@ -1335,9 +1336,15 @@ F1 의 `EmptyState` 가 이대로 구현합니다.
 
 빈 화면 컴포넌트를 쓰지 않습니다. 커서는 제목에 있고, 아래 한 줄만 둡니다.
 
-- 제목 자리: `제목 없음` (`fg-neutral-subtle`, 40px)
+- 제목 자리: `새 페이지` (`--knoc-color-doc-placeholder`, 40px)
 - 첫 줄: `바로 쓰거나, / 를 눌러 블록을 넣으세요` (`fg-neutral-muted`, 16px)
 - 버튼 없음 — 다음 행동이 클릭이 아니라 타이핑입니다.
+
+**제목 자리만 SEED 밖의 색입니다.** 40px 은 같은 색이어도 본문 크기와 다르게 존재해서, `fg-neutral-subtle` 로 두면 아직 아무도 안 쓴 글자가 빈 문서에서 제일 큰 덩어리가 됩니다. SEED 에서 제일 옅은 `fg-placeholder`(gray-600) 로도 아직 그렇고, 그 아래는 `fg-disabled` 뿐인데 이 줄은 비활성이 아니라 **지금 커서가 서 있는 줄** 입니다. 뜻이 다른 토큰을 색이 맞는다고 끌어다 쓰면 나중에 disabled 색이 움직일 때 이 자리가 같이 딸려 갑니다.
+
+그래서 단계만 빌려 `--knoc-color-doc-placeholder`(gray-500) 를 따로 둡니다. 팔레트가 모드별로 뒤집히므로 한 줄로 양쪽이 맞습니다 — 라이트 `#d1d3d8`(흰 바탕 대비 1.5:1), 다크 `#5b606a`(2.8:1). **여기에 본문 대비 기준을 적용하지 않습니다** — 읽으라고 두는 글자가 아니라 여기가 빈 줄이라는 표시고, 진짜 이름이 들어오면 그 자리는 `fg-neutral` 입니다. 첫 줄(16px)은 본문 크기라 `fg-neutral-muted` 그대로입니다.
+
+글자가 `제목 없음` 이 아닌 것은 **이 문자열이 트리·브레드크럼에서 이름 없는 페이지의 이름으로도 서기 때문입니다.** 자리 문구와 이름이 다르면 같은 페이지로 안 읽히는데, 이름 자리에서 「없음」은 이름이 아니라 상태 설명으로 들립니다. 출처는 `editorPlaceholders.title` 한 곳입니다.
 
 **버튼을 두는 기준**: 다음 행동이 그 화면 안에 있을 때만. 검색 결과 없음과 휴지통은 다음 행동이 화면 밖(검색창, 페이지 삭제)에 있어서 첫 실행에만 `brandSolid` 버튼이 있습니다.
 

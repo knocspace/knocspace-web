@@ -73,6 +73,22 @@ const FIELD_LABEL = "문서 제목";
 const TYPE = "text-doc-title leading-doc-title tracking-doc-title font-bold";
 
 /**
+ * 자리 문구의 색. SEED 의 fg 계열이 아니라 **`--knoc-color-doc-placeholder`**
+ * 다 (knocspace.css · DESIGN.md §9).
+ *
+ * 같은 색이어도 40px 은 본문 크기와 다르게 존재한다 — 빈 문서를 열었을 때
+ * 아직 아무도 안 쓴 글자가 화면에서 제일 큰 덩어리가 되면, 문서가 비었다는
+ * 사실보다 그 글자가 먼저 읽힌다. SEED 에서 제일 옅은 `fg-placeholder` 로도
+ * 아직 그렇고, 그 아래는 `fg-disabled` 뿐인데 이 줄은 비활성이 아니라 지금
+ * 커서가 서 있는 줄이다. 그래서 색만 빌리지 않고 자리를 따로 만들었다.
+ *
+ * `textarea` 는 이 상수를 안 쓰고 `placeholder:text-doc-placeholder` 를
+ * 그대로 적는다. Tailwind 는 소스에 **통째로 적힌 문자열** 만 보고 CSS 를
+ * 만들어서, `placeholder:${TONE}` 처럼 이어 붙이면 그 클래스가 안 나온다.
+ */
+const PLACEHOLDER_TONE = "text-doc-placeholder";
+
+/**
  * 줄바꿈을 공백 하나로 누른다. 여러 줄을 붙여넣어도 제목은 한 줄이다.
  *
  * Enter 를 막는 것만으로는 모자란다. 붙여넣기가 남고, 그 값이 트리·브레드크럼·
@@ -86,7 +102,7 @@ function toSingleLine(text: string): string {
 export function PageTitle({ value, onChange, editable = true, onEnter }: PageTitleProps) {
   if (!editable) {
     return (
-      <p className={`${TYPE} ${value ? "text-fg-neutral" : "text-fg-neutral-subtle"}`}>
+      <p className={`${TYPE} ${value ? "text-fg-neutral" : PLACEHOLDER_TONE}`}>
         {value || editorPlaceholders.title}
       </p>
     );
@@ -121,7 +137,7 @@ export function PageTitle({ value, onChange, editable = true, onEnter }: PageTit
         spellCheck={false}
         onChange={(event) => onChange?.(toSingleLine(event.currentTarget.value))}
         onKeyDown={handleKeyDown}
-        className={`${TYPE} col-start-1 row-start-1 m-0 w-full resize-none overflow-hidden border-0 bg-bg-transparent p-0 text-fg-neutral outline-none placeholder:text-fg-neutral-subtle`}
+        className={`${TYPE} col-start-1 row-start-1 m-0 w-full resize-none overflow-hidden border-0 bg-bg-transparent p-0 text-fg-neutral outline-none placeholder:text-doc-placeholder`}
       />
     </div>
   );
