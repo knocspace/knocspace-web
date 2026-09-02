@@ -4,7 +4,7 @@ import { EditorSurface } from "../../EditorSurface/EditorSurface";
 import { ContentEditor } from "../ContentEditor";
 import type { ContentEditorProps } from "../ContentEditor";
 import type { KnocPartialBlock } from "../../../model/blocknote-schema";
-import { storyDoc, storyPageId } from "./storyDoc";
+import { bodyBlock, storyDoc, storyPageId } from "./storyDoc";
 
 /**
  * 목차 — **BlockNote 에 없어서 우리가 만든 첫 블록입니다** (F3 §3).
@@ -47,11 +47,21 @@ function heading(level: 1 | 2 | 3, text: string): KnocPartialBlock {
   return { type: "heading", props: { level }, content: text };
 }
 
+/* 목차를 **첫 블록으로 두지 않는다.** 세 갈래 다 앞에 본문 한 줄이 서 있는
+ * 이유가 이것이고, 지우면 스토리를 열자마자 목차가 통째로 잡힌 채로 뜬다.
+ *
+ * 목차는 content: "none" 이라 커서가 못 앉는다(toc-block.ts). 그런 블록이 문서
+ * 첫 줄이면 에디터가 처음 잡는 선택이 커서가 아니라 그 노드의 NodeSelection 이
+ * 되고, blocknote-bridge.css 의 노드 선택 링이 그려진다 — 구분선·이미지를
+ * 통째로 골랐을 때와 같은 자리다. 블록 자체는 멀쩡한데 늘 잡혀 있는 것처럼 보인다.
+ *
+ * 앞뒤에 본문을 두는 것은 다른 블록 스토리(인용·코드·표·파일)와도 같은 모양이다. */
 function startBlocks(start: Start): KnocPartialBlock[] {
   if (start === "제목 없는 문서") {
     /* 안내 문구가 뜨는 상태. 목차를 먼저 넣고 제목을 나중에 치는 순서가
      * 실제로 흔해서, 그때 이 블록이 뭘 기다리는지 보여야 합니다. */
     return [
+      bodyBlock("목차 앞에 오는 본문입니다."),
       { type: "tableOfContents" },
       { type: "paragraph", content: "위에 목차가 있고 제목은 아직 없습니다. 아래에 `# ` 를 쳐 보세요." },
       { type: "paragraph", content: "" },
@@ -61,6 +71,7 @@ function startBlocks(start: Start): KnocPartialBlock[] {
   if (start === "긴 문서") {
     /* 눌러서 굴러가는 것을 보려면 화면보다 긴 문서가 필요합니다. */
     return [
+      bodyBlock("목차 앞에 오는 본문입니다."),
       { type: "tableOfContents" },
       ...Array.from({ length: 6 }, (_, index) => [
         heading(2, `${index + 1}장. 스크롤 확인용 제목`),
@@ -72,6 +83,7 @@ function startBlocks(start: Start): KnocPartialBlock[] {
   }
 
   return [
+    bodyBlock("목차 앞에 오는 본문입니다."),
     { type: "tableOfContents" },
     heading(1, "제목1 — 가장 왼쪽"),
     { type: "paragraph", content: "제목을 고치면 위 목차가 같이 바뀝니다." },
