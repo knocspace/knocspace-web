@@ -69,6 +69,9 @@ export const Playground: Story = {
      * 그냥 놓고, 대신 문서 바탕색 위에 세워서 표면과 그림자가 보이게 한다. */
     <div className="bg-bg-layer-basement p-x6">
       <PageIconPicker
+        /* 스토리에는 여닫을 것이 없다. 늘 열린 것으로 둔다 — 판 입장에서 이 값은
+         * 포커스와 검색어 초기화의 기준일 뿐이라 보이고 안 보이고와 무관하다. */
+        open
         value={args.value || undefined}
         onPick={args.onPick}
         listCategories={listEmojiCategories}

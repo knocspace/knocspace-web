@@ -465,6 +465,9 @@
   --max-width-measure: var(--knoc-doc-measure);
   --width-icon-picker:      var(--knoc-icon-picker-width);
   --max-height-icon-picker: var(--knoc-icon-picker-list-height);
+  /* 목록이 아직 안 왔을 때 자리만 잡는 빈 상자가 쓴다. max 가 아니라 고정값이라야
+   * 격자가 들어오는 순간 판 높이가 안 뛴다 (PageIconPicker). */
+  --height-icon-picker:     var(--knoc-icon-picker-list-height);
   --max-width-empty:   var(--knoc-empty-measure);
 
   --blur-toast: var(--knoc-toast-blur);

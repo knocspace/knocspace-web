@@ -48,8 +48,29 @@ export function PageIcon({
   searchEmoji,
 }: PageIconProps) {
   const [open, setOpen] = useState(false);
+  /* 한 번이라도 열었나. 판을 처음 열 때 붙이고 그 뒤로는 안 뗀다 — 아래 주석. */
+  const [mounted, setMounted] = useState(false);
   const triggerRef = useRef<HTMLButtonElement>(null);
   const rootRef = useRef<HTMLDivElement>(null);
+
+  const toggle = () => {
+    setMounted(true);
+    setOpen((was) => !was);
+  };
+
+  /* 누르기 전에 이모지 데이터를 미리 받는다.
+   *
+   * 데이터가 동적 import 라 첫 열기에만 한 번 받아 오는데 그게 오래 걸린다.
+   * 그런데 **누르기 전에 반드시 마우스가 먼저 이 버튼 위를 지난다.** 그 사이에
+   * 시작해 두면 누를 때쯤에는 대개 끝나 있다. 키보드로 오는 사람을 위해 포커스도
+   * 같이 듣는다.
+   *
+   * 여러 번 불러도 괜찮다. listCategories 는 자기 Promise 를 캐시한다
+   * (page-icon-emoji.ts). 실패는 삼킨다 — 이건 미리 해 두는 것뿐이라, 진짜로
+   * 열었을 때 판이 다시 부르고 거기서 다뤄야 한다. */
+  const prefetch = () => {
+    void listCategories().catch(() => {});
+  };
 
   /* 바깥 클릭과 Escape 로 닫는다. 열려 있을 때만 듣는다 — 안 그러면 문서를 여는
    * 내내 document 리스너 둘이 붙어 있다. */
@@ -94,7 +115,9 @@ export function PageIcon({
           aria-label={pageIconLabels.change}
           aria-expanded={open}
           disabled={!editable}
-          onClick={() => setOpen((was) => !was)}
+          onClick={toggle}
+          onPointerEnter={prefetch}
+          onFocus={prefetch}
           /* 52px 은 글자 크기지 상자 크기가 아니다 (§2). leading-none 이 없으면
            * 줄상자가 글자보다 커져서 아래 제목과의 간격이 어긋난다.
            *
@@ -111,7 +134,9 @@ export function PageIcon({
           ref={triggerRef}
           type="button"
           aria-expanded={open}
-          onClick={() => setOpen((was) => !was)}
+          onClick={toggle}
+          onPointerEnter={prefetch}
+          onFocus={prefetch}
           /* 왼쪽만 상쇄한다. 아이콘이 있을 때의 이모지와 같은 자리에서
            * 시작해야, 아이콘을 넣고 빼도 왼쪽 끝이 안 움직인다. */
           className="-ml-dense-2 t3-regular flex h-x6 items-center gap-dense-3 rounded-r1 px-dense-2 text-fg-neutral-muted hover:bg-bg-neutral-weak-alpha knoc-focus-ring"
@@ -121,9 +146,23 @@ export function PageIcon({
         </button>
       )}
 
-      {open && (
-        <div className="absolute left-0 top-full z-10 mt-dense-2">
+      {/* 처음 열 때 붙이고, 닫을 때는 감추기만 한다.
+        *
+        * 판이 1,870개 버튼을 그린다. 닫을 때마다 떼어내면 그 값을 열 때마다 다시
+        * 치른다 — 이모지 데이터를 받아오는 것은 한 번뿐이라도(모듈이 Promise 를
+        * 쥔다) 격자를 다시 만드는 것은 매번이었다.
+        *
+        * 그렇다고 처음부터 붙여 두지는 않는다. 그러면 그 값이 문서를 여는 쪽으로
+        * 옮겨갈 뿐이고, 아이콘을 안 고르는 사람은 내내 손해다. 그래서 `mounted`
+        * 는 한 번 켜지면 안 꺼진다 — 첫 열기만 느리고 그 뒤로는 즉시 뜬다.
+        *
+        * `hidden` 은 display:none 이라 감춰진 동안 레이아웃도 접근성 트리도
+        * 탭 순서도 안 탄다. 열림을 prop 으로도 넘기는 것은 판이 포커스와 검색어를
+        * 마운트가 아니라 그 값에 매달기 때문이다 (PageIconPicker). */}
+      {mounted && (
+        <div hidden={!open} className="absolute left-0 top-full z-10 mt-dense-2">
           <PageIconPicker
+            open={open}
             value={value}
             onPick={pick}
             listCategories={listCategories}
