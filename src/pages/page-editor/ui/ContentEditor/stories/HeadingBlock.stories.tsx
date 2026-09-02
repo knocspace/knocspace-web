@@ -11,34 +11,25 @@ import { bodyBlock, storyDoc, storyPageId } from "./storyDoc";
  *
  * | | Notion | 크기 | 마크다운 | 슬래시 |
  * | --- | --- | --- | --- | --- |
- * | H1 | 제목1 | 3em · 48px | `# ` | `/제목1` · `Ctrl+Alt+1` |
- * | H2 | 제목2 | 2em · 32px | `## ` | `/제목2` · `Ctrl+Alt+2` |
- * | H3 | 제목3 | 1.3em · 20.8px | `### ` | `/제목3` · `Ctrl+Alt+3` |
+ * | H1 | 제목1 | 30px | `# ` | `/제목1` · `Ctrl+Alt+1` |
+ * | H2 | 제목2 | 24px | `## ` | `/제목2` · `Ctrl+Alt+2` |
+ * | H3 | 제목3 | 20px | `### ` | `/제목3` · `Ctrl+Alt+3` |
  *
- * - **H4·H5·H6 은 닫았습니다** (`levels: [1, 2, 3]` — `blocknote-schema.ts`). BlockNote 에는 여섯
- *   단계가 있지만 H4 는 본문과 크기가 같고(1em) H5·H6 은 본문보다 **작아서**(0.9em ·
- *   0.8em) 위계가 아니라 각주로 읽힙니다. Notion 에도 제목1·2·3 뿐입니다
- * - 슬래시 메뉴 · 단축키(`Ctrl+Alt+4`) · 마크다운(`#### `) 셋이 같이 닫혔습니다.
- *   셋 다 `propSchema.level.values` 한 곳에서 나오기 때문입니다
- * - **붙여넣기는 안 걸러집니다.** `<h4>` 가 든 HTML 을 붙여넣으면 level 4 블록이
- *   그대로 들어옵니다 — 만들 수도 되돌릴 수도 없는데 존재는 합니다. F4 의 문서
- *   가져오기에서 3 으로 누릅니다
+ * - **H4~H6 은 닫았습니다** (`blocknote-schema.ts` 의 `levels`). H4 는 본문과 크기가 같고
+ *   H5·H6 은 더 작아서 위계가 아니라 각주로 읽힙니다. 슬래시 메뉴 · 단축키 · 마크다운 셋이
+ *   `levels` 한 곳에서 나와 같이 닫힙니다 — 다만 **붙여넣기는 안 걸러집니다**
  * - **크기는 우리 값입니다** — 30 · 24 · 20px, 줄간 1.3 (Notion 값. DESIGN.md §2).
- *   BlockNote 기본 48 · 32 · 20.8px 은 본문 16px 의 3 · 2 · 1.3 배라 제목1 이 너무
- *   크게 섭니다. `--knoc-text-heading-*` 에서 오고 브리지가 `--level` 로 넘깁니다
- * - **페이지 제목 40px 과는 다른 것입니다.** 그건 `PageTitle` 자리고,
- *   문서가 블록 배열 하나뿐인 BlockNote 에는 아예 없는 개념입니다
+ *   BlockNote 기본 48 · 32 · 20.8px 은 제목1 이 너무 크게 섭니다
+ * - **페이지 제목 40px 과는 다른 것입니다.** 그건 `PageTitle` 자리고, 문서가 블록 배열
+ *   하나뿐인 BlockNote 에는 아예 없는 개념입니다
  * - 토글 제목(`isToggleable`)은 같은 블록의 속성이고 세 단계 다 받습니다
  */
 
 const LEVELS = [1, 2, 3] as const;
 type HeadingLevel = (typeof LEVELS)[number];
 
-/* 컨트롤에 찍히는 이름. 값은 숫자 그대로 두고 보이는 글자만 바꾼다 —
- * 블록에 들어가는 것은 `level: 2` 이지 "H2" 가 아니기 때문이다.
- *
- * 숫자 1~3 을 그대로 두면 무엇의 1 인지가 안 보인다. 화면에서도 슬래시 메뉴
- * 에서도 이것들은 H1 · H2 로 불린다. */
+/* 보이는 글자만 바꾸고 값은 숫자 그대로 둔다 — 블록에 들어가는 것은
+ * `level: 2` 이지 "H2" 가 아니다. */
 const LEVEL_LABELS: Record<HeadingLevel, string> = {
   1: "H1",
   2: "H2",
@@ -78,12 +69,9 @@ function headingDoc({ level, isToggleable, text, allLevels }: HeadingStoryArgs) 
   );
 }
 
-/* component 를 안 적는다. 다른 스토리들과 다른 점이라 이유를 남긴다.
- *
- * 여기서 보여주는 것은 ContentEditor 라는 컴포넌트가 아니라 그 안에 놓인 제목
- * 블록이다. arg 도 컴포넌트 props(pageId · content)가 아니라 블록 props(level ·
- * isToggleable)라, component 를 적으면 스토리북이 arg 와 props 를 맞춰 보다가
- * 어긋난다. ContentEditor 자체의 props 표는 그 컴포넌트 스토리가 생길 때 붙는다. */
+/* component 를 안 적는다. arg 가 컴포넌트 props 가 아니라 블록 props 라,
+ * 적으면 스토리북이 둘을 맞춰 보다가 어긋난다. ContentEditor 의 props 표는
+ * `에디터/문서 한 장` 에 있다. */
 const meta: Meta<HeadingStoryArgs> = {
   title: "에디터/제목",
   args: {
@@ -134,20 +122,16 @@ type Story = StoryObj<HeadingStoryArgs>;
 /**
  * ### 해 볼 것
  * - **제목** 을 H1 → H3 으로 내려 봅니다
- * - **토글 제목** 을 켜고 제목 왼쪽 화살표를 눌러 봅니다
  * - **H1~H3 한 번에** 로 위계가 실제로 보이는지 확인합니다
- * - 빈 줄에서 `# ` `## ` `### ` 또는 `/제목2`, `Ctrl+Alt+2` 로도 같은 블록이 됩니다.
- *   `#### ` 과 `Ctrl+Alt+4` 는 이제 아무 일도 안 합니다.
- *   그렇게 바꾼 결과는 컨트롤에 안 비칩니다(`storyDoc.ts` 의 `storyPageId`)
- * - 위 툴바로 다크로 뒤집어 봅니다. 제목 색은 `blocknote-bridge.css` 가 SEED 로 넘긴 값입니다
+ * - **토글 제목** 을 켜고 제목 왼쪽 화살표를 눌러 봅니다
+ * - 빈 줄에서 `# ` · `/제목2` · `Ctrl+Alt+2` 로도 같은 블록이 됩니다.
+ *   `#### ` 과 `Ctrl+Alt+4` 는 아무 일도 안 합니다
  */
 export const Playground: Story = {
   render: (args) => (
     /* EditorSurface 로 감싸는 것은 거터 때문이다. ContentEditor 가 -mx-doc-gutter
      * 로 좌우를 도로 물고 있어서, px-doc-gutter 를 깐 표면 안에 넣어야 실제
-     * 문서와 같은 자리에 선다 (DESIGN.md §7).
-     *
-     * pageId 를 컨트롤 값에서 만드는 이유는 storyPageId 에 적어 뒀다. */
+     * 문서와 같은 자리에 선다 (DESIGN.md §7). */
     <EditorSurface>
       <ContentEditor
         pageId={storyPageId("heading", args.level, args.isToggleable, args.allLevels, args.text)}

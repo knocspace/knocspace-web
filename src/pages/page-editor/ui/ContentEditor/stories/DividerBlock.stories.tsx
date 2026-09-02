@@ -14,11 +14,9 @@ import { bodyBlock, storyDoc, storyPageId } from "./storyDoc";
  * | 블록 | `divider` | `divider` |
  * | 입력 | `---` | `---` |
  *
- * - 선 색은 브릿지가 `stroke-neutral-muted` 로 덮습니다. BlockNote 가 `#7d797a` 를
- *   박아 둔 자리라 변수로는 안 닿습니다(DESIGN.md §7)
- * - **Notion 은 이 블록을 프레젠테이션 모드에서 슬라이드 구분자로도 씁니다.**
- *   저희는 그 모드가 없어서 구분선은 구분선일 뿐입니다(`knocspace-parity.md`)
- * - 커서가 앉지 않는 블록이라, 지우려면 드래그 핸들 메뉴나 앞줄에서 `Backspace` 입니다
+ * - 선 색은 브릿지가 `stroke-neutral-muted` 로 덮습니다. BlockNote 가 색을 박아 둔 자리라
+ *   변수로는 안 닿습니다 (DESIGN.md §7)
+ * - 커서가 앉지 않는 블록이라, 지우려면 손잡이 메뉴나 앞줄에서 `Backspace` 입니다
  */
 
 type DividerStoryArgs = Omit<ContentEditorProps, "pageId" | "content"> & {
@@ -73,9 +71,9 @@ type Story = StoryObj<DividerStoryArgs>;
 /**
  * ### 해 볼 것
  * - 빈 줄에서 `---` 를 쳐 봅니다. 세 번째 하이픈에서 바로 선이 됩니다
- * - **연달아 둘** 로 두고 위아래 여백이 겹치는지 봅니다
+ * - **연달아 둘** 로 두고 블록이 세로로 얼마를 먹는지 봅니다 — 여백이 블록 안에 들어 있습니다
+ * - 선 위에 마우스를 올려 손잡이가 잡히는지 봅니다. 커서는 안 앉지만 블록입니다
  * - 다크로 뒤집어 봅니다. 선이 배경에 묻히면 안 됩니다
- * - 선 위에 마우스를 올려 드래그 핸들이 잡히는지 봅니다 — 커서는 안 앉지만 블록입니다
  */
 export const Playground: Story = {
   render: ({ layout, ...args }) => (

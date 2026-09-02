@@ -12,17 +12,16 @@ import { storyDoc, storyPageId } from "./storyDoc";
  *
  * | | Notion | BlockNote | 입력 | 단축키 |
  * | --- | --- | --- | --- | --- |
- * | 글머리 | `bulleted_list_item` | `bulletListItem` | `- ` `+ ` `* ` | `Ctrl+Shift+8` |
- * | 번호 | `numbered_list_item` | `numberedListItem` | `1. ` | `Ctrl+Shift+7` |
- * | 체크박스 | `to_do` | `checkListItem` | `[] ` `[x] ` | `Ctrl+Shift+9` |
- * | 토글 | `toggle` | `toggleListItem` | — | `Ctrl+Shift+6` |
+ * | 글머리 | `bulleted_list_item` | `bulletListItem` | `- ` `+ ` `* ` | `Ctrl+Shift+5` |
+ * | 번호 | `numbered_list_item` | `numberedListItem` | `1. ` | `Ctrl+Shift+6` |
+ * | 체크박스 | `to_do` | `checkListItem` | `[] ` `[x] ` | `Ctrl+Shift+4` |
+ * | 토글 | `toggle` | `toggleListItem` | `> ` | `Ctrl+Shift+7` |
  *
- * - **번호 매기기는 숫자뿐입니다.** Notion 은 `list_format` 으로 알파벳 · 로마자까지
- *   고르지만, BlockNote 는 시작 숫자(`start`)만 받습니다(`knocspace-parity.md`)
- * - 토글만 입력 규칙이 없습니다. 슬래시 메뉴나 단축키로 만듭니다
- * - 체크 표시의 강조색은 `accent-color` 로 SEED 브랜드색을 넘깁니다. 안 걸면 OS 기본
- *   파랑입니다(DESIGN.md §7)
- * - 중첩은 네 종류가 서로 섞입니다 — 글머리 아래에 체크박스를 넣어도 됩니다
+ * - **단축키 번호는 Notion 것입니다** (맥은 `⌘⌥` + 같은 숫자). BlockNote 기본을 덮습니다
+ *   (`model/block-shortcuts.ts`)
+ * - **`> ` 는 인용이 아니라 토글입니다** (Notion 규격). 인용은 `" ` 쪽에 그대로 남아 있습니다
+ * - **번호는 숫자뿐입니다.** Notion 의 알파벳 · 로마자는 BlockNote 에 없고 `start` 만 받습니다
+ * - 네 종류는 서로 중첩됩니다 — 글머리 아래에 체크박스를 넣어도 됩니다
  */
 
 const KINDS = ["bulletListItem", "numberedListItem", "checkListItem", "toggleListItem"] as const;
@@ -123,9 +122,8 @@ type Story = StoryObj<ListStoryArgs>;
  * - **목록 종류** 를 넷으로 바꿔 봅니다. **시작 숫자** 는 번호에서만, **첫 항목 체크** 는
  *   체크박스에서만 화면이 바뀝니다
  * - 항목 끝에 커서를 두고 `Tab` · `Shift+Tab` — 컨트롤 없이도 단이 바뀝니다
- * - 토글의 화살표를 접었다 펴 봅니다. 접힌 상태는 문서에 저장되지 않습니다
- * - 체크박스를 눌러 보고 Actions 패널에서 `onChange` 가 찍히는지 봅니다
- * - **읽기 전용** 을 끄고 체크박스를 눌러 봅니다 — 안 눌립니다
+ * - 빈 줄에서 `> ` 를 쳐 봅니다. 인용이 아니라 **토글** 이 됩니다
+ * - 체크박스 · 토글 줄에서 `Ctrl+Enter` — 체크가 켜졌다 꺼지고 토글이 여닫힙니다
  */
 export const Playground: Story = {
   render: (args) => (
