@@ -1,4 +1,4 @@
-import type { KeyboardEvent } from "react";
+import { useImperativeHandle, useRef, type KeyboardEvent, type Ref } from "react";
 import { editorPlaceholders } from "@/shared/config";
 
 /**
@@ -48,8 +48,11 @@ import { editorPlaceholders } from "@/shared/config";
  *
  * 높이는 스크립트로 안 잰다. 같은 글자를 안 보이게 한 겹 깔고 그 위에
  * textarea 를 겹쳐서, 상자 높이를 글자가 스스로 정하게 둔다. 그래서 이
- * 컴포넌트에는 effect 도 ref 도 없다. (`field-sizing: content` 가 자리 잡으면
- * 이 겹도 지울 수 있는데, 파이어폭스·사파리가 아직이다.)
+ * 컴포넌트에는 재는 코드도 effect 도 없다. (`field-sizing: content` 가 자리
+ * 잡으면 이 겹도 지울 수 있는데, 파이어폭스·사파리가 아직이다.)
+ *
+ * 들고 있는 ref 하나는 높이와 무관하다 — 본문에서 커서가 올라올 때 받을 자리다
+ * (`PageTitleHandle`).
  *
  * 테두리도 배경도 없다 (DESIGN.md §10). 40px 글자는 자기 영역이 뚜렷해서
  * 상자를 더하면 문서가 양식처럼 보인다. 편집 중에도 캐럿만 선다.
@@ -61,8 +64,36 @@ export interface PageTitleProps {
   onChange?: (next: string) => void;
   /** 끄면 읽기 전용 — F5 의 보기 권한이 여기로 온다. */
   editable?: boolean;
-  /** 제목에서 Enter. 줄바꿈 대신 본문으로 나가는 자리다 (F3 §3). */
+  /**
+   * 제목에서 `Enter` — 본문 맨 위에 **새 줄을 만드는** 자리다 (F3 §3).
+   *
+   * Notion 은 제목과 본문이 한 판이라 제목 끝의 `Enter` 가 그냥 「다음 줄」이고,
+   * 그 줄은 없으면 생긴다. 우리는 판이 갈려 있어서 화면이 이어 준다
+   * (PageEditorPage).
+   */
   onEnter?: () => void;
+  /**
+   * 글 **끝**에서 `↓` — 본문 첫 줄로 **내려가는** 자리다.
+   *
+   * `Enter` 와 가는 곳은 같아도 하는 일이 다르다. 이쪽은 있는 줄로 옮겨 갈
+   * 뿐이라 문서가 안 바뀐다.
+   */
+  onArrowDown?: () => void;
+  /** 밖에서 커서를 놓기 위한 핸들. */
+  ref?: Ref<PageTitleHandle>;
+}
+
+/**
+ * 밖에서 이 줄에 커서를 놓는 길. **`textarea` 자체는 안 내보낸다.**
+ *
+ * 본문 첫 줄에서 `↑` 나 `Backspace` 로 올라올 때 화면이 부른다
+ * (PageEditorPage). 엘리먼트를 내보내면 밖에서 값도 바꾸고 스타일도 건드릴 수
+ * 있게 되는데, 여기서 여는 것은 「커서를 받는다」 하나다 — 에디터 인스턴스를
+ * 안 내보내고 핸들만 여는 ContentEditor 와 같은 규칙이다.
+ */
+export interface PageTitleHandle {
+  /** 글 끝에 커서를 놓고 포커스를 받는다. */
+  focusEnd(): void;
 }
 
 /** 스크린리더가 읽을 이름. 눈으로는 40px 글자가 곧 제목이라 라벨이 따로 없다. */
@@ -99,7 +130,31 @@ function toSingleLine(text: string): string {
   return text.replace(/\s*[\r\n]+\s*/g, " ");
 }
 
-export function PageTitle({ value, onChange, editable = true, onEnter }: PageTitleProps) {
+export function PageTitle({
+  value,
+  onChange,
+  editable = true,
+  onEnter,
+  onArrowDown,
+  ref,
+}: PageTitleProps) {
+  const fieldRef = useRef<HTMLTextAreaElement>(null);
+
+  useImperativeHandle(ref, () => ({
+    focusEnd() {
+      const field = fieldRef.current;
+      /* 읽기 전용이면 `textarea` 가 아예 없다. 본문에서 올라오려던 커서는
+       * 그냥 있던 자리에 남는다 — 읽기만 하는 문서에서 제목에 커서가 설 자리는
+       * 어차피 없다. */
+      if (!field) {
+        return;
+      }
+
+      field.focus();
+      field.setSelectionRange(field.value.length, field.value.length);
+    },
+  }));
+
   if (!editable) {
     return (
       <p className={`${TYPE} ${value ? "text-fg-neutral" : PLACEHOLDER_TONE}`}>
@@ -109,10 +164,37 @@ export function PageTitle({ value, onChange, editable = true, onEnter }: PageTit
   }
 
   const handleKeyDown = (event: KeyboardEvent<HTMLTextAreaElement>) => {
-    if (event.key !== "Enter") return;
-    /* 여기서 안 막으면 textarea 가 줄을 늘린다. */
-    event.preventDefault();
-    onEnter?.();
+    /* **한글을 조합하는 중에는 아무것도 안 한다.** 「제목」을 치는 동안 후보를
+     * 확정하는 Enter 가 여기로 먼저 들어온다 — 막아 버리면 조합하던 글자가
+     * 사라진 채로 본문으로 내려간다. 조합이 끝난 뒤의 Enter 만 우리 것이다. */
+    if (event.nativeEvent.isComposing) {
+      return;
+    }
+
+    if (event.key === "Enter") {
+      /* 여기서 안 막으면 textarea 가 줄을 늘린다. 나갈 곳이 없어도 막는 것은
+       * 그대로다 — 제목에 줄바꿈이 안 담기는 것은 이 필드의 규칙이다. */
+      event.preventDefault();
+      onEnter?.();
+      return;
+    }
+
+    /* `↓` 는 **글 끝에서만** 나간다. 접혀서 두 줄이 된 제목의 첫 줄에서 누르면
+     * 브라우저가 아랫줄로 커서를 옮겨야 하고, 그건 아직 제목 안의 이동이다.
+     *
+     * 「마지막 줄인가」가 아니라 「글 끝인가」로 재는 것은 잴 방법이 없어서다 —
+     * 제목에는 줄바꿈이 안 담기고(toSingleLine) 접히는 것은 그리는 쪽 사정이라,
+     * 글자만 봐서는 몇 번째 줄인지 알 수 없다. 대신 접힌 제목에서도 `↓` 를
+     * 한 번 더 누르면 나간다 — 첫 번째 `↓` 가 커서를 글 끝으로 옮기기 때문이다. */
+    if (event.key === "ArrowDown" && !event.shiftKey && !event.altKey) {
+      const field = event.currentTarget;
+      if (field.selectionStart !== field.value.length || field.selectionEnd !== field.value.length) {
+        return;
+      }
+
+      event.preventDefault();
+      onArrowDown?.();
+    }
   };
 
   return (
@@ -130,6 +212,7 @@ export function PageTitle({ value, onChange, editable = true, onEnter }: PageTit
       </span>
 
       <textarea
+        ref={fieldRef}
         aria-label={FIELD_LABEL}
         value={value}
         rows={1}

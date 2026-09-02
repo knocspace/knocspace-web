@@ -1,3 +1,6 @@
+import type { BlockIdentifier } from "@blocknote/core";
+import type { AnyBlockNoteEditor } from "./block-selection";
+
 /**
  * 블록을 붙일 수 있는 사본으로 만든다 — 「복제」가 부르는 유일한 계산이다.
  *
@@ -20,4 +23,32 @@ export function copyForInsert<TBlock extends { id?: string; children?: TBlock[] 
     id: undefined,
     children: block.children?.map(copyForInsert),
   };
+}
+
+/**
+ * 블록 몇 개를 그 아래에 복제한다 — ⠿ 메뉴의 「복제」와 `⌘D` 가 같이 부른다.
+ *
+ * **마지막 블록 뒤에 붙인다.** 여러 줄을 복제하면 원본 다음에 사본이 통째로
+ * 오는 것이 Notion 이고, 한 줄씩 사이에 끼우면 순서가 섞인다.
+ *
+ * id 로도 블록으로도 받는다(`BlockIdentifier`). 메뉴는 사이드 메뉴가 들고 있던
+ * 블록을 그대로 넘기고, `⌘D` 는 선택에서 꺼낸 id 를 넘긴다 — `getBlock` 이 둘
+ * 다 받아 주므로 부르는 쪽에서 모양을 맞출 필요가 없다.
+ *
+ * 사이 어딘가에서 사라진 블록은 조용히 뺀다. 메뉴가 열려 있는 동안 문서가
+ * 바뀔 수 있고(협업 · 되돌리기), 없는 블록을 넣으라고 하면 코어가 던진다.
+ */
+export function duplicateBlocks(
+  editor: AnyBlockNoteEditor,
+  blocks: BlockIdentifier[],
+) {
+  const found = blocks
+    .map((block) => editor.getBlock(block))
+    .filter((block) => block !== undefined);
+
+  if (found.length === 0) {
+    return;
+  }
+
+  editor.insertBlocks(found.map(copyForInsert), found[found.length - 1], "after");
 }

@@ -3,6 +3,10 @@ import { ko } from "@blocknote/core/locales";
 import { syntaxHighlighter } from "@blocknote/code-block";
 import { useCreateBlockNote } from "@blocknote/react";
 import { editorPlaceholders } from "@/shared/config";
+import { knocBlockSelection } from "../lib/blocknote-block-selection";
+import { knocDocumentBoundary } from "../lib/blocknote-document-boundary";
+import { knocPageKeys } from "../lib/blocknote-page-keys";
+import { knocBlockShortcuts } from "./block-shortcuts";
 import { toBlockNoteInitialContent, type PageContent } from "./page-content";
 import { knocSchema } from "./blocknote-schema";
 
@@ -92,8 +96,30 @@ export function useContentEditor({ pageId, content, collaboration }: UseContentE
         width: 3,
         color: "var(--knoc-color-drop-indicator)",
       },
-      /* 코드 블록 하이라이트(Shiki). 스키마 쪽 언어 목록과 짝이다 — blocknote-schema.ts. */
-      extensions: [syntaxHighlighter, ...(collaboration ?? [])],
+      /* 코드 블록 하이라이트(Shiki). 스키마 쪽 언어 목록과 짝이다 — blocknote-schema.ts.
+       *
+       * knocBlockSelection 은 블록 선택이다 — 끌어서 여러 줄 고르기와 그 뒤의
+       * 키보드 전부(화살표 · Enter · Backspace · ⌘A · ⌘D). BlockNote 는 줄을
+       * 넘어가는 선택을 그냥 글자 선택으로 두는데 Notion 은 블록을 잡는다
+       * (blocknote-block-selection.ts).
+       *
+       * knocPageKeys 는 PageUp · PageDown 이다 — 고른 블록이 있으면 선택이,
+       * 없으면 커서가 한 화면 움직인다. 그 둘만 화면 좌표를 재야 해서 갈라 뒀다.
+       *
+       * knocBlockShortcuts 는 블록 **종류**를 바꾸는 것들이다 — 숫자키 전환 ·
+       * ⌘Enter · `>` 입력. 스키마를 알아야 해서 이쪽(model)에 산다.
+       *
+       * knocDocumentBoundary 는 본문 맨 앞에서 제목으로 나가는 `↑` ·
+       * `Backspace` 다. 그 둘만 **맨 뒤에** 서야 해서 tiptap 우선순위를 직접
+       * 쓰고, 어디로 갈지는 화면이 store 에 채워 준다 (ContentEditor). */
+      extensions: [
+        syntaxHighlighter,
+        knocBlockSelection,
+        knocPageKeys,
+        knocBlockShortcuts,
+        knocDocumentBoundary(),
+        ...(collaboration ?? []),
+      ],
     },
     [pageId],
   );

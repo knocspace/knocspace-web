@@ -41,6 +41,12 @@ F3에서는 **서버 저장을 구현하지 않습니다.**
 * [x] `ContentEditor` 구현
 * [x] 사이드 메뉴 위치 계산
 * [x] 손잡이(⠿)를 눌러 블록 선택 — 고른 동안 포맷 툴바는 안 뜹니다
+* [x] 끌어서 여러 블록 선택 — 줄을 넘어가면 블록이 통째로 잡힙니다 (Notion 규격)
+* [x] 블록 선택 중의 키보드 — `Esc` · `Enter` · `Backspace` · 화살표 · `⌘A` · `⌘D` · `⌘X` · `⌘V`
+* [x] `PageUp` · `PageDown` — 고른 블록이 있으면 선택이, 없으면 커서가 한 화면씩
+* [x] 블록 전환 숫자키 — Notion 번호 그대로 (`⌘⌥0`~`8` · `Ctrl+Shift+0`~`8`)
+* [x] `⌘Enter` — 체크박스 켜고 끄기 · 토글 열고 닫기
+* [x] 마크다운 `>` + 공백 → 토글 목록 (Notion 규격)
 * [x] 블록 메뉴(⠿) — 전환 · 색상 · 복제 · 삭제. 전환은 서브메뉴 열두 줄
 * [x] 블록 색·블록 선택 면의 상자 — 반경 r1, 글줄 밖으로 3px · 6px (DESIGN.md §7)
 * [x] `PageTitle` 구현
@@ -53,7 +59,7 @@ F3에서는 **서버 저장을 구현하지 않습니다.**
 * [ ] SlashMenu 구현 (표면 교체 — 목차 항목은 기본 메뉴에 붙어 있습니다)
 * [ ] FormatToolbar 구현
 * [ ] 콜아웃 블록
-* [ ] 제목 → 본문 포커스 이동
+* [x] 제목 ↔ 본문 포커스 이동 — 양방향입니다
 * [ ] 자동 저장
 * [ ] 저장 상태 표시
 * [ ] 이탈 경고
@@ -74,11 +80,72 @@ F3에서는 **서버 저장을 구현하지 않습니다.**
 * [x] `ui/ContentEditor/ContentEditor.tsx`
 * [x] `ui/ContentEditor/LazyContentEditor.tsx`
 * [x] `lib/blocknote-side-menu.ts` — ＋ · ⠿ 세로 위치
-* [x] `lib/block-selection.ts` — ⠿ 를 누르면 그 블록에 NodeSelection 을 놓습니다
+* [x] `lib/block-selection.ts` — ⠿ 를 누르면 그 블록에 NodeSelection 을 놓습니다. 여러 블록의 자리 계산도 여기입니다
+* [x] `lib/blocknote-block-selection.ts` — 줄을 넘어간 선택을 블록 경계로 넓히고, 칠하고, 키보드를 답니다
+* [x] `lib/block-range-selection.ts` — 구분선처럼 글자가 없는 블록이 가장자리일 때의 선택
 * [x] `ui/ContentEditor/BlockSideMenu.tsx` — 기본 사이드 메뉴 + 손잡이 클릭 선택
 * [x] `ui/ContentEditor/BlockDragHandleMenu.tsx` · `TurnIntoMenuItem.tsx` · `model/turn-into-items.ts` — ⠿ 메뉴
 
 ⠿ 메뉴는 BlockNote 기본(삭제 · 색깔 · 표 머리글)을 전환 · 색상 · 복제 · 삭제로 바꾼 것입니다. 표면은 BlockNote `Generic.Menu` 그대로고 폭 · 아이콘 · 목록만 우리 것입니다 ([DESIGN.md §9](../../DESIGN.md)).
+
+### 블록 선택 — Notion 규격
+
+**Notion 에는 블록 경계를 걸친 글자 선택이 없습니다.** 끌기가 줄을 넘어가는 순간 두 줄이 통째로
+잡히고, 그 뒤로 키보드가 전부 「블록」 단위로 움직입니다. BlockNote 는 여기까지 안 와 있어서
+(블록 하나를 고르는 상태만 있고, 그것도 `⠿` 를 눌렀을 때 우리가 놓습니다) 그 차이를 메웠습니다.
+
+Notion 공식 문서([keyboard shortcuts](https://www.notion.com/help/keyboard-shortcuts))를 그대로
+옮긴 것이 아래 표입니다. 우리가 정한 것은 `PageUp/PageDown` 한 줄뿐이고, 그건 Notion 에도 적혀
+있지 않아서 화살표의 규칙을 한 화면으로 늘린 것입니다.
+
+| 키 | 하는 일 | 출처 |
+| --- | --- | --- |
+| 끌기 · `shift`+클릭 | 줄을 넘어가면 블록을 통째로 잡습니다 | Notion |
+| `Esc` | 커서가 있는 블록을 고릅니다 / 한 번 더 누르면 풉니다 | Notion |
+| `Enter` | 고른 블록 **안으로** 커서를 넣습니다 | Notion |
+| `Backspace` `Delete` | 고른 블록을 지웁니다 | Notion |
+| `↑` `↓` `←` `→` | 선택을 다른 블록으로 옮깁니다 | Notion |
+| `shift`+`↑` `↓` | 선택을 한 블록 늘리거나 줄입니다 | Notion |
+| `⌘A` | 한 번은 이 블록의 글자, 한 번 더는 문서 전체 | Notion |
+| `⌘D` | 고른 블록을 복제합니다 | Notion |
+| `⌘C` `⌘X` `⌘V` | 블록 단위로 담고 · 지우고 · 붙입니다 | Notion |
+| `PageUp` `PageDown` | 한 화면 위/아래로 — 선택이든 커서든 (`shift` 로 늘립니다) | 우리 |
+| `⌘⌥0`~`8` · `Ctrl+Shift+0`~`8` | 블록 종류를 바꿉니다 (9 = 하위 페이지는 백로그) | Notion |
+| `⌘Enter` | 체크박스 켜고 끄기 · 토글 열고 닫기 | Notion |
+| `>` + 공백 | 토글 목록 (인용은 `"` + 공백) | Notion |
+| `⌘`+`shift`+`↑` `↓` | 고른 블록을 위/아래로 옮깁니다 | BlockNote 기본 |
+| `Tab` `shift`+`Tab` | 들여쓰기 · 내어쓰기 | BlockNote 기본 |
+| `⌘B` `⌘I` `⌘U` `⌘E` `⌘⇧S` | 굵게 · 기울임 · 밑줄 · 인라인 코드 · 취소선 | BlockNote 기본 |
+
+**글자가 없는 블록이 가장자리면 선택 종류가 하나 더 있습니다.** 구분선에는 글자가 없어서
+`TextSelection` 의 끝이 될 수 없습니다 — `TextSelection.between` 이 글자를 찾아 안쪽으로
+되돌아오고, 그러면 구분선이 선택에서 빠져 `shift`+`↓` 가 거기서 멈춥니다. 그때만
+`BlockRangeSelection`(`lib/block-range-selection.ts`)으로 바꿉니다. BlockNote 의
+`MultipleNodeSelection` 과 같은 물건인데 밖으로 안 내놔서 짧게 다시 썼습니다.
+
+**선택의 정체는 그 밖에는 그대로 `TextSelection` 입니다.** 새 Selection 종류를 만들지 않았습니다 — BlockNote
+안에 `MultipleNodeSelection` 이 있는데 밖으로 안 내놓기도 하고, `TextSelection` 으로 두면 복사 ·
+포맷 툴바 · `⠿` 로 끌기 · `getSelection()` 넷이 하나도 안 바뀐 채 그대로 동작합니다. 하는 일은
+「줄을 넘어간 선택을 블록 경계까지 밀어 내는 것」 하나고, 끌기 · `shift`+클릭 · `shift`+화살표가
+전부 그 코드 한 벌을 지납니다 (`lib/blocknote-block-selection.ts`).
+
+대신 **잘라내기 · 붙여넣기 두 자리만** 우리가 가로챕니다. 선택이 첫 블록의 글자 처음부터 마지막
+블록의 글자 끝까지라, ProseMirror 에게 맡기면 지워진 자리에 **빈 문단 하나가 남습니다.** Notion 은
+안 남깁니다.
+
+**여러 블록을 골랐을 때는 포맷 툴바가 뜹니다** — Notion 도 그렇고, `⌘B` 가 고른 줄 전부에 걸립니다.
+안 띄우는 것은 블록을 **하나** 골랐을 때뿐입니다 (`⠿` · `Esc`).
+
+**숫자키는 OS 마다 조합이 다릅니다.** Notion 이 이 계열만 `Mod` 를 안 쓰고 macOS 는
+`Cmd+Option+숫자`, Windows 는 `Ctrl+Shift+숫자` 입니다. 두 벌을 같이 겁니다. **뒤쪽이
+BlockNote 기본과 부딪힙니다** — 저쪽의 `Ctrl+Shift+6`~`9` 는 토글 · 번호 · 불릿 · 체크로,
+마크다운 편집기 관례지 Notion 번호가 아닙니다. 우리 것이 먼저 서서 덮습니다(`runsBefore`).
+9 만 남겨 뒀습니다 — Notion 에서 9 는 하위 페이지고 그건 백로그입니다.
+
+**아직 없는 것 몇.** `⌘`+`shift`+클릭으로 블록을 하나씩 **골랐다 뺐다** 하는 것은 ProseMirror 의
+선택으로 표현할 수 없습니다(연속하지 않은 선택이 없습니다). `⌘/`(고른 블록의 메뉴 열기)와
+`⌘K`(링크 걸기 — BlockNote 에 아예 없습니다), `⌘⇧H`(직전 색 다시 적용)는 메뉴 · 툴바 표면이
+우리 것이 된 뒤입니다(F3 §2). `⌘⇧U`(상위 블록으로)와 `@` · `[[` 는 다음 스프린트입니다.
 
 **「페이지」(블록을 하위 페이지로 전환)는 백로그입니다** ([빼는 것](mvp.md)). 페이지를 가리키는 블록이 없고, 하위 페이지를 만드는 일이라 `shared/api` 를 부르는 유일한 전환이며, 글자가 문서 밖으로 나가서 되돌리기 범위를 같이 정해야 합니다. 이번 스프린트에서 하지 않습니다.
 
@@ -196,14 +263,71 @@ BlockNote에는 페이지 제목이 없습니다. 문서가 블록 배열 하나
 
 ### 포커스 이동
 
-제목에서 아래 입력 시 첫 번째 블록으로 이동합니다.
+**Notion 은 제목과 본문이 한 판입니다.** 커서가 그냥 위아래로 오갑니다. 우리는 제목이
+`textarea`(PageTitle)고 본문이 ProseMirror(ContentEditor)라 판이 둘이라, 그 사이를 손으로
+이어야 합니다. 잇는 자리는 `PageEditorPage` 한 곳입니다.
 
-* `Enter`
-* `↓`
+| 방향 | 키 | 하는 일 | 조건 |
+| --- | --- | --- | --- |
+| 제목 → 본문 | `Enter` | 맨 위에 **빈 줄을 만들고** 그 안으로 | 늘 (제목에 줄바꿈은 안 담깁니다) |
+| 제목 → 본문 | `↓` | 첫 줄로 **내려갑니다** (문서는 안 바뀝니다) | 커서가 **글 끝**일 때 |
+| 본문 → 제목 | `↑` | 제목 끝으로 | 첫 블록의 **첫 줄**일 때 |
+| 본문 → 제목 | `Backspace` | 제목 끝으로 | 첫 블록의 **첫 글자 앞**일 때 |
 
-* [ ] `ContentEditor`가 포커스 핸들만 열기
+**`Enter` 와 `↓` 가 다릅니다.** Notion 은 제목과 본문이 한 판이라 제목 끝의 `Enter` 가 그냥
+「다음 줄」이고, 그 줄은 **없으면 생깁니다** — 아래에 이미 글이 있으면 그 위로 빈 줄이 하나
+끼고 있던 글이 밀려 내려갑니다. `↓` 는 있는 줄로 옮겨 갈 뿐이라 문서가 안 바뀝니다.
+맨 위가 이미 빈 문단이면 `Enter` 도 안 만듭니다 — 그 줄이 곧 새 줄이라, 안 그러면 새 문서에서
+빈 줄이 둘이 됩니다.
+
+* [x] `ContentEditor`가 포커스 핸들만 열기 (`ContentEditorHandle.focusStart`)
+* [x] `PageTitle`도 같은 규칙으로 핸들만 (`PageTitleHandle.focusEnd`)
+* [x] `lib/document-boundary.ts` — 「본문의 맨 앞인가」 판단
+* [x] `ContentEditorHandle.insertStart` — 제목 `Enter` 가 만드는 줄
+* [x] `lib/blocknote-document-boundary.ts` — `↑` · `Backspace` 를 키맵 맨 뒤에서 잡습니다
 
 에디터 인스턴스를 외부에 노출하지 않습니다. 노출하면 F10에서 Yjs로 바꿀 때 밖까지 깨집니다.
+같은 이유로 `PageTitle`도 `textarea` 자체를 안 내보냅니다.
+
+**`↑` 는 첫 글자가 아니라 첫 줄입니다.** 길어서 접힌 문단이나 여러 줄짜리 코드 블록이 첫
+블록이면, 둘째 줄의 `↑` 는 아직 본문 안의 이동입니다. 그 판단은 글자 수로 못 하고 재야 해서
+ProseMirror 의 `endOfTextblock("up")` 을 씁니다.
+
+**첫 블록이 제목이나 목록이면 `Backspace` 를 두 번 눌러야 합니다.** 블록 맨 앞의 `Backspace` 는
+**먼저 그 블록의 종류를 벗기기** 때문입니다 — 제목1 이 본문이 되고, 그 다음 누름이 제목 줄로
+올라갑니다. 모든 블록에 같은 규칙이고 Notion 도 같은 순서라, 첫 블록만 예외로 두지 않았습니다.
+예외로 뒀으면 `Backspace` 로 첫 줄의 제목을 되돌리는 길이 없어집니다.
+
+| 첫 블록 | 1번째 | 2번째 |
+| --- | --- | --- |
+| 문단 · 빈 문단 | 제목으로 | |
+| 제목 · 목록 · 인용 | 문단이 됨 | 제목으로 |
+
+견본 문서의 첫 줄이 제목1 이라(`sample-page-content.ts`) 눈으로 확인할 때 이 두 단계를 먼저
+만납니다. 한 번 눌렀을 때 글자가 작아지는 것이 「먹혔다」는 신호입니다.
+
+**본문 쪽 두 키는 키맵의 맨 뒤에 섭니다** (`lib/blocknote-document-boundary.ts`).
+
+먼저 서면 안 됩니다 — `Backspace` 로 제목1 을 본문으로 되돌리는 것이 BlockNote 몫이라,
+우리가 앞에 서면 되돌리기도 전에 제목 줄로 튀어 나갑니다. 그렇다고 React `onKeyDown` 으로
+받아서도 안 됩니다: **ProseMirror 가 문서 맨 앞의 `Backspace` 를 스스로 `preventDefault`
+합니다.** 아무 플러그인도 안 가져가면 `captureKeyDown` 이 도는데, 거기서
+`stopNativeHorizontalDelete` 가 「글줄 끝이면 브라우저에 안 맡긴다」로 참을 돌려주기
+때문입니다. 문서 맨 앞은 정의상 글줄의 끝이라 늘 걸립니다.
+
+`captureKeyDown` 은 `handleKeyDown` 을 **전부 물어본 다음**에만 돕니다. 그러니 그 줄의 맨
+뒤에 끼어들면 됩니다 — tiptap 확장 우선순위 `1` 입니다(기본 100, BlockNote 것들이 91~111).
+
+    BlockNote  블록 종류를 먼저 벗긴다 (제목1 → 본문)
+    우리       저쪽이 안 가져갔을 때만 — 그때가 제목으로 올라갈 자리다
+    PM         여기까지 아무도 안 가져가야 preventDefault 한다 (이제 안 온다)
+
+**처음에는 React `onKeyDown` 이었고, 브라우저에서 한 번도 안 걸렸습니다.** 레이아웃이 없는
+테스트에서는 `endOfTextblock` 이 거짓이라 저 경로가 안 돌아 통과했습니다 — 그래서 못 잡았습니다.
+지금은 `endOfTextblock` 을 참으로 만들어 두고(브라우저 흉내) 검사합니다.
+
+**한글 조합 중에는 둘 다 손대지 않습니다** (`isComposing`). 제목에서 후보를 확정하는 `Enter`,
+본문에서 첫 글자를 지우는 `Backspace` 가 그대로 여기로 들어옵니다.
 
 ### 빈 문서
 
@@ -330,13 +454,11 @@ F3부터 Vitest를 사용합니다.
       ↓
 2. 콜아웃 / 목차 블록
       ↓
-3. 제목 → 본문 포커스 이동
+3. 자동 저장
       ↓
-4. 자동 저장
+4. 저장 상태 / 이탈 경고
       ↓
-5. 저장 상태 / 이탈 경고
-      ↓
-6. 테스트
+5. 테스트
 ```
 
 F3가 끝나면 **페이지를 열고 → 작성하고 → 자동 저장하고 → 다시 열어도 내용이 남는 화면 MVP**가 완성됩니다.

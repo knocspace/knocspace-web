@@ -10,9 +10,9 @@ import IconPaintrollerLine from "@karrotmarket/react-monochrome-icon/IconPaintro
 import IconSquare2StackedLine from "@karrotmarket/react-monochrome-icon/IconSquare2StackedLine";
 import IconTrashcanLine from "@karrotmarket/react-monochrome-icon/IconTrashcanLine";
 import { blockMenuLabels } from "@/shared/config";
-import { copyForInsert } from "../../lib/block-duplication";
-import { menuTargetBlocks } from "../../lib/block-selection";
-import { knocSchema, type KnocPartialBlock } from "../../model/blocknote-schema";
+import { duplicateBlocks } from "../../lib/block-duplication";
+import { menuTargetBlocks, selectedBlocks } from "../../lib/block-selection";
+import { knocSchema } from "../../model/blocknote-schema";
 import { TurnIntoMenuItem } from "./TurnIntoMenuItem";
 
 /**
@@ -61,8 +61,12 @@ export function BlockDragHandleMenu() {
   }
 
   /* 「복제」·「삭제」가 다루는 블록. 규칙은 block-selection.ts 에 한 벌 있고,
-   * 「전환」도 같은 것을 부른다. 여기서 다시 세지 않는다. */
-  const targetBlocks = () => menuTargetBlocks(block, editor.getSelection()?.blocks);
+   * 「전환」도 같은 것을 부른다. 여기서 다시 세지 않는다.
+   *
+   * 고른 것을 `editor.getSelection()` 이 아니라 `selectedBlocks` 로 받는 이유는
+   * 저쪽 파일에 적어 뒀다 — 글자가 없는 블록이 가장자리인 선택에서 한 칸 더
+   * 집는다. */
+  const targetBlocks = () => menuTargetBlocks(block, selectedBlocks(editor));
 
   return (
     /* **「전환」이 열려 있는 동안 「색상」의 판을 감춘다.** 서브메뉴 둘이 겹쳐
@@ -104,17 +108,9 @@ export function BlockDragHandleMenu() {
       <Components.Generic.Menu.Item
         className="bn-menu-item"
         icon={<IconSquare2StackedLine size={16} />}
-        onClick={() => {
-          const blocks = targetBlocks();
-          /* 사이드 메뉴가 들고 있는 블록은 BlockNote 가 `Block<any, any, any>` 로
-           * 준다(SideMenuState). 우리 스키마로 좁힐 방법이 밖에 없어서 넣는
-           * 자리에서 한 번 짚어 준다 — 값은 이 문서에서 꺼낸 것 그대로다. */
-          const copies = blocks.map(copyForInsert) as KnocPartialBlock[];
-
-          /* 마지막 블록 **뒤**에 붙인다. 여러 줄을 복제하면 원본 다음에 사본이
-           * 통째로 오는 것이 Notion 이고, 한 줄씩 사이에 끼우면 순서가 섞인다. */
-          editor.insertBlocks(copies, blocks[blocks.length - 1], "after");
-        }}
+        /* 사본을 만드는 규칙도 붙이는 자리도 block-duplication.ts 한 곳이다 —
+         * `⌘D` 가 같은 것을 부른다 (blocknote-block-selection.ts). */
+        onClick={() => duplicateBlocks(editor, targetBlocks())}
       >
         {blockMenuLabels.duplicate}
       </Components.Generic.Menu.Item>

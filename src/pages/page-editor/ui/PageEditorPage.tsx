@@ -1,8 +1,9 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useParams } from "react-router";
 import { EditorSurface } from "./EditorSurface/EditorSurface";
 import { PageIcon } from "./PageIcon/PageIcon";
-import { PageTitle } from "./PageTitle/PageTitle";
+import { PageTitle, type PageTitleHandle } from "./PageTitle/PageTitle";
+import type { ContentEditorHandle } from "./ContentEditor/ContentEditor";
 import { listEmojiCategories, searchEmoji } from "../lib/page-icon-emoji";
 import { LazyContentEditor } from "./ContentEditor/LazyContentEditor";
 import { samplePageContent } from "../model/sample-page-content";
@@ -13,8 +14,16 @@ import { samplePageContent } from "../model/sample-page-content";
  * TODO(F2): 제목과 내용의 출처가 `usePage(pageId)` 로 바뀐다. 그때 samplePageContent 과
  * 아래 useState 가 사라지고, 로딩(Skeleton) · 404 · 에러 갈래가 이 자리에 생긴다.
  * TODO(F3): 자동 저장. 지금은 제목도 본문도 바뀐 값을 받아만 두고 안 보낸다.
- * TODO(F3): 제목에서 Enter 로 본문 첫 블록으로 가기. ContentEditor 가 핸들을
- * 열어야 한다 — 에디터 인스턴스는 밖으로 안 내보낸다(architecture.md).
+ *
+ * ── 제목과 본문을 잇는 자리
+ *
+ * Notion 은 제목과 본문이 한 판이라 `Enter` `↑` `↓` `Backspace` 가 그냥
+ * 이어진다. 우리는 제목이 `textarea` 고 본문이 ProseMirror 라 판이 둘이고,
+ * **그 사이를 잇는 유일한 자리가 여기다.**
+ *
+ * 양쪽 다 핸들만 연다 — `textarea` 도 에디터 인스턴스도 밖으로 안 나온다
+ * (architecture.md). 이 화면이 아는 것은 「위에 제목이 있고 아래에 본문이
+ * 있다」는 것뿐이고, 언제 넘어갈지는 각자가 정한다.
  */
 
 export function PageEditorPage() {
@@ -23,6 +32,9 @@ export function PageEditorPage() {
   /* 서버가 없어서 라우트가 잠깐 들고 있는다. F2 에서 usePage 로 바뀐다. */
   const [title, setTitle] = useState("");
   const [icon, setIcon] = useState<string | undefined>(undefined);
+
+  const titleRef = useRef<PageTitleHandle>(null);
+  const bodyRef = useRef<ContentEditorHandle>(null);
 
   /* 라우트가 :pageId 를 보장하지만 useParams 의 타입은 그걸 모른다.
    * 없을 수 있는 값으로 다뤄서 에디터에 undefined 가 흘러가지 않게 한다. */
@@ -52,9 +64,25 @@ export function PageEditorPage() {
             searchEmoji={searchEmoji}
           />
         </div>
-        <PageTitle value={title} onChange={setTitle} />
+        <PageTitle
+          ref={titleRef}
+          value={title}
+          onChange={setTitle}
+          /* Enter 는 **줄을 만들고**, ↓ 는 있는 줄로 **내려간다.** Notion 에서
+           * 제목 끝의 Enter 가 「다음 줄」인 것과 같다 — 그 줄이 없으면 생긴다.
+           *
+           * 본문이 아직 안 실렸으면(지연 로드) 아무 일도 안 일어난다. 제목을
+           * 칠 수 있을 때쯤이면 이미 서 있다. */
+          onEnter={() => bodyRef.current?.insertStart()}
+          onArrowDown={() => bodyRef.current?.focusStart()}
+        />
       </div>
-      <LazyContentEditor pageId={pageId} content={samplePageContent()} />
+      <LazyContentEditor
+        ref={bodyRef}
+        pageId={pageId}
+        content={samplePageContent()}
+        onLeaveStart={() => titleRef.current?.focusEnd()}
+      />
     </EditorSurface>
   );
 }
