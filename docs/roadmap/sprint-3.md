@@ -322,6 +322,8 @@ BlockNote가 제공하지 않는 블록입니다. `createReactBlockSpec`으로 �
 * [ ] 콜아웃
 * [x] 목차 — `model/toc-block.ts` · `model/table-of-contents.ts` · `ui/ContentEditor/TableOfContentsView.tsx`
 
+콜아웃은 [콜아웃 블록 구현 계획](../decisions/f3-callout-block.md)에 있습니다 — 스키마 · 자식을 상자 안에 세우는 브리지 예외 · 아이콘 피커 재사용.
+
 목차는 담는 것이 없는 블록입니다(`content: "none"`, `propSchema: {}`). 저장되는 것은 `{ "type": "tableOfContents" }` 한 줄이고, 목록은 그릴 때 문서에서 다시 셉니다 — 제목 글자를 props 로 복사해 두면 같은 글자가 문서에 두 벌이 됩니다.
 
 데이터베이스 · 뷰는 [F6·F7](later-sprints.md)에서 진행합니다.
